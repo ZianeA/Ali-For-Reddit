@@ -3,4 +3,19 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_activity_main_fragment">Main</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="tab_text_3">Tab 3</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quam quisque id diam vel quam elementum pulvinar etiam non. Volutpat consequat mauris nunc congue nisi. Consectetur a erat nam at lectus urna duis convallis. Eu nisl nunc mi ipsum. Duis tristique sollicitudin nibh sit amet commodo nulla. Commodo odio aenean sed adipiscing diam donec adipiscing tristique risus. Ac tortor dignissim convallis aenean et tortor at risus viverra. Morbi non arcu risus quis varius quam quisque id. Tellus rutrum tellus pellentesque eu tincidunt. Ut diam quam nulla porttitor. Dictumst vestibulum rhoncus est pellentesque. Mus mauris vitae ultricies leo integer malesuada nunc. Dui accumsan sit amet nulla facilisi morbi tempus.
+
+Dui ut ornare lectus sit. Leo urna molestie at elementum eu facilisis sed odio morbi. Mauris commodo quis imperdiet massa tincidunt nunc pulvinar sapien. Quam elementum pulvinar etiam non quam lacus. Amet consectetur adipiscing elit ut. Vivamus arcu felis bibendum ut tristique et egestas. Ultrices tincidunt arcu non sodales neque. Elit sed vulputate mi sit amet mauris. Et egestas quis ipsum suspendisse ultrices gravida dictum fusce. Nec dui nunc mattis enim ut tellus. Donec massa sapien faucibus et molestie ac feugiat sed. Mattis pellentesque id nibh tortor id. Amet massa vitae tortor condimentum lacinia quis vel. Purus faucibus ornare suspendisse sed nisi. Sed vulputate mi sit amet mauris commodo quis imperdiet massa. Odio aenean sed adipiscing diam donec adipiscing tristique risus nec. Hendrerit gravida rutrum quisque non tellus orci ac.
+
+Varius duis at consectetur lorem donec. Hac habitasse platea dictumst vestibulum rhoncus est pellentesque elit. Pharetra convallis posuere morbi leo. Ornare lectus sit amet est placerat. Risus feugiat in ante metus dictum. Consequat nisl vel pretium lectus quam. Odio morbi quis commodo odio aenean sed adipiscing diam donec. Augue lacus viverra vitae congue. Ac auctor augue mauris augue neque. Purus in massa tempor nec feugiat nisl. Adipiscing diam donec adipiscing tristique risus nec feugiat. Felis donec et odio pellentesque diam volutpat commodo sed egestas. Commodo quis imperdiet massa tincidunt nunc pulvinar sapien. Tincidunt arcu non sodales neque sodales ut etiam sit. Quis lectus nulla at volutpat diam ut venenatis tellus in. At quis risus sed vulputate odio ut enim blandit. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Tellus integer feugiat scelerisque varius morbi. Et netus et malesuada fames ac turpis egestas sed.</string>
 </resources>
