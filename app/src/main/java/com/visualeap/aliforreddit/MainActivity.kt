@@ -1,14 +1,21 @@
 package com.visualeap.aliforreddit
 
+import android.content.res.Resources
 import android.os.Bundle
-import androidx.appcompat.app.ActionBarDrawerToggle
+import android.util.Log
+import android.util.TypedValue
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.GravityCompat
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    private val tag = MainActivity::class.java.simpleName
 
     private val onBottomNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -60,22 +67,39 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+//        setSupportActionBar(toolbar)
 
         navigation.setOnNavigationItemSelectedListener(onBottomNavigationItemSelectedListener)
 
-        val toggle = ActionBarDrawerToggle(
-            this,
-            drawer_layout,
-            toolbar,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-        )
-        drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
+//        val toggle = ActionBarDrawerToggle(
+//            this,
+//            drawer_layout,
+//            toolbar,
+//            R.string.navigation_drawer_open,
+//            R.string.navigation_drawer_close
+//        )
+//        drawer_layout.addDrawerListener(toggle)
+//        toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(onDrawerItemSelectedListener)
+
+        roundProfilePicture()
     }
+
+    private fun roundProfilePicture() {
+        ContextCompat.getDrawable(this, R.drawable.profile_picture)
+            ?.toBitmap()
+            .apply {
+                val roundedProfileDrawable = RoundedBitmapDrawableFactory.create(resources, profileImage.drawable.toBitmap(84, 84))
+                roundedProfileDrawable.cornerRadius = 21f
+                Log.d(tag, test.radius.toString())
+                Log.d(tag, 8f.toPx(resources).toString())
+                profileImage.setImageDrawable(roundedProfileDrawable)
+            }
+    }
+
+    private fun Float.toPx(resources: Resources) =
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics);
 
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
