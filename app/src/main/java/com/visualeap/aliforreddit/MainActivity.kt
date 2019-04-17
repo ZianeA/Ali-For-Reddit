@@ -1,15 +1,9 @@
 package com.visualeap.aliforreddit
 
-import android.content.res.Resources
 import android.os.Bundle
-import android.util.Log
-import android.util.TypedValue
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.GravityCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -82,24 +76,7 @@ class MainActivity : AppCompatActivity() {
 //        toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(onDrawerItemSelectedListener)
-
-        roundProfilePicture()
     }
-
-    private fun roundProfilePicture() {
-        ContextCompat.getDrawable(this, R.drawable.profile_picture)
-            ?.toBitmap()
-            .apply {
-                val roundedProfileDrawable = RoundedBitmapDrawableFactory.create(resources, profileImage.drawable.toBitmap(84, 84))
-                roundedProfileDrawable.cornerRadius = 21f
-                Log.d(tag, test.radius.toString())
-                Log.d(tag, 8f.toPx(resources).toString())
-                profileImage.setImageDrawable(roundedProfileDrawable)
-            }
-    }
-
-    private fun Float.toPx(resources: Resources) =
-        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, resources.displayMetrics);
 
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
