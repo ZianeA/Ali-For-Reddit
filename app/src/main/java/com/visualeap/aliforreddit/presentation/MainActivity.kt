@@ -1,10 +1,12 @@
-package com.visualeap.aliforreddit
+package com.visualeap.aliforreddit.presentation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.visualeap.aliforreddit.R
+import com.visualeap.aliforreddit.presentation.frontPage.FrontPageContainerFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -16,7 +18,10 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.navigation_home -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, HomeFragmentContainer())
+                        .replace(
+                            R.id.fragment_container,
+                            FrontPageContainerFragment()
+                        )
                         .commit();
                     return@OnNavigationItemSelectedListener true
                 }

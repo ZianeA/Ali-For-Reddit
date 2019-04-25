@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit
+package com.visualeap.aliforreddit.presentation.frontPage
 
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.snackbar.Snackbar
@@ -8,9 +8,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import android.os.Bundle
 import android.view.*
+import com.visualeap.aliforreddit.R
 import kotlinx.android.synthetic.main.fragment_container_home.*
 
-class HomeFragmentContainer : Fragment() {
+class FrontPageContainerFragment : Fragment() {
 
     /**
      * The [androidx.viewpager.widget.PagerAdapter] that will provide
@@ -75,7 +76,7 @@ class HomeFragmentContainer : Fragment() {
         override fun getItem(position: Int): Fragment {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return HomeFragment.newInstance(position + 1)
+            return FrontPageFragment.newInstance(position + 1)
         }
 
         override fun getCount(): Int {
