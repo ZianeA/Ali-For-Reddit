@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            drawer_layout.closeDrawer(GravityCompat.START)
+            drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
 
@@ -68,7 +68,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 //        setSupportActionBar(toolbar)
 
-        navigation.setOnNavigationItemSelectedListener(onBottomNavigationItemSelectedListener)
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+            onBottomNavigationItemSelectedListener
+        )
+
+        // Set default selection
+        if (savedInstanceState == null) {
+            bottomNavigationView.selectedItemId = R.id.navigation_home
+        }
 
 //        val toggle = ActionBarDrawerToggle(
 //            this,
@@ -80,12 +87,12 @@ class MainActivity : AppCompatActivity() {
 //        drawer_layout.addDrawerListener(toggle)
 //        toggle.syncState()
 
-        nav_view.setNavigationItemSelectedListener(onDrawerItemSelectedListener)
+        drawerNavigationView.setNavigationItemSelectedListener(onDrawerItemSelectedListener)
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }

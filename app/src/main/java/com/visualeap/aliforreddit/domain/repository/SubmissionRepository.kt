@@ -1,8 +1,9 @@
 package com.visualeap.aliforreddit.domain.repository
 
-import com.visualeap.aliforreddit.domain.entity.Submission
+import io.reactivex.Observable
+import net.dean.jraw.models.Submission
 
 interface SubmissionRepository {
 
-    fun getSubmissions() : List<Submission>
+    fun getSubmissions(): Observable<List<Submission>>
 }

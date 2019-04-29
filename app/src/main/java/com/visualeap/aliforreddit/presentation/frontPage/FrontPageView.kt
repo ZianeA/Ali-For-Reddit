@@ -1,10 +1,7 @@
 package com.visualeap.aliforreddit.presentation.frontPage
 
-import com.visualeap.aliforreddit.domain.entity.Submission
+import net.dean.jraw.models.Submission
 
 interface FrontPageView {
-    fun displaySubmissions(submissions: List<Submission>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
+    fun displaySubmissions(submissions: List<Submission>)
 }

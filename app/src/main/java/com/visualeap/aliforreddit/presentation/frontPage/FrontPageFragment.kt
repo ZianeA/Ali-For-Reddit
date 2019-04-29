@@ -1,15 +1,19 @@
 package com.visualeap.aliforreddit.presentation.frontPage
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.visualeap.aliforreddit.R
+import com.visualeap.aliforreddit.data.SubmissionDataRepository
+import com.visualeap.aliforreddit.presentation.util.AsyncSchedulerProvider
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import net.dean.jraw.models.Submission
 
-class FrontPageFragment : Fragment() {
+class FrontPageFragment : Fragment(), FrontPageView {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -20,8 +24,25 @@ class FrontPageFragment : Fragment() {
         rootView.section_label.text = getString(
             R.string.section_format, arguments?.getInt(
                 ARG_SECTION_NUMBER
-            ))
+            )
+        )
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        //TODO use dependency injection
+        FrontPagePresenter(
+            this,
+            SubmissionDataRepository(),
+            AsyncSchedulerProvider()
+        ).loadSubmissions()
+    }
+
+    override fun displaySubmissions(submissions: List<Submission>) {
+        Log.d(TAG, "list size = ${submissions.size}")
+        Log.d(TAG, submissions[0].toString())
     }
 
     companion object {
@@ -38,5 +59,7 @@ class FrontPageFragment : Fragment() {
         fun newInstance(sectionNumber: Int) = FrontPageFragment().apply {
             arguments = bundleOf(ARG_SECTION_NUMBER to sectionNumber)
         }
+
+        private val TAG = FrontPageFragment::class.java.simpleName
     }
 }
