@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reddit_username">Paste your Reddit username here</string>
+    <string name="client_id">Paste the client id here</string>
+    <string name="redirect_url">Paste your redirect URL here</string>
+</resources>
