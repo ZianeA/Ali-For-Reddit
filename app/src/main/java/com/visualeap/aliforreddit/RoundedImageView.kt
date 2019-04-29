@@ -8,6 +8,7 @@ import androidx.core.graphics.drawable.toBitmap
 
 class RoundedImageView : AppCompatImageView {
 
+    private var isCircular = false
     private var cornerRadius = 0
 
     constructor(context: Context) : super(context) {
@@ -41,6 +42,8 @@ class RoundedImageView : AppCompatImageView {
             cornerRadius =
                 getDimensionPixelSize(R.styleable.RoundedImageView_cornerRadius, DEFAULT_RADIUS)
 
+            isCircular = getBoolean(R.styleable.RoundedImageView_isCircular, false)
+
             recycle()
         }
     }
@@ -51,12 +54,14 @@ class RoundedImageView : AppCompatImageView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
         //When the bitmap's height and width are not set to ImageView's, corner radius won't work as expected.
-        drawable?.run {
+        drawable?.let {
             val width = MeasureSpec.getSize(widthMeasureSpec)
             val height = MeasureSpec.getSize(heightMeasureSpec)
+
             val roundedDrawable =
-                RoundedBitmapDrawableFactory.create(resources, toBitmap(width, height))
+                RoundedBitmapDrawableFactory.create(resources, it.toBitmap(width, height))
             roundedDrawable.cornerRadius = cornerRadius.toFloat()
+            roundedDrawable.isCircular = isCircular
 
             setImageDrawable(roundedDrawable)
         }
