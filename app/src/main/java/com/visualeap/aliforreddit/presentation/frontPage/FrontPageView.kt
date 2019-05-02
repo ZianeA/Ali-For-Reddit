@@ -1,7 +1,7 @@
 package com.visualeap.aliforreddit.presentation.frontPage
 
-import net.dean.jraw.models.Submission
+import com.visualeap.aliforreddit.domain.entity.Post
 
 interface FrontPageView {
-    fun displaySubmissions(submissions: List<Submission>)
+    fun displayPosts(posts: List<Post>)
 }

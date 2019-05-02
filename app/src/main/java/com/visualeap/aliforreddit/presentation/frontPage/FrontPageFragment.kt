@@ -8,10 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.data.SubmissionDataRepository
-import com.visualeap.aliforreddit.presentation.util.AsyncSchedulerProvider
+import com.visualeap.aliforreddit.domain.entity.Post
 import kotlinx.android.synthetic.main.fragment_home.view.*
-import net.dean.jraw.models.Submission
 
 class FrontPageFragment : Fragment(), FrontPageView {
 
@@ -33,16 +31,16 @@ class FrontPageFragment : Fragment(), FrontPageView {
         super.onViewCreated(view, savedInstanceState)
 
         //TODO use dependency injection
-        FrontPagePresenter(
-            this,
-            SubmissionDataRepository(),
-            AsyncSchedulerProvider()
-        ).loadSubmissions()
+//        FrontPagePresenter(
+//            this,
+//            SubmissionDataRepository(),
+//            AsyncSchedulerProvider()
+//        ).loadSubmissions()
     }
 
-    override fun displaySubmissions(submissions: List<Submission>) {
-        Log.d(TAG, "list size = ${submissions.size}")
-        Log.d(TAG, submissions[0].toString())
+    override fun displayPosts(posts: List<Post>) {
+        Log.d(TAG, "list size = ${posts.size}")
+        Log.d(TAG, posts[0].toString())
     }
 
     companion object {

@@ -2,78 +2,60 @@ package com.visualeap.aliforreddit.core
 
 import android.annotation.SuppressLint
 import com.visualeap.aliforreddit.R
-
 import android.app.Application
-import android.os.AsyncTask
 import android.util.Log
-import net.dean.jraw.android.*
-import net.dean.jraw.http.SimpleHttpLogger
-import net.dean.jraw.http.UserAgent
-import net.dean.jraw.oauth.AccountHelper
+import com.visualeap.aliforreddit.data.AccessToken
+import com.visualeap.aliforreddit.data.RedditService
+import com.visualeap.aliforreddit.data.TokenAuthenticator
+import com.visualeap.aliforreddit.presentation.util.AsyncSchedulerProvider
+import com.visualeap.aliforreddit.presentation.util.applySchedulers
+import okhttp3.Credentials
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.*
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.HttpException
+import java.net.HttpURLConnection
 
 class AliForRedditApp : Application() {
 
-    companion object {
-        lateinit var tokenStore: SharedPreferencesTokenStore
-        lateinit var accountHelper: AccountHelper
-        private const val PLATFORM = "android"
-    }
+    lateinit var reddit: RedditService
+    private val tag = AliForRedditApp::class.java.simpleName
 
-    //TODO replace AsyncTask and remove annotation
-    @SuppressLint("StaticFieldLeak")
+    @SuppressLint("CheckResult")
     override fun onCreate() {
         super.onCreate()
 
-        // Get UserAgent and OAuth2 data from api_key.xml
-        //TODO - Refactor this into a class in a separate file rather than an anonymous class
-        val version =
-            applicationContext.packageManager.getPackageInfo(applicationContext.packageName, 0)
-                .versionName
-        val provider = object : AppInfoProvider {
-            override fun provide() = AppInfo(
-                getString(R.string.client_id), getString(R.string.redirect_url),
-                UserAgent(
-                    PLATFORM,
-                    applicationContext.packageName,
-                    version,
-                    getString(R.string.reddit_username)
-                )
-            )
-        }
+        val logging = HttpLoggingInterceptor()
+        logging.level = HttpLoggingInterceptor.Level.BODY
 
-        // Ideally, this should be unique to every device
-        val deviceUuid = UUID.randomUUID()
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .authenticator(TokenAuthenticator(AccessToken("", "", "")))
+            .build()
 
-        // Store our access tokens and refresh tokens in shared preferences
-        tokenStore = SharedPreferencesTokenStore(applicationContext)
-        // Load stored tokens into memory
-        tokenStore.load()
-        // Automatically save new tokens as they arrive
-        tokenStore.autoPersist = true
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://www.reddit.com/")
+            .addConverterFactory(MoshiConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .client(okHttpClient)
+            .build()
 
-        // An AccountHelper manages switching between accounts and into/out of userless mode.
-        accountHelper = AndroidHelper.accountHelper(provider, deviceUuid, tokenStore)
+        reddit = retrofit.create<RedditService>(RedditService::class.java)
 
-        // Every time we use the AccountHelper to switch between accounts (from one account to another,
-        // or into/out of userless mode), call this function
-        accountHelper.onSwitch {
-
-            // By default, JRAW logs HTTP activity to System.out. We're going to use Log.i() instead.
-            val logAdapter = SimpleAndroidLogAdapter(Log.INFO)
-
-            // We're going to use the LogAdapter to write down the summaries produced by SimpleHttpLogger
-            it.logger = SimpleHttpLogger(SimpleHttpLogger.DEFAULT_LINE_LENGTH, logAdapter)
-
-            // If you want to disable logging, use a NoopHttpLogger instead:
-            // it.logger = NoopHttpLogger()
-        }
-
-        object : AsyncTask<Void, Void, Void>(){
-            override fun doInBackground(vararg p0: Void?): Void? {
-                accountHelper.switchToUserless()
-                return null
-            }
-        }.execute()
+        reddit.getAccessToken(
+            """https://oauth.reddit.com/grants/installed_client""",
+            UUID.randomUUID().toString(),
+            Credentials.basic(getString(R.string.client_id), "")
+        ).applySchedulers(AsyncSchedulerProvider())
+            .subscribe({ Log.i(tag, it.value) }, {
+                if(it is HttpException){
+                    if(it.response().code() == HttpURLConnection.HTTP_UNAUTHORIZED){
+                        Log.e(tag, "expired token")
+                    }
+                }
+            })
     }
 }
