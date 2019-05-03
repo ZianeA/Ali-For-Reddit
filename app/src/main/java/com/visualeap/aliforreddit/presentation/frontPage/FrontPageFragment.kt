@@ -35,7 +35,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
 //            this,
 //            SubmissionDataRepository(),
 //            AsyncSchedulerProvider()
-//        ).loadSubmissions()
+//        ).loadPosts()
     }
 
     override fun displayPosts(posts: List<Post>) {

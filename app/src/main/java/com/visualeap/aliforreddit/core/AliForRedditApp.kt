@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import com.visualeap.aliforreddit.R
 import android.app.Application
 import android.util.Log
-import com.visualeap.aliforreddit.data.AccessToken
+import com.visualeap.aliforreddit.data.entity.Token
 import com.visualeap.aliforreddit.data.RedditService
 import com.visualeap.aliforreddit.data.TokenAuthenticator
 import com.visualeap.aliforreddit.presentation.util.AsyncSchedulerProvider
@@ -33,7 +33,14 @@ class AliForRedditApp : Application() {
 
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(logging)
-            .authenticator(TokenAuthenticator(AccessToken("", "", "")))
+            .authenticator(TokenAuthenticator(
+                Token(
+                    "",
+                    "",
+                    "",
+                    ""
+                )
+            ))
             .build()
 
         val retrofit = Retrofit.Builder()
@@ -45,17 +52,17 @@ class AliForRedditApp : Application() {
 
         reddit = retrofit.create<RedditService>(RedditService::class.java)
 
-        reddit.getAccessToken(
-            """https://oauth.reddit.com/grants/installed_client""",
-            UUID.randomUUID().toString(),
-            Credentials.basic(getString(R.string.client_id), "")
-        ).applySchedulers(AsyncSchedulerProvider())
-            .subscribe({ Log.i(tag, it.value) }, {
-                if(it is HttpException){
-                    if(it.response().code() == HttpURLConnection.HTTP_UNAUTHORIZED){
-                        Log.e(tag, "expired token")
-                    }
-                }
-            })
+//        reddit.getAccessToken(
+//            """https://oauth.reddit.com/grants/installed_client""",
+//            UUID.randomUUID().toString(),
+//            Credentials.basic(getString(R.string.client_id), "")
+//        ).applySchedulers(AsyncSchedulerProvider())
+//            .subscribe({ Log.i(tag, it.accessToken) }, {
+//                if(it is HttpException){
+//                    if(it.response().code() == HttpURLConnection.HTTP_UNAUTHORIZED){
+//                        Log.e(tag, "expired token")
+//                    }
+//                }
+//            })
     }
 }

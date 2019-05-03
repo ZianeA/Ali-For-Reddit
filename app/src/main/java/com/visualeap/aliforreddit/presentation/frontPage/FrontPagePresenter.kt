@@ -13,7 +13,7 @@ class FrontPagePresenter(
 
     private val disposables = CompositeDisposable()
 
-    fun loadSubmissions() {
+    fun loadPosts() {
         val disposable = repository.getPosts()
             .applySchedulers(schedulerProvider)
             .subscribe { view.displayPosts(it) }

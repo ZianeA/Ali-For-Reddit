@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -7,6 +8,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.presentation.frontPage.FrontPageContainerFragment
+import com.visualeap.aliforreddit.presentation.login.LoginActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -88,6 +90,18 @@ class MainActivity : AppCompatActivity() {
 //        toggle.syncState()
 
         drawerNavigationView.setNavigationItemSelectedListener(onDrawerItemSelectedListener)
+
+        //TODO this is temporally
+        profileImage.setOnClickListener {
+            startActivityForResult(
+                Intent(this, LoginActivity::class.java),
+                REQUEST_CODE_LOGIN
+            )
+        }
+    }
+
+    companion object {
+        private const val REQUEST_CODE_LOGIN = 101
     }
 
     override fun onBackPressed() {

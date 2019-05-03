@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.data
 
+import com.visualeap.aliforreddit.data.entity.Token
 import io.reactivex.Observable
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -13,5 +14,5 @@ interface RedditService {
         @Field("grant_type") grantType: String,
         @Field("device_id") deviceId: String,
         @Header("Authorization") credentials: String
-    ): Observable<AccessToken>
+    ): Observable<Token>
 }

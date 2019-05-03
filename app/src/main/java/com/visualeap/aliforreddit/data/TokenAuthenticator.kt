@@ -1,9 +1,9 @@
 package com.visualeap.aliforreddit.data
 
-import android.util.Log
+import com.visualeap.aliforreddit.data.entity.Token
 import okhttp3.*
 
-class TokenAuthenticator(private val accessToken: AccessToken) :
+class TokenAuthenticator(private val accessToken: Token) :
     Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
@@ -12,7 +12,7 @@ class TokenAuthenticator(private val accessToken: AccessToken) :
         }
 
         return response.request().newBuilder()
-            .header(AUTHORIZATION, "${accessToken.type} ${accessToken.value}")
+            .header(AUTHORIZATION, "${accessToken.type} ${accessToken.accessToken}")
             .build();
     }
 

@@ -37,12 +37,12 @@ class FrontPagePresenterTest {
     }
 
     @Test
-    fun passSubmissionsToView() {
+    fun passPostsToView() {
         //Arrange
         `when`(repository.getPosts()).thenReturn(POST_LIST_OBSERVABLE)
 
         //Act
-        presenter.loadSubmissions()
+        presenter.loadPosts()
 
         //Assert
         verify(view, times(1)).displayPosts(POSTS_LIST)
