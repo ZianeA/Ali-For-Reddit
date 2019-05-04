@@ -1,8 +1,8 @@
 package com.visualeap.aliforreddit.presentation.frontPage
 
 import com.visualeap.aliforreddit.domain.repository.PostRepository
-import com.visualeap.aliforreddit.presentation.util.SchedulerProvider
-import com.visualeap.aliforreddit.presentation.util.applySchedulers
+import com.visualeap.aliforreddit.core.util.scheduler.SchedulerProvider
+import com.visualeap.aliforreddit.core.util.applySchedulers
 import io.reactivex.disposables.CompositeDisposable
 
 class FrontPagePresenter(

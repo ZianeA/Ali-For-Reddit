@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data.entity
+package com.visualeap.aliforreddit.domain.entity
 
 import com.squareup.moshi.Json
 

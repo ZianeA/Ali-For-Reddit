@@ -1,23 +1,15 @@
 package com.visualeap.aliforreddit.core
 
 import android.annotation.SuppressLint
-import com.visualeap.aliforreddit.R
 import android.app.Application
-import android.util.Log
-import com.visualeap.aliforreddit.data.entity.Token
+import com.visualeap.aliforreddit.domain.entity.Token
 import com.visualeap.aliforreddit.data.RedditService
 import com.visualeap.aliforreddit.data.TokenAuthenticator
-import com.visualeap.aliforreddit.presentation.util.AsyncSchedulerProvider
-import com.visualeap.aliforreddit.presentation.util.applySchedulers
-import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.*
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.HttpException
-import java.net.HttpURLConnection
 
 class AliForRedditApp : Application() {
 

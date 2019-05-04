@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.data
 
-import com.visualeap.aliforreddit.data.entity.Token
+import com.visualeap.aliforreddit.domain.entity.Token
 import okhttp3.*
 
 class TokenAuthenticator(private val accessToken: Token) :

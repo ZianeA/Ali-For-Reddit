@@ -53,7 +53,7 @@ class LoginPresenterTest {
     }
 
     @Test
-    fun `loginHasn'tFinished_don'tHideLoginUi`() {
+    fun loginNotFinished_dontHideLoginUi() {
         //Act
         presenter.onPageStarted("")
 
