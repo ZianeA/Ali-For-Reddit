@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.presentation.frontPage
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,9 +10,14 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.entity.Post
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import javax.inject.Inject
 
 class FrontPageFragment : Fragment(), FrontPageView {
+
+    @Inject
+    lateinit var presenter: FrontPagePresenter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,18 +35,21 @@ class FrontPageFragment : Fragment(), FrontPageView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.i(TAG, presenter::class.java.simpleName)
+    }
 
-        //TODO use dependency injection
-//        FrontPagePresenter(
-//            this,
-//            SubmissionDataRepository(),
-//            AsyncSchedulerProvider()
-//        ).loadPosts()
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        presenter.stop()
     }
 
     override fun displayPosts(posts: List<Post>) {
-        Log.d(TAG, "list size = ${posts.size}")
-        Log.d(TAG, posts[0].toString())
+        //TODO implement
     }
 
     companion object {

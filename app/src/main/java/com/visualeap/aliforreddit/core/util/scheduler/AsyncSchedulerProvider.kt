@@ -1,10 +1,13 @@
 package com.visualeap.aliforreddit.core.util.scheduler
 
+import dagger.Reusable
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.android.schedulers.AndroidSchedulers
+import javax.inject.Inject
 
-class AsyncSchedulerProvider : SchedulerProvider {
+@Reusable
+class AsyncSchedulerProvider @Inject constructor() : SchedulerProvider {
     override val io: Scheduler = Schedulers.io()
 
     override val computation: Scheduler = Schedulers.computation()

@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data
+package com.visualeap.aliforreddit.data.network
 
 import com.visualeap.aliforreddit.domain.entity.Token
 import okhttp3.*

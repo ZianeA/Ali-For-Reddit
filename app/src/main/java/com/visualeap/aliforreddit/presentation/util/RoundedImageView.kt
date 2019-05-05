@@ -1,10 +1,11 @@
-package com.visualeap.aliforreddit
+package com.visualeap.aliforreddit.presentation.util
 
 import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.graphics.drawable.toBitmap
+import com.visualeap.aliforreddit.R
 
 class RoundedImageView : AppCompatImageView {
 
@@ -40,7 +41,10 @@ class RoundedImageView : AppCompatImageView {
             defStyleRes
         ).apply {
             cornerRadius =
-                getDimensionPixelSize(R.styleable.RoundedImageView_cornerRadius, DEFAULT_RADIUS)
+                getDimensionPixelSize(
+                    R.styleable.RoundedImageView_cornerRadius,
+                    DEFAULT_RADIUS
+                )
 
             isCircular = getBoolean(R.styleable.RoundedImageView_isCircular, false)
 

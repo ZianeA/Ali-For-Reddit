@@ -45,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.visualeap.aliforreddit.RoundedImageView
+                <com.visualeap.aliforreddit.presentation.util.RoundedImageView
                     android:id="@+id/profileImage"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
