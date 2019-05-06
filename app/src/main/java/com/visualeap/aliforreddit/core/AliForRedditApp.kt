@@ -30,6 +30,7 @@ class AliForRedditApp : Application(), HasActivityInjector {
 
         super.onCreate()
 
+        //TODO remove this
 //        reddit.getAccessToken(
 //            """https://oauth.reddit.com/grants/installed_client""",
 //            UUID.randomUUID().toString(),

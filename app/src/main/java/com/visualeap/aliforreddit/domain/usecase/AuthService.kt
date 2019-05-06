@@ -8,8 +8,9 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface AuthService {
+
     @FormUrlEncoded
-    @POST("api/v1/access_token")
+    @POST(URL_PATH)
     fun getAccessToken(
         @Field("grant_type") grantType: String,
         @Field("code") code: String,
@@ -17,10 +18,21 @@ interface AuthService {
     ): Observable<Token>
 
     @FormUrlEncoded
-    @POST("api/v1/access_token")
+    @POST(URL_PATH)
     fun getUserLessAccessToken(
         @Field("grant_type") grantType: String,
         @Field("device_id") deviceId: String,
         @Header("Authorization") credentials: String
     ): Observable<Token>
+
+    @FormUrlEncoded
+    @POST(URL_PATH)
+    fun refreshToken(
+        @Field("grant_type") grantType: String,
+        @Field("refresh_token") refreshToken: String
+    ): Observable<Token>
+
+    companion object{
+        private const val URL_PATH = "api/v1/access_token"
+    }
 }
