@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import com.visualeap.aliforreddit.core.di.DaggerAppComponent
-import com.visualeap.aliforreddit.domain.entity.Token
 import com.visualeap.aliforreddit.data.network.RedditService
 import com.visualeap.aliforreddit.data.network.TokenAuthenticator
 import dagger.android.AndroidInjector
@@ -24,42 +23,12 @@ class AliForRedditApp : Application(), HasActivityInjector {
 
     override fun activityInjector(): AndroidInjector<Activity> = dispatchingAndroidInjector
 
-    lateinit var reddit: RedditService
-    private val tag = AliForRedditApp::class.java.simpleName
-
-    @SuppressLint("CheckResult")
     override fun onCreate() {
         DaggerAppComponent.builder()
             .build()
             .inject(this)
 
         super.onCreate()
-
-        val logging = HttpLoggingInterceptor()
-        logging.level = HttpLoggingInterceptor.Level.BODY
-
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .authenticator(
-                TokenAuthenticator(
-                    Token(
-                        "",
-                        "",
-                        "",
-                        ""
-                    )
-                )
-            )
-            .build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://www.reddit.com/")
-            .addConverterFactory(MoshiConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .client(okHttpClient)
-            .build()
-
-        reddit = retrofit.create<RedditService>(RedditService::class.java)
 
 //        reddit.getAccessToken(
 //            """https://oauth.reddit.com/grants/installed_client""",
