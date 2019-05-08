@@ -3,15 +3,19 @@ package com.visualeap.aliforreddit.presentation.frontPage
 import com.visualeap.aliforreddit.SyncSchedulerProvider
 import com.visualeap.aliforreddit.domain.entity.Post
 import com.visualeap.aliforreddit.domain.repository.PostRepository
+import io.mockk.*
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import io.reactivex.Observable
 import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito.*
-import org.mockito.junit.MockitoJUnit
-import org.mockito.junit.MockitoRule
-import org.junit.Rule
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.extension.ExtendWith
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(MockKExtension::class)
 class FrontPagePresenterTest {
 
     companion object {
@@ -19,32 +23,26 @@ class FrontPagePresenterTest {
         private val POST_LIST_OBSERVABLE = Observable.just(POSTS_LIST)
     }
 
-    @Rule
-    @JvmField
-    val rule: MockitoRule = MockitoJUnit.rule()
+    private val view: FrontPageView = mockk()
 
-    @Mock
-    private lateinit var view: FrontPageView
+    private val repository: PostRepository = mockk()
 
-    @Mock
-    private lateinit var repository: PostRepository
+    private val presenter = FrontPagePresenter(view, repository, SyncSchedulerProvider())
 
-    private lateinit var presenter: FrontPagePresenter
-
-    @Before
-    fun setUp() {
-        presenter = FrontPagePresenter(view, repository, SyncSchedulerProvider())
+    @BeforeEach
+    internal fun setUp() {
+        clearAllMocks()
     }
 
     @Test
     fun passPostsToView() {
         //Arrange
-        `when`(repository.getPosts()).thenReturn(POST_LIST_OBSERVABLE)
+        every { repository.getPosts() } returns POST_LIST_OBSERVABLE
 
         //Act
         presenter.loadPosts()
 
         //Assert
-        verify(view, times(1)).displayPosts(POSTS_LIST)
+        verify(atMost = 1) { view.displayPosts(POSTS_LIST) }
     }
 }

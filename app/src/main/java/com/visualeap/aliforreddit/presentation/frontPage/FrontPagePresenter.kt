@@ -19,7 +19,7 @@ class FrontPagePresenter @Inject constructor(
     fun loadPosts() {
         val disposable = repository.getPosts()
             .applySchedulers(schedulerProvider)
-            .subscribe { view.displayPosts(it) }
+            .subscribe({ view.displayPosts(it) }, {/*TODO implement on error*/})
 
         disposables.add(disposable)
     }
