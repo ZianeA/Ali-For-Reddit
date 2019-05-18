@@ -1,6 +1,6 @@
-package com.visualeap.aliforreddit.core.di
+package com.visualeap.aliforreddit.presentation.di
 
-import com.visualeap.aliforreddit.presentation.MainActivity
+import com.visualeap.aliforreddit.presentation.main.MainActivity
 import com.visualeap.aliforreddit.presentation.login.LoginActivity
 import com.visualeap.aliforreddit.presentation.login.LoginModule
 import dagger.Module

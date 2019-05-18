@@ -1,6 +1,6 @@
-package com.visualeap.aliforreddit.core.util
+package com.visualeap.aliforreddit.domain.util
 
-import com.visualeap.aliforreddit.core.util.scheduler.SchedulerProvider
+import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single

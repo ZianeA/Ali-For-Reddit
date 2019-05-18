@@ -1,7 +1,7 @@
-package com.visualeap.aliforreddit.core.di
+package com.visualeap.aliforreddit.presentation.di
 
-import com.visualeap.aliforreddit.core.AliForRedditApp
-import com.visualeap.aliforreddit.core.util.scheduler.SchedulerProviderModule
+import com.visualeap.aliforreddit.presentation.AliForRedditApp
+import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProviderModule
 import com.visualeap.aliforreddit.data.repository.RepositoryModule
 import com.visualeap.aliforreddit.domain.usecase.AuthModule
 import dagger.Component

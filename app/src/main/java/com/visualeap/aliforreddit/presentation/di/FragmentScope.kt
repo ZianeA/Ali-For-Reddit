@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.core.di
+package com.visualeap.aliforreddit.presentation.di
 
 import javax.inject.Scope
 

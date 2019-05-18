@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.presentation
+package com.visualeap.aliforreddit.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.presentation.frontPage.FrontPageContainerFragment
+import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageContainerFragment
 import com.visualeap.aliforreddit.presentation.login.LoginActivity
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector

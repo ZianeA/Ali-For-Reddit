@@ -1,19 +1,11 @@
-package com.visualeap.aliforreddit.core
+package com.visualeap.aliforreddit.presentation
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
-import com.visualeap.aliforreddit.core.di.DaggerAppComponent
-import com.visualeap.aliforreddit.data.network.RedditService
-import com.visualeap.aliforreddit.data.network.TokenAuthenticator
+import com.visualeap.aliforreddit.presentation.di.DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.moshi.MoshiConverterFactory
-import okhttp3.logging.HttpLoggingInterceptor
 import javax.inject.Inject
 
 class AliForRedditApp : Application(), HasActivityInjector {

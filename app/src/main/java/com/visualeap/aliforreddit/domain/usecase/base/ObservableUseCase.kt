@@ -1,7 +1,7 @@
 package com.visualeap.aliforreddit.domain.usecase.base
 
-import com.visualeap.aliforreddit.core.util.applySchedulers
-import com.visualeap.aliforreddit.core.util.scheduler.SchedulerProvider
+import com.visualeap.aliforreddit.domain.util.applySchedulers
+import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import io.reactivex.Observable
 
 abstract class ObservableUseCase<Results, Params>(private val schedulerProvider: SchedulerProvider) {

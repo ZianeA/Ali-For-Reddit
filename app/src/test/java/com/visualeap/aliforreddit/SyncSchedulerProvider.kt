@@ -1,13 +1,10 @@
 package com.visualeap.aliforreddit
 
-import com.visualeap.aliforreddit.core.util.scheduler.SchedulerProvider
-import dagger.Reusable
+import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
 
-@Reusable
-class SyncSchedulerProvider @Inject constructor() : SchedulerProvider {
+class SyncSchedulerProvider : SchedulerProvider {
     override val io: Scheduler = Schedulers.trampoline()
 
     override val computation: Scheduler = Schedulers.trampoline()

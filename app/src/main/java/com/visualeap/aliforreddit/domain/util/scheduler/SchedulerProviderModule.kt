@@ -1,9 +1,7 @@
-package com.visualeap.aliforreddit.core.util.scheduler
+package com.visualeap.aliforreddit.domain.util.scheduler
 
 import dagger.Binds
 import dagger.Module
-import dagger.Reusable
-import javax.inject.Qualifier
 
 @Module
 abstract class SchedulerProviderModule {

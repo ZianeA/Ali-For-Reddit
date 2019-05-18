@@ -1,7 +1,7 @@
-package com.visualeap.aliforreddit.core.di
+package com.visualeap.aliforreddit.presentation.di
 
-import com.visualeap.aliforreddit.presentation.frontPage.FrontPageFragment
-import com.visualeap.aliforreddit.presentation.frontPage.FrontPageModule
+import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageFragment
+import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

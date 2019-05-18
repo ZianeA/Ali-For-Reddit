@@ -1,14 +1,11 @@
-package com.visualeap.aliforreddit.presentation.frontPage
+package com.visualeap.aliforreddit.presentation.main.frontPage
 
 import com.visualeap.aliforreddit.SyncSchedulerProvider
 import com.visualeap.aliforreddit.domain.entity.Post
 import com.visualeap.aliforreddit.domain.repository.PostRepository
 import io.mockk.*
-import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Observable
-import org.junit.Before
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.core.util.scheduler.SchedulerProvider
+import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import com.visualeap.aliforreddit.domain.entity.Credentials
 import com.visualeap.aliforreddit.domain.entity.Token
 import com.visualeap.aliforreddit.domain.usecase.AuthenticateUser.*

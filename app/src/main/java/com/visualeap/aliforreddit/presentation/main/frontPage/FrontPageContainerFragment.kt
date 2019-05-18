@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.presentation.frontPage
+package com.visualeap.aliforreddit.presentation.main.frontPage
 
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.snackbar.Snackbar

@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.core.util.scheduler
+package com.visualeap.aliforreddit.domain.util.scheduler
 
 import dagger.Reusable
 import io.reactivex.Scheduler
