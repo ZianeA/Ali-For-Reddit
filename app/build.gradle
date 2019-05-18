@@ -38,7 +38,8 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
     implementation 'androidx.cardview:cardview:1.0.0'
-    testImplementation 'org.mockito:mockito-core:2.27.0'
+    //TODO remove mockito
+//    testImplementation 'org.mockito:mockito-core:2.27.0'
 //    implementation 'net.dean.jraw:JRAW-Android:1.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.5.0'
@@ -51,4 +52,7 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+    testImplementation "io.mockk:mockk:1.9.3"
+    testImplementation "org.assertj:assertj-core:3.12.2"
 }

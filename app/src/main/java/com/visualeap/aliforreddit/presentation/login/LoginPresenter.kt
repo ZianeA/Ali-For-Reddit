@@ -1,42 +1,54 @@
 package com.visualeap.aliforreddit.presentation.login
 
+import android.util.Log
+import com.visualeap.aliforreddit.core.di.ActivityScope
+import com.visualeap.aliforreddit.core.di.FragmentScope
+import com.visualeap.aliforreddit.domain.entity.Credentials
+import com.visualeap.aliforreddit.domain.usecase.*
 import okhttp3.HttpUrl
 import java.math.BigInteger
 import java.net.URI
 import java.security.SecureRandom
+import javax.inject.Inject
 
-class LoginPresenter(
+@FragmentScope
+class LoginPresenter @Inject constructor(
     private val view: LoginView,
-    private val clientId: String,
-    private val redirectUrl: String
+    private val credentials: Credentials,
+    private val getUniqueString: GetUniqueString,
+    private val getAuthUrl: GetAuthUrl,
+    private val isFinalRedirectUrl: IsFinalRedirectUrl,
+    private val authenticateUser: AuthenticateUser,
+    private val authService: AuthService
 ) {
 
+    private val tag = LoginPresenter::class.java.simpleName
+
     fun start() {
-        //TODO refactor this to a new class AuthorizationUrlBuilder
-        val state = BigInteger(128, SecureRandom()).toString(32)
-        val authUrl = HttpUrl.parse("https://www.reddit.com/api/v1/authorize.compact")
-            ?.newBuilder()
-            ?.addQueryParameter("client_id", clientId)
-            ?.addQueryParameter("response_type", "code")
-            ?.addQueryParameter("state", state)
-            ?.addQueryParameter("redirect_uri", redirectUrl)
-            ?.addQueryParameter("duration", "permanent")
-            ?.addQueryParameter("scope", "identity edit read mysubreddits")
-            ?.build()
-            .toString()
+        val authUrl = getAuthUrl.execute(
+            GetAuthUrl.Params(
+                credentials,
+                getUniqueString.execute(Unit)
+            )
+        )
 
         view.showLoginPage(authUrl)
     }
 
     fun onPageStarted(url: String) {
-        if (hasFinishedLoading(url)) {
+        if (isFinalRedirectUrl.execute(IsFinalRedirectUrl.Params(credentials.redirectUrl, url))) {
             view.hideLoginPage()
 
             //Authenticate user
+            val params = AuthenticateUser.Params(
+                authService,
+                url,
+                credentials,
+                getUniqueString.execute(Unit)
+            )
 
+            val disposable = authenticateUser.execute(params).subscribe({ /*TODO on sucess*/ },
+                { /*TODO error*/ Log.i(tag, it.message) })
         }
     }
-
-    private fun hasFinishedLoading(url: String) = url.startsWith(redirectUrl)
-
 }

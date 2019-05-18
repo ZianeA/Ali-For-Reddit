@@ -38,7 +38,7 @@ class AliForRedditApp : Application(), HasActivityInjector {
 //        ).applySchedulers(AsyncSchedulerProvider())
 //            .subscribe({ Log.i(tag, it.accessToken) }, {
 //                if(it is HttpException){
-//                    if(it.response().code() == HttpURLConnection.HTTP_UNAUTHORIZED){
+//                    if(it.response().finalUrl() == HttpURLConnection.HTTP_UNAUTHORIZED){
 //                        Log.e(tag, "expired token")
 //                    }
 //                }

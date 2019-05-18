@@ -2,6 +2,7 @@ package com.visualeap.aliforreddit.core.di
 
 import com.visualeap.aliforreddit.presentation.MainActivity
 import com.visualeap.aliforreddit.presentation.login.LoginActivity
+import com.visualeap.aliforreddit.presentation.login.LoginModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -14,6 +15,6 @@ abstract class ActivityBindingModule {
 
     //TODO Don't forget to remove this if you remove LoginActivity
     @ActivityScope
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = [LoginModule.ActivityModule::class])
     abstract fun loginActivity(): LoginActivity
 }

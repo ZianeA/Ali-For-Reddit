@@ -1,8 +1,6 @@
-package com.visualeap.aliforreddit.domain.usecase
+package com.visualeap.aliforreddit.domain.usecase.base
 
-import com.visualeap.aliforreddit.core.util.applySchedulers
+interface NonReactiveUseCase<Results, Params> {
 
-interface NonReactiveUseCase<T, P> {
-
-    fun execute(param: P): T
+    fun execute(params: Params): Results
 }

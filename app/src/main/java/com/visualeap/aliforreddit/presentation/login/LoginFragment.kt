@@ -1,16 +1,20 @@
 package com.visualeap.aliforreddit.presentation.login
 
+import android.content.Context
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.visualeap.aliforreddit.R
-import kotlinx.android.synthetic.main.fragment_login.*
 import android.os.AsyncTask.execute
 import android.graphics.Bitmap
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.visualeap.aliforreddit.core.di.ActivityScope
+import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_login.*
+import javax.inject.Inject
 
 //TODO remove this screen (fragment, activity, presenter), and just add the WebView to MainActivity
 /**
@@ -18,14 +22,13 @@ import android.webkit.WebViewClient
  */
 class LoginFragment : Fragment(), LoginView {
 
-    private lateinit var presenter: LoginPresenter
+    @Inject
+    lateinit var presenter: LoginPresenter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        presenter =
-            LoginPresenter(this, getString(R.string.client_id), getString(R.string.redirect_url))
         return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
@@ -34,19 +37,16 @@ class LoginFragment : Fragment(), LoginView {
         presenter.start()
     }
 
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
     override fun showLoginPage(authUrl: String) {
         // Watch for pages loading
         webView.webViewClient = object : WebViewClient() {
-            override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
-                presenter.onPageStarted(url)
-//                if (helper.isFinalRedirectUrl(url)) {
-//                    // No need to continue loading, we've already got all the required information
-//                    webView.stopLoading()
-//                    webView.visibility = View.GONE
-//
-//                    // Try to authenticate the user
-//
-//                }
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                url?.let { presenter.onPageStarted(it) }
             }
         }
 
@@ -54,6 +54,8 @@ class LoginFragment : Fragment(), LoginView {
     }
 
     override fun hideLoginPage() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // No need to continue loading, we've already got all the required information
+        webView.stopLoading()
+        webView.visibility = View.GONE
     }
 }
