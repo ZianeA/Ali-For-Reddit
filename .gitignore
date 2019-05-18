@@ -12,4 +12,4 @@
 /captures
 .externalNativeBuild
 
-/app/src/debug/res/values/api_key.xml
+/app/src/debug/res/values/api_credentials.xml
