@@ -6,6 +6,7 @@ import com.visualeap.aliforreddit.presentation.di.DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
+import java.net.HttpURLConnection
 import javax.inject.Inject
 
 class AliForRedditApp : Application(), HasActivityInjector {
@@ -16,8 +17,8 @@ class AliForRedditApp : Application(), HasActivityInjector {
     override fun activityInjector(): AndroidInjector<Activity> = dispatchingAndroidInjector
 
     override fun onCreate() {
-        DaggerAppComponent.builder()
-            .build()
+        DaggerAppComponent.factory()
+            .create(this)
             .inject(this)
 
         super.onCreate()

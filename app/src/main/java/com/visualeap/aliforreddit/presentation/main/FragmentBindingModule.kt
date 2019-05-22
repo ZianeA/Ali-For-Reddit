@@ -1,5 +1,6 @@
-package com.visualeap.aliforreddit.presentation.di
+package com.visualeap.aliforreddit.presentation.main
 
+import com.visualeap.aliforreddit.presentation.di.FragmentScope
 import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageFragment
 import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageModule
 import dagger.Module

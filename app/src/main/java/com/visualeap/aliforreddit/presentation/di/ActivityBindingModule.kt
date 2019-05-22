@@ -3,6 +3,7 @@ package com.visualeap.aliforreddit.presentation.di
 import com.visualeap.aliforreddit.presentation.main.MainActivity
 import com.visualeap.aliforreddit.presentation.login.LoginActivity
 import com.visualeap.aliforreddit.presentation.login.LoginModule
+import com.visualeap.aliforreddit.presentation.main.FragmentBindingModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
