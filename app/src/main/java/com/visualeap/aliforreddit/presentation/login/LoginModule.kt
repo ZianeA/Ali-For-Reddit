@@ -7,18 +7,17 @@ import dagger.Module
 import dagger.Provides
 import dagger.Reusable
 import dagger.android.ContributesAndroidInjector
+import javax.inject.Named
 
 @Module
 class LoginModule {
 
     @Reusable
     @Provides
-    fun provideCredentials(loginActivity: LoginActivity) = loginActivity.run {
-        Credentials(
-            getString(R.string.client_id),
-            getString(R.string.redirect_url)
-        )
-    }
+    fun provideCredentials(
+        @Named("clientId") clientId: String,
+        @Named("redirectUrl") redirectUrl: String
+    ) = Credentials(clientId, redirectUrl)
 
     @Provides
     fun provideLoginView(loginFragment: LoginFragment): LoginView = loginFragment
