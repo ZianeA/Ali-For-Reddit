@@ -6,6 +6,7 @@ import com.visualeap.aliforreddit.domain.repository.PostRepository
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Observable
+import io.reactivex.Single
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -17,10 +18,10 @@ class FrontPagePresenterTest {
 
     companion object {
         private val POSTS_LIST = listOf(Post())
-        private val POST_LIST_OBSERVABLE = Observable.just(POSTS_LIST)
+        private val POST_LIST_SINGLE = Single.just(POSTS_LIST)
     }
 
-    private val view: FrontPageView = mockk()
+    private val view: FrontPageView = mockk(relaxed = true)
 
     private val repository: PostRepository = mockk()
 
@@ -34,10 +35,10 @@ class FrontPagePresenterTest {
     @Test
     fun passPostsToView() {
         //Arrange
-        every { repository.getPosts() } returns POST_LIST_OBSERVABLE
+        every { repository.getPosts() } returns POST_LIST_SINGLE
 
         //Act
-        presenter.loadPosts()
+        presenter.start()
 
         //Assert
         verify(atMost = 1) { view.displayPosts(POSTS_LIST) }

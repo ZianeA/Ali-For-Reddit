@@ -38,11 +38,10 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
     implementation 'androidx.cardview:cardview:1.0.0'
-    //TODO remove mockito
-//    testImplementation 'org.mockito:mockito-core:2.27.0'
-//    implementation 'net.dean.jraw:JRAW-Android:1.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.5.0'
+    implementation "com.squareup.moshi:moshi:1.8.0"
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.8.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
     implementation "io.reactivex.rxjava2:rxjava:2.2.8"
@@ -55,4 +54,5 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
     testImplementation "io.mockk:mockk:1.9.3"
     testImplementation "org.assertj:assertj-core:3.12.2"
+//    testImplementation 'com.squareup.okhttp3:mockwebserver:3.14.2'
 }

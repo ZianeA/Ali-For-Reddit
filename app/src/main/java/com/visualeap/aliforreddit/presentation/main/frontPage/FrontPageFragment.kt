@@ -10,6 +10,9 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.entity.Post
+import com.visualeap.aliforreddit.domain.repository.PostRepository
+import com.visualeap.aliforreddit.domain.util.applySchedulers
+import com.visualeap.aliforreddit.presentation.util.AsyncSchedulerProvider
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import javax.inject.Inject
@@ -33,9 +36,9 @@ class FrontPageFragment : Fragment(), FrontPageView {
         return rootView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Log.i(TAG, presenter::class.java.simpleName)
+    override fun onResume() {
+        super.onResume()
+        presenter.start()
     }
 
     override fun onAttach(context: Context?) {

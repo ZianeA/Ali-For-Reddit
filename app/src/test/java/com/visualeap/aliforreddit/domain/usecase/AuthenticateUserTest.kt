@@ -3,6 +3,7 @@ package com.visualeap.aliforreddit.domain.usecase
 import com.visualeap.aliforreddit.SyncSchedulerProvider
 import com.visualeap.aliforreddit.domain.entity.Credentials
 import com.visualeap.aliforreddit.domain.entity.Token
+import com.visualeap.aliforreddit.util.createToken
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
@@ -27,12 +28,7 @@ class AuthenticateUserTest {
 
     private val authService: AuthService = mockk()
     private val authenticateUser = AuthenticateUser(SyncSchedulerProvider())
-    private val token = Token(
-        "ACCESS TOKEN",
-        "bearer",
-        "3600",
-        "REFRESH TOKEN"
-    )
+    private val token = createToken()
 
     init {
         every {

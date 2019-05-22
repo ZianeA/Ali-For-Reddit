@@ -2,31 +2,38 @@ package com.visualeap.aliforreddit.domain.usecase
 
 import dagger.Module
 import dagger.Provides
+import dagger.Reusable
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
+import javax.inject.Qualifier
+
+
 
 @Module
 class AuthModule {
 
-    @Singleton
+    @Reusable
     @Provides
     fun provideInterceptor() =
         HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(interceptor: HttpLoggingInterceptor): OkHttpClient =
+    @Named("authOkHttpClient")
+    fun provideAuthOkHttpClient(interceptor: HttpLoggingInterceptor): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(interceptor)
             .build()
 
     @Singleton
     @Provides
-    fun provideAuthRetrofit(okHttpClient: OkHttpClient): Retrofit =
+    @Named("authRetrofit")
+    fun provideAuthRetrofit(@Named("authOkHttpClient") okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
@@ -36,8 +43,8 @@ class AuthModule {
 
     @Singleton
     @Provides
-    fun provideAuthService(retrofit: Retrofit): AuthService =
-        retrofit.create<AuthService>(AuthService::class.java)
+    fun provideAuthService(@Named("authRetrofit") authRetrofit: Retrofit): AuthService =
+        authRetrofit.create<AuthService>(AuthService::class.java)
 
     companion object {
         private const val BASE_URL = "https://www.reddit.com/"

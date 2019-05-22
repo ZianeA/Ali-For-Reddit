@@ -17,7 +17,7 @@ import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
+class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView {
 
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Fragment>
