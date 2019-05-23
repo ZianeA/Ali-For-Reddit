@@ -6,10 +6,10 @@ import io.reactivex.Observable
 import io.reactivex.Single
 
 fun <T> Observable<T>.applySchedulers(provider: SchedulerProvider): Observable<T> =
-    subscribeOn(provider.io).observeOn(provider.ui)
+    subscribeOn(provider.worker).observeOn(provider.main)
 
 fun <T> Single<T>.applySchedulers(provider: SchedulerProvider): Single<T> =
-    subscribeOn(provider.io).observeOn(provider.ui)
+    subscribeOn(provider.worker).observeOn(provider.main)
 
 fun Completable.applySchedulers(provider: SchedulerProvider): Completable =
-    subscribeOn(provider.io).observeOn(provider.ui)
+    subscribeOn(provider.worker).observeOn(provider.main)

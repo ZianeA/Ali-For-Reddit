@@ -5,9 +5,6 @@ import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 
 class SyncSchedulerProvider : SchedulerProvider {
-    override val io: Scheduler = Schedulers.trampoline()
-
-    override val computation: Scheduler = Schedulers.trampoline()
-
-    override val ui: Scheduler = Schedulers.trampoline()
+    override val worker: Scheduler = Schedulers.trampoline()
+    override val main: Scheduler = Schedulers.trampoline()
 }

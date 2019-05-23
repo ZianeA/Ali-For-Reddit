@@ -2,7 +2,6 @@ package com.visualeap.aliforreddit.presentation.main.frontPage
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +9,6 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.entity.Post
-import com.visualeap.aliforreddit.domain.repository.PostRepository
-import com.visualeap.aliforreddit.domain.util.applySchedulers
-import com.visualeap.aliforreddit.presentation.util.AsyncSchedulerProvider
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import javax.inject.Inject

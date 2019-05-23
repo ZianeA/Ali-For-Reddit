@@ -8,5 +8,5 @@ import dagger.Module
 abstract class SchedulerProviderModule {
 
     @Binds
-    abstract fun provideSchedulerProvider(schedulerProvider: AsyncSchedulerProvider): SchedulerProvider
+    abstract fun provideSchedulerProvider(schedulerProvider: IoSchedulerProvider): SchedulerProvider
 }
