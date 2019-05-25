@@ -2,14 +2,14 @@ package com.visualeap.aliforreddit.presentation.login
 
 import android.util.Log
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
-import com.visualeap.aliforreddit.domain.entity.Credentials
+import com.visualeap.aliforreddit.domain.entity.AuthCredentials
 import com.visualeap.aliforreddit.domain.usecase.*
 import javax.inject.Inject
 
 @FragmentScope
 class LoginPresenter @Inject constructor(
     private val view: LoginView,
-    private val credentials: Credentials,
+    private val credentials: AuthCredentials,
     private val getUniqueString: GetUniqueString,
     private val getAuthUrl: GetAuthUrl,
     private val isFinalRedirectUrl: IsFinalRedirectUrl,

@@ -1,7 +1,6 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import android.nfc.FormatException
-import com.visualeap.aliforreddit.domain.entity.Credentials
+import com.visualeap.aliforreddit.domain.entity.AuthCredentials
 import com.visualeap.aliforreddit.domain.usecase.GetAuthUrl.*
 import com.visualeap.aliforreddit.domain.usecase.base.NonReactiveUseCase
 import dagger.Reusable
@@ -35,7 +34,7 @@ class GetAuthUrl @Inject constructor() : NonReactiveUseCase<String, Params> {
         .toString()
 
     data class Params(
-        val credentials: Credentials,
+        val credentials: AuthCredentials,
         val state: String
     )
 }

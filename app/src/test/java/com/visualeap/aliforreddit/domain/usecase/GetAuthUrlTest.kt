@@ -1,14 +1,8 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.entity.Credentials
-import io.mockk.every
-import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import org.hamcrest.CoreMatchers
-import org.junit.Assert
+import com.visualeap.aliforreddit.domain.entity.AuthCredentials
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.extension.ExtendWith
 import org.assertj.core.api.Assertions.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -26,7 +20,7 @@ class GetAuthUrlTest {
         //Act
         val actualAuthUrl = getAuthenticationUrl.execute(
             GetAuthUrl.Params(
-                Credentials("CLIENT_ID", "URI"),
+                AuthCredentials("CLIENT_ID", "URI"),
                 "RANDOM_STRING"
             )
         )

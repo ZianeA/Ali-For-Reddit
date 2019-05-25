@@ -1,15 +1,12 @@
 package com.visualeap.aliforreddit.presentation.login
 
-import com.visualeap.aliforreddit.SyncSchedulerProvider
-import com.visualeap.aliforreddit.domain.entity.Credentials
-import com.visualeap.aliforreddit.domain.entity.Token
+import com.visualeap.aliforreddit.domain.entity.AuthCredentials
 import com.visualeap.aliforreddit.domain.usecase.*
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verify
-import io.reactivex.Single
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -37,7 +34,7 @@ class LoginPresenterTest {
 
     private val presenter = LoginPresenter(
         view,
-        Credentials(CLIENT_ID, REDIRECT_URL),
+        AuthCredentials(CLIENT_ID, REDIRECT_URL),
         getUniqueString,
         getAuthUrl,
         isFinalRedirectUrl,
@@ -61,7 +58,7 @@ class LoginPresenterTest {
             every {
                 getAuthUrl.execute(
                     GetAuthUrl.Params(
-                        Credentials(CLIENT_ID, REDIRECT_URL),
+                        AuthCredentials(CLIENT_ID, REDIRECT_URL),
                         STATE
                     )
                 )

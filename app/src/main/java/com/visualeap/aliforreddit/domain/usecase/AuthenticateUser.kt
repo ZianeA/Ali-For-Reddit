@@ -1,8 +1,8 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
-import com.visualeap.aliforreddit.domain.entity.Credentials
-import com.visualeap.aliforreddit.domain.entity.Token
+import com.visualeap.aliforreddit.domain.entity.AuthCredentials
+import com.visualeap.aliforreddit.domain.entity.token.UserToken
 import com.visualeap.aliforreddit.domain.usecase.AuthenticateUser.*
 import com.visualeap.aliforreddit.domain.usecase.base.SingleUseCase
 import dagger.Reusable
@@ -11,15 +11,16 @@ import okhttp3.HttpUrl
 import java.net.MalformedURLException
 import javax.inject.Inject
 
+//TODO save the token instead of simply returning it
 @Reusable
 class AuthenticateUser @Inject constructor(schedulerProvider: SchedulerProvider) :
-    SingleUseCase<Token, Params>(schedulerProvider) {
+    SingleUseCase<UserToken, Params>(schedulerProvider) {
 
     companion object {
         private const val AUTHORIZATION_CODE = "authorization_code"
     }
 
-    override fun createObservable(params: Params): Single<Token> {
+    override fun createObservable(params: Params): Single<UserToken> {
         params.run {
             val parsedFinalUrl = HttpUrl.parse(finalUrl)
                 ?: return Single.error(MalformedURLException())
@@ -40,7 +41,7 @@ class AuthenticateUser @Inject constructor(schedulerProvider: SchedulerProvider)
 
 
             val authCredentials = okhttp3.Credentials.basic(credentials.clientId, "")
-            return authService.getAccessToken(
+            return authService.getUserToken(
                 AUTHORIZATION_CODE,
                 code,
                 credentials.redirectUrl,
@@ -52,7 +53,7 @@ class AuthenticateUser @Inject constructor(schedulerProvider: SchedulerProvider)
     data class Params(
         val authService: AuthService,
         val finalUrl: String,
-        val credentials: Credentials,
+        val credentials: AuthCredentials,
         val state: String
     )
 }
