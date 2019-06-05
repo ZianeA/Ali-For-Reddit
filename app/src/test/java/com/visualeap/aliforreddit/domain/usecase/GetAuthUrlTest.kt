@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.entity.AuthCredentials
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.assertj.core.api.Assertions.*
@@ -8,7 +7,12 @@ import org.assertj.core.api.Assertions.*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GetAuthUrlTest {
 
-    private val getAuthenticationUrl = GetAuthUrl()
+    companion object {
+        private const val REDIRECT_URL = "URI"
+        private const val CLIENT_ID = "CLIENT_ID"
+    }
+
+    private val getAuthenticationUrl = GetAuthUrl(CLIENT_ID, REDIRECT_URL)
 
     @Test
     fun `should return correct authentication url`() {
@@ -18,12 +22,7 @@ class GetAuthUrlTest {
                     "&state=RANDOM_STRING&redirect_uri=URI&duration=permanent&scope="
 
         //Act
-        val actualAuthUrl = getAuthenticationUrl.execute(
-            GetAuthUrl.Params(
-                AuthCredentials("CLIENT_ID", "URI"),
-                "RANDOM_STRING"
-            )
-        )
+        val actualAuthUrl = getAuthenticationUrl.execute("RANDOM_STRING")
 
         //Assert
         assertThat(actualAuthUrl).contains(expectedAuthUrl)

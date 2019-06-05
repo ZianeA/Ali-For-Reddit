@@ -15,7 +15,7 @@ class IsFinalRedirectUrlTest {
         private const val REDIRECT_URL = "https://example.com/path"
     }
 
-    private val isFinalRedirectUrl = IsFinalRedirectUrl()
+    private val isFinalRedirectUrl = IsFinalRedirectUrl(REDIRECT_URL)
 
     @Test
     fun `return true when final url contains redirect url`() {
@@ -26,10 +26,8 @@ class IsFinalRedirectUrlTest {
             .build()
             .toString()
 
-        val params = IsFinalRedirectUrl.Params(REDIRECT_URL, finalUrl)
-
         //Act
-        val actual = isFinalRedirectUrl.execute(params)
+        val actual = isFinalRedirectUrl.execute(finalUrl)
 
         //Assert
         assertThat(actual).isEqualTo(true)
@@ -39,10 +37,9 @@ class IsFinalRedirectUrlTest {
     fun `return false when final url doesn't contain redirect url`() {
         //Arrange
         val finalUrl = "https://invalid.com"
-        val params = IsFinalRedirectUrl.Params(REDIRECT_URL, finalUrl)
 
         //Act
-        val actual = isFinalRedirectUrl.execute(params)
+        val actual = isFinalRedirectUrl.execute(finalUrl)
 
         //Assert
         assertThat(actual).isEqualTo(false)
@@ -52,10 +49,9 @@ class IsFinalRedirectUrlTest {
     fun `return false when final url is malformed`() {
         //Arrange
         val finalUrl = "this is a malformed URL $REDIRECT_URL"
-        val params = IsFinalRedirectUrl.Params(REDIRECT_URL, finalUrl)
 
         //Act
-        val actual = isFinalRedirectUrl.execute(params)
+        val actual = isFinalRedirectUrl.execute(finalUrl)
 
         //Assert
         assertThat(actual).isEqualTo(false)
@@ -65,10 +61,9 @@ class IsFinalRedirectUrlTest {
     fun `return false when final url doesn't contain any query`() {
         //Arrange
         val finalUrl = REDIRECT_URL
-        val params = IsFinalRedirectUrl.Params(REDIRECT_URL, finalUrl)
 
         //Act
-        val actual = isFinalRedirectUrl.execute(params)
+        val actual = isFinalRedirectUrl.execute(finalUrl)
 
         //Assert
         assertThat(actual).isEqualTo(false)

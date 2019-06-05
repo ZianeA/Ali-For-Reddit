@@ -12,8 +12,6 @@ import javax.inject.Named
 import javax.inject.Singleton
 import javax.inject.Qualifier
 
-
-
 @Module
 class AuthModule {
 

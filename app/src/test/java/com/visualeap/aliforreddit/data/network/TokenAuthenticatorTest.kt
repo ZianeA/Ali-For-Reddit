@@ -1,9 +1,8 @@
 package com.visualeap.aliforreddit.data.network
 
 import com.visualeap.aliforreddit.domain.usecase.AuthService
-import com.visualeap.aliforreddit.domain.usecase.RefreshAccessToken
+import com.visualeap.aliforreddit.domain.usecase.RefreshToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
-import com.visualeap.aliforreddit.util.createRequest
 import com.visualeap.aliforreddit.util.createResponse
 import com.visualeap.aliforreddit.util.createToken
 import io.mockk.clearAllMocks
@@ -11,9 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import okhttp3.Request
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -22,7 +19,7 @@ import org.junit.jupiter.api.TestInstance
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TokenAuthenticatorTest {
 
-    private val refreshToken: RefreshAccessToken = mockk()
+    private val refreshToken: RefreshToken = mockk()
     private val authService: AuthService = mockk()
     private val authenticator = TokenAuthenticator(authService, refreshToken)
 

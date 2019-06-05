@@ -5,19 +5,21 @@ import com.visualeap.aliforreddit.domain.usecase.IsFinalRedirectUrl.*
 import dagger.Reusable
 import okhttp3.HttpUrl
 import javax.inject.Inject
+import javax.inject.Named
 
 @Reusable
-class IsFinalRedirectUrl @Inject constructor() : NonReactiveUseCase<Boolean, Params> {
+class IsFinalRedirectUrl @Inject constructor(@Named("redirectUrl") private val redirectUrl: String) :
+    NonReactiveUseCase<Boolean, String> {
 
-    override fun execute(params: Params): Boolean {
-        params.run {
-            HttpUrl.parse(finalRedirectUrl)
-                ?.let { it.query() ?: return false }
+    /**
+     * @param params the final redirect URL
+     */
+    override fun execute(params: String): Boolean {
+
+            HttpUrl.parse(params)
+                ?.let {
+                    return if (it.query() != null) params.contains(redirectUrl) else false
+                }
                 ?: return false
-
-            return finalRedirectUrl.contains(redirectUrl)
-        }
     }
-
-    data class Params(val redirectUrl: String, val finalRedirectUrl: String)
 }

@@ -1,59 +1,86 @@
 package com.visualeap.aliforreddit.domain.usecase
 
+import com.visualeap.aliforreddit.data.network.RedditService
+import com.visualeap.aliforreddit.domain.entity.Account
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
-import com.visualeap.aliforreddit.domain.entity.AuthCredentials
-import com.visualeap.aliforreddit.domain.entity.token.UserToken
+import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.domain.usecase.AuthenticateUser.*
-import com.visualeap.aliforreddit.domain.usecase.base.SingleUseCase
+import com.visualeap.aliforreddit.domain.usecase.base.CompletableUseCase
 import dagger.Reusable
-import io.reactivex.Single
+import io.reactivex.*
 import okhttp3.HttpUrl
 import java.net.MalformedURLException
 import javax.inject.Inject
+import javax.inject.Named
 
-//TODO save the token instead of simply returning it
 @Reusable
-class AuthenticateUser @Inject constructor(schedulerProvider: SchedulerProvider) :
-    SingleUseCase<UserToken, Params>(schedulerProvider) {
+class AuthenticateUser @Inject constructor(
+    schedulerProvider: SchedulerProvider,
+    private val authService: AuthService,
+    private val redditService: RedditService,
+    private val accountRepository: AccountRepository,
+    private val switchLoginAccount: SwitchLoginAccount,
+    @Named("redirectUrl") private val redirectUrl: String,
+    @Named("basicAuth") private val basicAuth: String
+) :
+    CompletableUseCase<Params>(schedulerProvider) {
 
     companion object {
         private const val AUTHORIZATION_CODE = "authorization_code"
     }
 
-    override fun createObservable(params: Params): Single<UserToken> {
-        params.run {
-            val parsedFinalUrl = HttpUrl.parse(finalUrl)
-                ?: return Single.error(MalformedURLException())
+    override fun createObservable(params: Params): Completable {
 
-            parsedFinalUrl.queryParameter("error")
-                ?.let { return Single.error(OAuthException("Reddit responded with error: $it")) }
+        val parsedFinalUrl = HttpUrl.parse(params.finalUrl)
+            ?: return Completable.error(MalformedURLException())
 
-            parsedFinalUrl.queryParameter("state")
-                ?.let { stateReceived ->
-                    if (state != stateReceived)
-                        return Single.error(IllegalStateException("State doesn't match"))
-                }
-                ?: return Single.error(IllegalArgumentException("Final redirect URL did not contain the 'state' query parameter"))
+        parsedFinalUrl.queryParameter("error")
+            ?.let { return Completable.error(OAuthException("Reddit responded with error: $it")) }
 
-
-            val code = parsedFinalUrl.queryParameter("code")
-                ?: return Single.error(IllegalArgumentException("Final redirect URL did not contain the 'code' query parameter"))
+        parsedFinalUrl.queryParameter("state")
+            ?.let { stateReceived ->
+                if (params.state != stateReceived)
+                    return Completable.error(IllegalStateException("State doesn't match"))
+            }
+            ?: return Completable.error(IllegalArgumentException("Final redirect URL did not contain the 'state' query parameter"))
 
 
-            val authCredentials = okhttp3.Credentials.basic(credentials.clientId, "")
-            return authService.getUserToken(
-                AUTHORIZATION_CODE,
-                code,
-                credentials.redirectUrl,
-                authCredentials
+        val code = parsedFinalUrl.queryParameter("code")
+            ?: return Completable.error(IllegalArgumentException("Final redirect URL did not contain the 'code' query parameter"))
+
+        //The token is saved in an account with a username "unknown"
+        // because the same token is going to be used to retrieve the user information, username and avatar url.
+        // TokenInterceptor is going to automatically fetch it from the DB and add it to the API call header.
+        return authService.getUserToken(
+            AUTHORIZATION_CODE,
+            code,
+            redirectUrl,
+            basicAuth
+        ).flatMapCompletable { token ->
+            accountRepository.saveAccount(
+                Account(
+                    Account.UNKNOWN_ACCOUNT_USERNAME,
+                    token,
+                    false
+                )
             )
+                .andThen(switchLoginAccount.execute(Account.UNKNOWN_ACCOUNT_USERNAME))
+                .andThen(redditService.getCurrentUser())
+                .flatMapCompletable {
+                    accountRepository.updateAccount(
+                        Account(
+                            it.name,
+                            token,
+                            true,
+                            it.avatarUrl
+                        )
+                    )
+                }
         }
     }
 
     data class Params(
-        val authService: AuthService,
         val finalUrl: String,
-        val credentials: AuthCredentials,
         val state: String
     )
 }

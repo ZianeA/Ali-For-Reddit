@@ -17,7 +17,7 @@ interface AuthService {
         @Field(GRANT_TYPE) grantType: String,
         @Field("code") code: String,
         @Field("redirect_uri") redirectUrl: String,
-        @Header(HttpHeaders.AUTHORIZATION) credentials: String
+        @Header(HttpHeaders.AUTHORIZATION) basicAuth: String
     ): Single<UserToken>
 
     @FormUrlEncoded
@@ -25,7 +25,7 @@ interface AuthService {
     fun getUserLessToken(
         @Field(GRANT_TYPE) grantType: String,
         @Field("device_id") deviceId: String,
-        @Header(HttpHeaders.AUTHORIZATION) credentials: String
+        @Header(HttpHeaders.AUTHORIZATION) basicAuth: String
     ): Single<UserlessToken>
 
     @FormUrlEncoded

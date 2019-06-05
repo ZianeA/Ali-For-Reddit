@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.presentation.login
 
-import com.visualeap.aliforreddit.domain.entity.AuthCredentials
 import com.visualeap.aliforreddit.domain.usecase.*
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -30,16 +29,13 @@ class LoginPresenterTest {
     private val getAuthUrl: GetAuthUrl = mockk()
     private val isFinalRedirectUrl: IsFinalRedirectUrl = mockk()
     private val authenticateUser: AuthenticateUser = mockk(relaxed = true)
-    private val authService: AuthService = mockk(relaxed = true)
 
     private val presenter = LoginPresenter(
         view,
-        AuthCredentials(CLIENT_ID, REDIRECT_URL),
         getUniqueString,
         getAuthUrl,
         isFinalRedirectUrl,
-        authenticateUser,
-        authService
+        authenticateUser
     )
 
     @BeforeEach
@@ -54,15 +50,7 @@ class LoginPresenterTest {
         fun `pass auth url to view`() {
             //Arrange
             every { getUniqueString.execute(Unit) } returns STATE
-
-            every {
-                getAuthUrl.execute(
-                    GetAuthUrl.Params(
-                        AuthCredentials(CLIENT_ID, REDIRECT_URL),
-                        STATE
-                    )
-                )
-            } returns AUTH_URL
+            every { getAuthUrl.execute(STATE) } returns AUTH_URL
 
             //Act
             presenter.start()
@@ -78,14 +66,7 @@ class LoginPresenterTest {
         @Test
         fun `hide login ui when authorization is complete`() {
             //Arrange
-            every {
-                isFinalRedirectUrl.execute(
-                    IsFinalRedirectUrl.Params(
-                        REDIRECT_URL,
-                        FINAL_REDIRECT_URL
-                    )
-                )
-            } returns true
+            every { isFinalRedirectUrl.execute(FINAL_REDIRECT_URL) } returns true
 
             //Act
             presenter.onPageStarted(FINAL_REDIRECT_URL)

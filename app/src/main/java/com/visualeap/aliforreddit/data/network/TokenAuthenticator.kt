@@ -1,22 +1,16 @@
 package com.visualeap.aliforreddit.data.network
 
-import android.app.Application
-import android.util.Log
-import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.domain.entity.Token
 import com.visualeap.aliforreddit.domain.usecase.AuthService
-import com.visualeap.aliforreddit.domain.usecase.RefreshAccessToken
+import com.visualeap.aliforreddit.domain.usecase.RefreshToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import okhttp3.*
-import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class TokenAuthenticator @Inject constructor(
     private val authService: AuthService,
-    private val refreshAccessToken: RefreshAccessToken
+    private val refreshToken: RefreshToken
 ) : Authenticator {
 
     private val tag = TokenAuthenticator::class.java.simpleName
@@ -27,7 +21,7 @@ class TokenAuthenticator @Inject constructor(
         }
 
         synchronized(this) {
-            val token = refreshAccessToken.execute(Unit) ?: return null
+            val token = refreshToken.execute(Unit) ?: return null
 
             return response.request().newBuilder()
                 .header(HttpHeaders.AUTHORIZATION, "${token.type} ${token.accessToken}")

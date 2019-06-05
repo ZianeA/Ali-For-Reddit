@@ -6,19 +6,19 @@ import dagger.Reusable
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
+import javax.inject.Singleton
 
-//Add unit tests
-@Reusable
+@Singleton
 class TokenInterceptor @Inject constructor(private val getAccessToken: GetToken) :
     Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val token = getAccessToken.execute(Unit)
+        getAccessToken.execute(Unit)?.run {
+            val newRequest = chain.request().newBuilder()
+                .header(HttpHeaders.AUTHORIZATION, "$type $accessToken")
+                .build()
+            return chain.proceed(newRequest)
 
-        val newRequest = chain.request().newBuilder()
-            .header(HttpHeaders.AUTHORIZATION, "${token.type} ${token.accessToken}")
-            .build()
-
-        return chain.proceed(newRequest)
+        } ?: return chain.proceed(chain.request())
     }
 }

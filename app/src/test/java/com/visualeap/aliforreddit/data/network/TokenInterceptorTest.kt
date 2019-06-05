@@ -5,12 +5,14 @@ import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import com.visualeap.aliforreddit.util.createRequest
 import com.visualeap.aliforreddit.util.createResponse
 import com.visualeap.aliforreddit.util.createToken
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import okhttp3.Interceptor
 import okhttp3.Request
 import org.assertj.core.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -21,6 +23,11 @@ class TokenInterceptorTest {
     private val chain: Interceptor.Chain = mockk()
     private val getAccessToken: GetToken = mockk()
     private val tokenInterceptor = TokenInterceptor(getAccessToken)
+
+    @BeforeEach
+    internal fun setUp() {
+        clearAllMocks()
+    }
 
     @Nested
     inner class Intercept {
@@ -41,6 +48,22 @@ class TokenInterceptorTest {
             //Assert
             val header = response.request().header(HttpHeaders.AUTHORIZATION)
             assertThat(header).isEqualTo("${token.type} ${token.accessToken}")
+        }
+
+        @Test
+        fun `ignore when token is null`() {
+            //Arrange
+            val request = createRequest()
+            val requestSlot = slot<Request>()
+            every { chain.request() } returns request
+            every { chain.proceed(capture(requestSlot)) } answers { createResponse(requestSlot.captured) }
+            every { getAccessToken.execute(Unit) } returns null
+
+            //Act
+            val response = tokenInterceptor.intercept(chain)
+
+            //Assert
+            assertThat(response.request()).isEqualTo(request)
         }
     }
 }
