@@ -28,7 +28,7 @@ class GetUserLessToken @Inject constructor(
             basicAuth
         ).subscribe({ token = it }, { /*Do nothing on error*/ }).dispose()
 
-        return token
+        return token?.copy(deviceId = params)
     }
 
     companion object {

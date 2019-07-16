@@ -35,6 +35,11 @@ class LoginFragment : Fragment(), LoginView {
         presenter.start()
     }
 
+    override fun onPause() {
+        super.onPause()
+        presenter.stop()
+    }
+
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)

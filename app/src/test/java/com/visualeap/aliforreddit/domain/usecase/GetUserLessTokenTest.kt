@@ -26,19 +26,19 @@ internal class GetUserLessTokenTest {
     fun `return user-less token`() {
         //Arrange
         val deviceId = "DEVICE ID"
-        val expectedToken = createUserlessToken()
         every {
             authService.getUserLessToken(
                 "https://oauth.reddit.com/grants/installed_client",
                 deviceId,
                 basicAuth
             )
-        } returns Single.just(expectedToken)
+        } returns Single.just(createUserlessToken(deviceId = null))
 
         //Act
         val token = getUserLessToken.execute(deviceId)
 
         //Assert
+        val expectedToken = createUserlessToken(deviceId = deviceId)
         assertThat(token).isEqualTo(expectedToken)
     }
 

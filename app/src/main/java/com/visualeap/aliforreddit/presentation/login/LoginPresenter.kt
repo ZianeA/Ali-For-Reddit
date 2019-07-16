@@ -3,6 +3,7 @@ package com.visualeap.aliforreddit.presentation.login
 import android.util.Log
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
 import com.visualeap.aliforreddit.domain.usecase.*
+import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 @FragmentScope
@@ -15,6 +16,7 @@ class LoginPresenter @Inject constructor(
 ) {
 
     private val tag = LoginPresenter::class.java.simpleName
+    private val compositeDisposable = CompositeDisposable()
 
     fun start() {
         val authUrl = getAuthUrl.execute(getUniqueString.execute(Unit))
@@ -30,6 +32,12 @@ class LoginPresenter @Inject constructor(
 
             val disposable = authenticateUser.execute(params).subscribe({ /*TODO on sucess*/ },
                 { /*TODO error*/ Log.i(tag, it.message) })
+
+            compositeDisposable.add(disposable)
         }
+    }
+
+    fun stop() {
+        compositeDisposable.dispose()
     }
 }
