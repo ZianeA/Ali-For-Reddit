@@ -1,7 +1,7 @@
-package com.visualeap.aliforreddit.domain.entity
+package com.visualeap.aliforreddit.domain.model
 
-import com.visualeap.aliforreddit.domain.entity.token.Token
-import com.visualeap.aliforreddit.domain.entity.token.UserlessToken
+import com.visualeap.aliforreddit.domain.model.token.Token
+import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 
 data class Account(
     val username: String,

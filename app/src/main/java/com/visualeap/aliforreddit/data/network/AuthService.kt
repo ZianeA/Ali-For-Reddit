@@ -1,7 +1,7 @@
-package com.visualeap.aliforreddit.domain.usecase
+package com.visualeap.aliforreddit.data.network
 
-import com.visualeap.aliforreddit.domain.entity.token.UserToken
-import com.visualeap.aliforreddit.domain.entity.token.UserlessToken
+import com.visualeap.aliforreddit.domain.model.token.UserToken
+import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import io.reactivex.Single
 import retrofit2.http.Field

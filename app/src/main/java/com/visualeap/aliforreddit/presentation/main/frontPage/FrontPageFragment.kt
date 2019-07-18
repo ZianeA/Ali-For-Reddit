@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.domain.entity.Post
+import com.visualeap.aliforreddit.domain.model.Post
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import javax.inject.Inject

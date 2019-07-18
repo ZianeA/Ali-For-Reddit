@@ -1,10 +1,10 @@
 package com.visualeap.aliforreddit.util
 
-import com.visualeap.aliforreddit.domain.entity.Account
-import com.visualeap.aliforreddit.domain.entity.User
-import com.visualeap.aliforreddit.domain.entity.token.Token
-import com.visualeap.aliforreddit.domain.entity.token.UserToken
-import com.visualeap.aliforreddit.domain.entity.token.UserlessToken
+import com.visualeap.aliforreddit.domain.model.Account
+import com.visualeap.aliforreddit.domain.model.User
+import com.visualeap.aliforreddit.domain.model.token.Token
+import com.visualeap.aliforreddit.domain.model.token.UserToken
+import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import okhttp3.Credentials
 import okhttp3.Protocol
 import okhttp3.Request

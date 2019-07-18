@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.data.network
 
-import com.visualeap.aliforreddit.domain.usecase.AuthService
 import com.visualeap.aliforreddit.domain.usecase.RefreshToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import com.visualeap.aliforreddit.util.createResponse
@@ -20,8 +19,7 @@ import org.junit.jupiter.api.TestInstance
 class TokenAuthenticatorTest {
 
     private val refreshToken: RefreshToken = mockk()
-    private val authService: AuthService = mockk()
-    private val authenticator = TokenAuthenticator(authService, refreshToken)
+    private val authenticator = TokenAuthenticator(refreshToken)
 
     @BeforeEach
     internal fun setUp() {

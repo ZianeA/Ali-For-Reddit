@@ -1,10 +1,9 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.entity.Account
+import com.visualeap.aliforreddit.domain.model.Account
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.domain.usecase.base.NonReactiveUseCase
 import dagger.Reusable
-import io.reactivex.Observable
 import java.lang.IllegalStateException
 import javax.inject.Inject
 

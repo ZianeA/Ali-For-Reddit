@@ -1,7 +1,7 @@
 package com.visualeap.aliforreddit.data.network
 
-import com.visualeap.aliforreddit.domain.entity.Post
-import com.visualeap.aliforreddit.domain.entity.User
+import com.visualeap.aliforreddit.domain.model.Post
+import com.visualeap.aliforreddit.domain.model.User
 import io.reactivex.Single
 import retrofit2.http.*
 

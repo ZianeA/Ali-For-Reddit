@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.domain.entity.token
+package com.visualeap.aliforreddit.domain.model.token
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

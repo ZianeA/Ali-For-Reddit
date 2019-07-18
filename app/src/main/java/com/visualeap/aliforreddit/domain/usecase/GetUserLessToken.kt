@@ -1,7 +1,7 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.entity.token.Token
-import com.visualeap.aliforreddit.domain.entity.token.UserlessToken
+import com.visualeap.aliforreddit.domain.model.token.UserlessToken
+import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import com.visualeap.aliforreddit.domain.usecase.base.NonReactiveUseCase
 import dagger.Reusable
 import javax.inject.Inject
@@ -9,7 +9,7 @@ import javax.inject.Named
 
 @Reusable
 class GetUserLessToken @Inject constructor(
-    private val authService: AuthService,
+    private val tokenRepository: TokenRepository,
     @Named("basicAuth") private val basicAuth: String
 ) :
     NonReactiveUseCase<UserlessToken?, String> {
@@ -22,7 +22,7 @@ class GetUserLessToken @Inject constructor(
         var token: UserlessToken? = null
 
         //Dispose immediately since it's a synchronous call
-        authService.getUserLessToken(
+        tokenRepository.getUserLessToken(
             GRANT_TYPE,
             params,
             basicAuth

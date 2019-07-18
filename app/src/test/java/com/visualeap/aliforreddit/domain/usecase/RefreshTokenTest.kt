@@ -1,6 +1,7 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
+import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import com.visualeap.aliforreddit.util.createAccount
 import com.visualeap.aliforreddit.util.createAnonymousAccount
 import com.visualeap.aliforreddit.util.createUserToken
@@ -16,12 +17,12 @@ import java.sql.SQLException
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class RefreshTokenTest {
-    private val authService: AuthService = mockk()
+    private val tokenRepository: TokenRepository = mockk()
     private val getCurrentAccount: GetCurrentAccount = mockk()
     private val getUserLessToken: GetUserLessToken = mockk()
     private val accountRepository: AccountRepository = mockk(relaxUnitFun = true)
     private val refreshToken =
-        RefreshToken(authService, getCurrentAccount, getUserLessToken, accountRepository)
+        RefreshToken(tokenRepository, getCurrentAccount, getUserLessToken, accountRepository)
 
     companion object {
         private const val GRANT_TYPE = "refresh_token"
@@ -42,7 +43,7 @@ internal class RefreshTokenTest {
 
         every { getCurrentAccount.execute(Unit) } returns createAccount(token = storedUserToken)
         every {
-            authService.refreshUserToken(
+            tokenRepository.getRefreshedUserToken(
                 GRANT_TYPE,
                 storedUserToken.refreshToken!!
             )
@@ -81,7 +82,7 @@ internal class RefreshTokenTest {
             createUserToken(accessToken = REFRESHED_ACCESS_TOKEN, refreshToken = null)
 
         every { getCurrentAccount.execute(Unit) } returns createAccount()
-        every { authService.refreshUserToken(any(), any()) } returns Single.just(refreshedUserToken)
+        every { tokenRepository.getRefreshedUserToken(any(), any()) } returns Single.just(refreshedUserToken)
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
 
         //Act
@@ -117,7 +118,7 @@ internal class RefreshTokenTest {
     fun `throw exception when saving user token fails`() {
         //Arrange
         every { getCurrentAccount.execute(any()) } returns createAccount()
-        every { authService.refreshUserToken(any(), any()) } returns Single.just(
+        every { tokenRepository.getRefreshedUserToken(any(), any()) } returns Single.just(
             createUserToken()
         )
         every { accountRepository.saveAccount(any()) } returns Completable.error(SQLException())
@@ -141,7 +142,7 @@ internal class RefreshTokenTest {
     fun `not throw exception when user token retrieval fails`() {
         //Arrange
         every { getCurrentAccount.execute(Unit) } returns createAccount()
-        every { authService.refreshUserToken(any(), any()) } returns Single.error(Throwable())
+        every { tokenRepository.getRefreshedUserToken(any(), any()) } returns Single.error(Throwable())
 
         //Act, Assert
         assertThatCode { refreshToken.execute(Unit) }.doesNotThrowAnyException()

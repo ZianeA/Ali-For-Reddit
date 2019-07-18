@@ -1,10 +1,11 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.entity.Account
-import com.visualeap.aliforreddit.domain.entity.token.Token
-import com.visualeap.aliforreddit.domain.entity.token.UserToken
-import com.visualeap.aliforreddit.domain.entity.token.UserlessToken
+import com.visualeap.aliforreddit.domain.model.Account
+import com.visualeap.aliforreddit.domain.model.token.Token
+import com.visualeap.aliforreddit.domain.model.token.UserToken
+import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
+import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import com.visualeap.aliforreddit.domain.usecase.base.NonReactiveUseCase
 import dagger.Reusable
 import java.lang.IllegalArgumentException
@@ -13,7 +14,7 @@ import javax.inject.Inject
 
 @Reusable
 class RefreshToken @Inject constructor(
-    private val authService: AuthService,
+    private val tokenRepository: TokenRepository,
     private val getCurrentAccount: GetCurrentAccount,
     private val getUserLessToken: GetUserLessToken,
     private val accountRepository: AccountRepository
@@ -32,7 +33,7 @@ class RefreshToken @Inject constructor(
             if (refreshToken.isNullOrBlank()) throw IllegalStateException("Refresh token cannot be null or empty")
 
             //Dispose immediately since it's a synchronous call
-            authService.refreshUserToken(GRANT_TYPE, refreshToken)
+            tokenRepository.getRefreshedUserToken(GRANT_TYPE, refreshToken)
                 .subscribe({ newToken = it }, { /*do nothing on error*/ })
                 .dispose()
 

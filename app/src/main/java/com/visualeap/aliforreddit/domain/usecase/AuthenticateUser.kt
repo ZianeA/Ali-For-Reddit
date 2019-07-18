@@ -1,9 +1,10 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.data.network.RedditService
-import com.visualeap.aliforreddit.domain.entity.Account
+import com.visualeap.aliforreddit.domain.model.Account
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
+import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import com.visualeap.aliforreddit.domain.usecase.AuthenticateUser.*
 import com.visualeap.aliforreddit.domain.usecase.base.CompletableUseCase
 import dagger.Reusable
@@ -16,8 +17,8 @@ import javax.inject.Named
 @Reusable
 class AuthenticateUser @Inject constructor(
     schedulerProvider: SchedulerProvider,
-    private val authService: AuthService,
-    private val redditService: RedditService,
+    private val tokenRepository: TokenRepository,
+    private val redditService: RedditService, //TODO remove dependency on data layer
     private val accountRepository: AccountRepository,
     private val switchLoginAccount: SwitchLoginAccount,
     @Named("redirectUrl") private val redirectUrl: String,
@@ -51,7 +52,7 @@ class AuthenticateUser @Inject constructor(
         //The token is saved in an account with a username "unknown"
         // because the same token is going to be used to retrieve the user information, username and avatar url.
         // TokenInterceptor is going to automatically fetch it from the DB and add it to the API call header.
-        return authService.getUserToken(
+        return tokenRepository.getUserToken(
             AUTHORIZATION_CODE,
             code,
             redirectUrl,

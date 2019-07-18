@@ -2,8 +2,9 @@ package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.SyncSchedulerProvider
 import com.visualeap.aliforreddit.data.network.RedditService
-import com.visualeap.aliforreddit.domain.entity.Account
+import com.visualeap.aliforreddit.domain.model.Account
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
+import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import com.visualeap.aliforreddit.util.createAccount
 import com.visualeap.aliforreddit.util.createBasicAuth
 import com.visualeap.aliforreddit.util.createUser
@@ -32,7 +33,7 @@ class AuthenticateUserTest {
         private const val GRANT_TYPE = "authorization_code"
     }
 
-    private val authService: AuthService = mockk()
+    private val tokenRepository: TokenRepository = mockk()
     private val redditService: RedditService = mockk()
     private val switchLoginAccount: SwitchLoginAccount = mockk()
     private val basicAuth = createBasicAuth()
@@ -40,7 +41,7 @@ class AuthenticateUserTest {
     private val authenticateUser =
         AuthenticateUser(
             SyncSchedulerProvider(),
-            authService,
+            tokenRepository,
             redditService,
             accountRepository,
             switchLoginAccount,
@@ -66,7 +67,7 @@ class AuthenticateUserTest {
         )
 
         every {
-            authService.getUserToken(
+            tokenRepository.getUserToken(
                 GRANT_TYPE,
                 CODE,
                 REDIRECT_URL,
@@ -91,7 +92,7 @@ class AuthenticateUserTest {
     fun `return error when saving account fails`() {
         //Arrange
         val params = createParams(createCorrectFinalUrl())
-        every { authService.getUserToken(any(), any(), any(), any()) } returns Single.just(
+        every { tokenRepository.getUserToken(any(), any(), any(), any()) } returns Single.just(
             createUserToken()
         )
         every { accountRepository.saveAccount(any()) } returns Completable.error(SQLException())
@@ -109,7 +110,7 @@ class AuthenticateUserTest {
     fun `switch current account to the authenticated user account`() {
         //Arrange
         every {
-            authService.getUserToken(
+            tokenRepository.getUserToken(
                 GRANT_TYPE,
                 CODE,
                 REDIRECT_URL,
@@ -132,7 +133,7 @@ class AuthenticateUserTest {
     @Test
     fun `return error when switching accounts fails`() {
         //Arrange
-        every { authService.getUserToken(any(), any(), any(), any()) } returns Single.just(
+        every { tokenRepository.getUserToken(any(), any(), any(), any()) } returns Single.just(
             createUserToken()
         )
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
@@ -150,7 +151,7 @@ class AuthenticateUserTest {
         val user = createUser()
         val updatedAccount = createAccount(username = user.name, avatarUrl = user.avatarUrl)
         val params = createParams(createCorrectFinalUrl())
-        every { authService.getUserToken(any(), any(), any(), any()) } returns Single.just(
+        every { tokenRepository.getUserToken(any(), any(), any(), any()) } returns Single.just(
             createUserToken()
         )
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
@@ -170,7 +171,7 @@ class AuthenticateUserTest {
     fun `return error when adding username and avatar url to saved account fails`() {
         //Arrange
         val params = createParams(createCorrectFinalUrl())
-        every { authService.getUserToken(any(), any(), any(), any()) } returns Single.just(
+        every { tokenRepository.getUserToken(any(), any(), any(), any()) } returns Single.just(
             createUserToken()
         )
         every { accountRepository.saveAccount(any()) } returns Completable.complete()

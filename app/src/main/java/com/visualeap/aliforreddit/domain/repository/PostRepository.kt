@@ -1,7 +1,6 @@
 package com.visualeap.aliforreddit.domain.repository
 
-import com.visualeap.aliforreddit.domain.entity.Post
-import io.reactivex.Observable
+import com.visualeap.aliforreddit.domain.model.Post
 import io.reactivex.Single
 
 interface PostRepository {

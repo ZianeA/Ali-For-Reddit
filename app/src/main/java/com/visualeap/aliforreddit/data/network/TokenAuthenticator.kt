@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.data.network
 
-import com.visualeap.aliforreddit.domain.usecase.AuthService
 import com.visualeap.aliforreddit.domain.usecase.RefreshToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import okhttp3.*
@@ -9,7 +8,6 @@ import javax.inject.Singleton
 
 @Singleton
 class TokenAuthenticator @Inject constructor(
-    private val authService: AuthService,
     private val refreshToken: RefreshToken
 ) : Authenticator {
 

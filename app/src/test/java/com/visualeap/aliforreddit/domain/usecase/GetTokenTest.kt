@@ -1,11 +1,10 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.entity.token.Token
+import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.util.*
 import io.mockk.*
 import io.reactivex.Completable
-import io.reactivex.Single
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

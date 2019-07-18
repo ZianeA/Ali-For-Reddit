@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.domain.entity.token
+package com.visualeap.aliforreddit.domain.model.token
 
 interface Token {
     val accessToken: String

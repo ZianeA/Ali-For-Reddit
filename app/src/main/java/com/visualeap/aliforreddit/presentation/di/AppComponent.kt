@@ -1,11 +1,10 @@
 package com.visualeap.aliforreddit.presentation.di
 
-import android.app.Application
 import com.visualeap.aliforreddit.data.network.NetworkModule
 import com.visualeap.aliforreddit.presentation.AliForRedditApp
 import com.visualeap.aliforreddit.presentation.util.SchedulerProviderModule
 import com.visualeap.aliforreddit.data.repository.RepositoryModule
-import com.visualeap.aliforreddit.domain.usecase.AuthModule
+import com.visualeap.aliforreddit.data.repository.AuthModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.support.AndroidSupportInjectionModule

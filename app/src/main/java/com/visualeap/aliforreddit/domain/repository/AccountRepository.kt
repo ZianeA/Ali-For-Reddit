@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.domain.repository
 
-import com.visualeap.aliforreddit.domain.entity.Account
+import com.visualeap.aliforreddit.domain.model.Account
 import io.reactivex.Completable
 import io.reactivex.Single
 

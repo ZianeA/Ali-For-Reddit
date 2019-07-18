@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.entity.Account
+import com.visualeap.aliforreddit.domain.model.Account
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.domain.usecase.base.CompletableUseCase
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider

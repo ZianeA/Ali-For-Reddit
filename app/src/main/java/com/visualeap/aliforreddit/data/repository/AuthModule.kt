@@ -1,5 +1,6 @@
-package com.visualeap.aliforreddit.domain.usecase
+package com.visualeap.aliforreddit.data.repository
 
+import com.visualeap.aliforreddit.data.network.AuthService
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -10,7 +11,6 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
-import javax.inject.Qualifier
 
 @Module
 class AuthModule {

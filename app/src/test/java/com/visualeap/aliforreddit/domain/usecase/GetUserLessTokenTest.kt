@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.domain.usecase
 
+import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import com.visualeap.aliforreddit.util.createBasicAuth
 import com.visualeap.aliforreddit.util.createUserlessToken
 import io.mockk.clearAllMocks
@@ -13,9 +14,9 @@ import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class GetUserLessTokenTest {
-    private val authService: AuthService = mockk()
+    private val tokenRepository: TokenRepository = mockk()
     private val basicAuth = createBasicAuth()
-    private val getUserLessToken = GetUserLessToken(authService, basicAuth)
+    private val getUserLessToken = GetUserLessToken(tokenRepository, basicAuth)
 
     @BeforeEach
     internal fun setUp() {
@@ -27,7 +28,7 @@ internal class GetUserLessTokenTest {
         //Arrange
         val deviceId = "DEVICE ID"
         every {
-            authService.getUserLessToken(
+            tokenRepository.getUserLessToken(
                 "https://oauth.reddit.com/grants/installed_client",
                 deviceId,
                 basicAuth
@@ -46,7 +47,7 @@ internal class GetUserLessTokenTest {
     fun `return null when token retrieval fails`() {
         //Arrange
         every {
-            authService.getUserLessToken(
+            tokenRepository.getUserLessToken(
                 any(),
                 any(),
                 any()
