@@ -10,19 +10,27 @@ import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 
+val ACCESS_TOKEN = "ACCESS TOKEN"
+val TOKEN_TYPE = "bearer"
+val REFRESH_TOKEN = "REFRESH TOKEN"
+val DEVICE_ID = "REFRESH TOKEN"
+
 fun createUserToken(
-    accessToken: String = "ACCESS TOKEN",
-    type: String = "bearer",
-    refreshToken: String? = "REFRESH TOKEN"
-) = UserToken(accessToken, type, refreshToken)
+    id: Int = 1,
+    accessToken: String = ACCESS_TOKEN,
+    type: String = TOKEN_TYPE,
+    refreshToken: String? = REFRESH_TOKEN
+) = UserToken(id, accessToken, type, refreshToken)
 
 fun createUserlessToken(
-    accessToken: String = "ACCESS TOKEN",
-    type: String = "bearer",
-    deviceId: String? = "DEVICE ID"
-) = UserlessToken(accessToken, type, deviceId)
+    id: Int = 1,
+    accessToken: String = ACCESS_TOKEN,
+    type: String = TOKEN_TYPE,
+    deviceId: String? = DEVICE_ID
+) = UserlessToken(id, accessToken, type, deviceId)
 
-fun createToken(): Token = createUserToken()
+fun createToken(id: Int = 1, accessToken: String = ACCESS_TOKEN, type: String = TOKEN_TYPE): Token =
+    Token(id, accessToken, type)
 
 fun createAccount(
     username: String = "Test",

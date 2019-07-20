@@ -40,7 +40,7 @@ internal class GetUserLessTokenTest {
 
         //Assert
         val expectedToken = createUserlessToken(deviceId = deviceId)
-        assertThat(token).isEqualTo(expectedToken)
+        assertThat(token).isEqualToComparingFieldByField(expectedToken)
     }
 
     @Test

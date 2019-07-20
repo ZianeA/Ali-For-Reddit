@@ -18,7 +18,7 @@ import javax.inject.Named
 class AuthenticateUser @Inject constructor(
     schedulerProvider: SchedulerProvider,
     private val tokenRepository: TokenRepository,
-    private val redditService: RedditService, //TODO remove dependency on data layer
+    private val redditService: RedditService, //TODO remove dependency on data layer by abstracting reddit service behind a domain layer interface.
     private val accountRepository: AccountRepository,
     private val switchLoginAccount: SwitchLoginAccount,
     @Named("redirectUrl") private val redirectUrl: String,
