@@ -11,6 +11,7 @@ import java.lang.IllegalStateException
 import javax.inject.Inject
 import kotlin.IllegalArgumentException
 
+//TODO Completely rewrite this class. To change current account, and therefore the current token, use TokenRepository's method "setCurrentToken"
 @Reusable
 class SwitchLoginAccount @Inject constructor(
     schedulerProvider: SchedulerProvider,
@@ -31,7 +32,7 @@ class SwitchLoginAccount @Inject constructor(
                     throw IllegalArgumentException("Invalid username")
                 }
             }
-            .flatMap { accounts ->
+            /*.flatMap { accounts ->
                 Observable.fromIterable(accounts)
                     .flatMap {
                         if (it.isLoggedIn) {
@@ -48,7 +49,7 @@ class SwitchLoginAccount @Inject constructor(
                             .toObservable<Account>()
                     }
                     .toList()
-            }
+            }*/
             .ignoreElement()
 
     }

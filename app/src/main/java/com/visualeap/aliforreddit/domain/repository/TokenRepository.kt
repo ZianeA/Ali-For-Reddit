@@ -1,7 +1,10 @@
 package com.visualeap.aliforreddit.domain.repository
 
+import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
+import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 interface TokenRepository {
@@ -19,4 +22,6 @@ interface TokenRepository {
     ): Single<UserlessToken>
 
     fun getRefreshedUserToken(grantType: String, refreshToken: String): Single<UserToken>
+
+    fun getCurrentToken(): Maybe<Token>
 }

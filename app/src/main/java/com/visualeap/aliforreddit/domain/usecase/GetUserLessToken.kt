@@ -7,6 +7,7 @@ import dagger.Reusable
 import javax.inject.Inject
 import javax.inject.Named
 
+//TODO move this logic to TokenRepository. Maybe split this to refresh user-less token and get user-less token
 @Reusable
 class GetUserLessToken @Inject constructor(
     private val tokenRepository: TokenRepository,
@@ -21,7 +22,7 @@ class GetUserLessToken @Inject constructor(
     override fun execute(params: String): UserlessToken? {
         var token: UserlessToken? = null
 
-        //Dispose immediately since it's a synchronous call
+        //Dispose immediately because we can treat this as a synchronous call
         tokenRepository.getUserLessToken(
             GRANT_TYPE,
             params,

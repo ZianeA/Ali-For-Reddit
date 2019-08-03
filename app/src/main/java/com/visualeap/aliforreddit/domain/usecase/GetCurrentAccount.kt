@@ -7,6 +7,7 @@ import dagger.Reusable
 import java.lang.IllegalStateException
 import javax.inject.Inject
 
+//TODO delete this class. It's deprecated.
 @Reusable
 class GetCurrentAccount @Inject constructor(private val accountRepository: AccountRepository) :
     NonReactiveUseCase<Account?, Unit> {
@@ -21,11 +22,12 @@ class GetCurrentAccount @Inject constructor(private val accountRepository: Accou
             .subscribe({ accounts = it }, { throwable = it })
             .dispose() //Dispose immediately because this is a synchronous call
 
-        accounts?.apply {
+        /*accounts?.apply {
             val loggedInAccounts = filter { it.isLoggedIn }
+            //TODO should throw the same exception inside getCurrentToken method
             if (loggedInAccounts.size > 1) throw IllegalStateException("Multiple accounts cannot be logged-in at the same time")
             else currentAccount = loggedInAccounts.firstOrNull()
-        }
+        }*/
 
         throwable?.let { throw it }
 

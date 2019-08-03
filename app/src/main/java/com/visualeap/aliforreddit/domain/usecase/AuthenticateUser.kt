@@ -57,7 +57,8 @@ class AuthenticateUser @Inject constructor(
             code,
             redirectUrl,
             basicAuth
-        ).flatMapCompletable { token ->
+        ).toCompletable()
+        /*.flatMapCompletable { token ->
             accountRepository.saveAccount(
                 Account(
                     Account.UNKNOWN_ACCOUNT_USERNAME,
@@ -77,7 +78,7 @@ class AuthenticateUser @Inject constructor(
                         )
                     )
                 }
-        }
+        }*/
     }
 
     data class Params(

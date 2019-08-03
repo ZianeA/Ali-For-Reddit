@@ -13,7 +13,6 @@ import javax.inject.Singleton
     entities = [TokenEntity::class, UserTokenEntity::class, UserlessTokenEntity::class, CurrentToken::class],
     version = 1
 )
-@Singleton
-abstract class RedditDatabase @Inject constructor() : RoomDatabase() {
+abstract class RedditDatabase: RoomDatabase() {
     abstract fun tokenDao(): TokenDao
 }
