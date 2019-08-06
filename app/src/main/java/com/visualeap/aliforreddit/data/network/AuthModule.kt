@@ -1,6 +1,5 @@
-package com.visualeap.aliforreddit.data.repository
+package com.visualeap.aliforreddit.data.network
 
-import com.visualeap.aliforreddit.data.network.AuthService
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable

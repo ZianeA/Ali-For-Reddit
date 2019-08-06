@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
+//TODO these maybe useful when designing TokenRepository unit tests
+/*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class GetUserLessTokenTest {
     private val tokenRepository: TokenRepository = mockk()
@@ -60,4 +62,4 @@ internal class GetUserLessTokenTest {
         //Assert
         assertThat(token).isNull()
     }
-}
+}*/

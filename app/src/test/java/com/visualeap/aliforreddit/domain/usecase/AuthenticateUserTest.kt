@@ -1,14 +1,11 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.SyncSchedulerProvider
-import com.visualeap.aliforreddit.data.network.RedditService
 import com.visualeap.aliforreddit.domain.model.Account
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
+import com.visualeap.aliforreddit.domain.repository.RedditorRepository
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
-import com.visualeap.aliforreddit.util.createAccount
-import com.visualeap.aliforreddit.util.createBasicAuth
-import com.visualeap.aliforreddit.util.createUser
-import com.visualeap.aliforreddit.util.createUserToken
+import com.visualeap.aliforreddit.util.*
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable
@@ -18,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
+import java.io.IOException
 import java.net.MalformedURLException
 import java.sql.SQLException
 import kotlin.IllegalArgumentException
@@ -30,24 +28,13 @@ class AuthenticateUserTest {
         private const val REDIRECT_URL = "https://example.com/path"
         private const val CODE = "CODE"
         private const val STATE = "STATE"
-        private const val GRANT_TYPE = "authorization_code"
     }
 
     private val tokenRepository: TokenRepository = mockk()
-    private val redditService: RedditService = mockk()
-    private val switchLoginAccount: SwitchLoginAccount = mockk()
-    private val basicAuth = createBasicAuth()
     private val accountRepository: AccountRepository = mockk()
+    private val redditorRepository: RedditorRepository = mockk()
     private val authenticateUser =
-        AuthenticateUser(
-            SyncSchedulerProvider(),
-            tokenRepository,
-            redditService,
-            accountRepository,
-            switchLoginAccount,
-            REDIRECT_URL,
-            basicAuth
-        )
+        AuthenticateUser(tokenRepository, accountRepository, redditorRepository)
 
     @BeforeEach
     internal fun setUp() {
@@ -55,33 +42,31 @@ class AuthenticateUserTest {
     }
 
     @Test
-    fun `save the user-token inside account`() {
+    fun `fetch user token`() {
         //Arrange
-        val params = createParams(createCorrectFinalUrl())
-        val token = createUserToken()
-        val account = Account(
-            Account.UNKNOWN_ACCOUNT_USERNAME,
-            token,
-            false,
-            null
-        )
-
-        every {
-            tokenRepository.getUserToken(
-                GRANT_TYPE,
-                CODE,
-                REDIRECT_URL,
-                basicAuth
-            )
-        } returns Single.just(token)
-
+        every { tokenRepository.getUserToken(CODE) } returns Single.just(createUserToken())
+        every { redditorRepository.getCurrentRedditor() } returns Single.just(createRedditor())
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
-        every { redditService.getCurrentUser() } returns Single.just(createUser())
-        every { accountRepository.updateAccount(any()) } returns Completable.complete()
-        every { switchLoginAccount.execute(any()) } returns Completable.complete()
 
         //Act, Assert
-        authenticateUser.execute(params)
+        authenticateUser.execute(createParams())
+            .test()
+            .assertResult()
+    }
+
+    @Test
+    fun `create a new account`() {
+        //Arrange
+        val token = createUserToken(id = 101)
+        val redditor = createRedditor("Special User")
+        val account = createAccount(id = 0, redditor = redditor, token = token)
+
+        every { tokenRepository.getUserToken(any()) } returns Single.just(token)
+        every { redditorRepository.getCurrentRedditor() } returns Single.just(redditor)
+        every { accountRepository.saveAccount(any()) } returns Completable.complete()
+
+        //Act, Assert
+        authenticateUser.execute(createParams())
             .test()
             .assertResult()
 
@@ -89,24 +74,33 @@ class AuthenticateUserTest {
     }
 
     @Test
-    fun `return error when saving account fails`() {
+    fun `return error when creating account fails`() {
         //Arrange
-        val params = createParams(createCorrectFinalUrl())
-        every { tokenRepository.getUserToken(any(), any(), any(), any()) } returns Single.just(
-            createUserToken()
-        )
+        every { tokenRepository.getUserToken(any()) } returns Single.just(createUserToken())
+        every { redditorRepository.getCurrentRedditor() } returns Single.just(createRedditor())
         every { accountRepository.saveAccount(any()) } returns Completable.error(SQLException())
-        every { redditService.getCurrentUser() } returns Single.just(createUser())
-        every { accountRepository.updateAccount(any()) } returns Completable.complete()
-        every { switchLoginAccount.execute(any()) } returns Completable.complete()
 
         //Act, assert
-        authenticateUser.execute(params)
+        authenticateUser.execute(createParams())
             .test()
             .assertFailure(SQLException::class.java)
     }
 
     @Test
+    fun `return error when getting current redditor fails`() {
+        //Arrange
+        every { tokenRepository.getUserToken(any()) } returns Single.just(createUserToken())
+        every { redditorRepository.getCurrentRedditor() } returns Single.error(IOException())
+        every { accountRepository.saveAccount(any()) } returns Completable.complete()
+
+        //Act, assert
+        authenticateUser.execute(createParams())
+            .test()
+            .assertFailure(IOException::class.java)
+    }
+
+    //TODO to be deleted
+    /*@Test
     fun `switch current account to the authenticated user account`() {
         //Arrange
         every {
@@ -121,42 +115,36 @@ class AuthenticateUserTest {
         )
 
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
-        every { switchLoginAccount.execute(any()) } returns Completable.complete()
 
         //Act, assert
         authenticateUser.execute(createParams(createCorrectFinalUrl()))
             .test()
+    }*/
 
-        verify { switchLoginAccount.execute(Account.UNKNOWN_ACCOUNT_USERNAME) }
-    }
-
-    @Test
+    /*@Test
     fun `return error when switching accounts fails`() {
         //Arrange
         every { tokenRepository.getUserToken(any(), any(), any(), any()) } returns Single.just(
             createUserToken()
         )
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
-        every { switchLoginAccount.execute(any()) } returns Completable.error(Throwable())
 
         //Act, Assert
         authenticateUser.execute(createParams(createCorrectFinalUrl()))
             .test()
             .assertFailure(Throwable::class.java)
-    }
+    }*/
 
-    @Test
+    /*@Test
     fun `update account with username and avatar url`() {
         //Arrange
         val user = createUser()
-        val updatedAccount = createAccount(username = user.name, avatarUrl = user.avatarUrl)
+        val updatedAccount = createAccount()
         val params = createParams(createCorrectFinalUrl())
         every { tokenRepository.getUserToken(any(), any(), any(), any()) } returns Single.just(
             createUserToken()
         )
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
-        every { switchLoginAccount.execute(any()) } returns Completable.complete()
-        every { redditService.getCurrentUser() } returns Single.just(user)
         every { accountRepository.updateAccount(any()) } returns Completable.complete()
 
         //Act, assert
@@ -175,15 +163,13 @@ class AuthenticateUserTest {
             createUserToken()
         )
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
-        every { redditService.getCurrentUser() } returns Single.just(createUser())
         every { accountRepository.updateAccount(any()) } returns Completable.error(SQLException())
-        every { switchLoginAccount.execute(any()) } returns Completable.complete()
 
         //Act, assert
         authenticateUser.execute(params)
             .test()
             .assertFailure(SQLException::class.java)
-    }
+    }*/
 
     //TODO handle authentication of an existing user
 
@@ -268,7 +254,8 @@ class AuthenticateUserTest {
             .assertFailure(IllegalStateException::class.java)
     }
 
-    private fun createParams(finalUrl: String) = AuthenticateUser.Params(finalUrl, STATE)
+    private fun createParams(finalUrl: String = createCorrectFinalUrl()) =
+        AuthenticateUser.Params(finalUrl, STATE)
 
     private fun createCorrectFinalUrl(): String {
         return HttpUrl.parse(REDIRECT_URL)!!

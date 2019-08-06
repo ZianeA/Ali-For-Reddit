@@ -8,6 +8,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 //TODO move this logic to TokenRepository. Maybe split this to refresh user-less token and get user-less token
+/*
 @Reusable
 class GetUserLessToken @Inject constructor(
     private val tokenRepository: TokenRepository,
@@ -15,10 +16,12 @@ class GetUserLessToken @Inject constructor(
 ) :
     NonReactiveUseCase<UserlessToken?, String> {
 
-    /**
+    */
+/**
      * @param params The device ID. The ID should be unique per-device.
      * You should retain and re-use the same device_id when renewing your access token
-     */
+     *//*
+
     override fun execute(params: String): UserlessToken? {
         var token: UserlessToken? = null
 
@@ -27,12 +30,10 @@ class GetUserLessToken @Inject constructor(
             GRANT_TYPE,
             params,
             basicAuth
-        ).subscribe({ token = it }, { /*Do nothing on error*/ }).dispose()
+        ).subscribe({ token = it }, { */
+/*Do nothing on error*//*
+ }).dispose()
 
         return token?.copy(deviceId = params)
     }
-
-    companion object {
-        private const val GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client"
-    }
-}
+}*/

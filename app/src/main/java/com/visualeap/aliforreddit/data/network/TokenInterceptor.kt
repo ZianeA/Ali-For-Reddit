@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.data.network
 
+import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.usecase.GetToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import dagger.Reusable
@@ -9,16 +10,19 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TokenInterceptor @Inject constructor(private val getAccessToken: GetToken) :
+class TokenInterceptor @Inject constructor(private val getToken: GetToken) :
     Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        getAccessToken.execute(Unit)?.run {
-            val newRequest = chain.request().newBuilder()
-                .header(HttpHeaders.AUTHORIZATION, "$type $accessToken")
-                .build()
-            return chain.proceed(newRequest)
+        var token: Token? = null
 
-        } ?: return chain.proceed(chain.request())
+        getToken.execute(Unit)
+            .subscribe({ token = it }, { /*on error*/ })
+
+        val safeToken = token ?: return chain.proceed(chain.request())
+        val newRequest = chain.request().newBuilder()
+            .header(HttpHeaders.AUTHORIZATION, "${safeToken.type} ${safeToken.accessToken}")
+            .build()
+        return chain.proceed(newRequest)
     }
 }

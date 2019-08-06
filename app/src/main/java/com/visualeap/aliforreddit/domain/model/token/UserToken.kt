@@ -8,12 +8,12 @@ class UserToken(
     id: Int,
     /*@Json(name = "access_token")*/ accessToken: String,
     /*@Json(name = "token_type")*/ type: String,
-    /*@Json(name = "refresh_token")*/ val refreshToken: String? = null
+    /*@Json(name = "refresh_token")*/ val refreshToken: String
 ) : Token(id, accessToken, type) {
     fun copy(
         id: Int = this.id,
         accessToken: String = this.accessToken,
         type: String = this.type,
-        refreshToken: String? = this.refreshToken
+        refreshToken: String = this.refreshToken
     ) = UserToken(id, accessToken, type, refreshToken)
 }

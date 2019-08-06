@@ -1,13 +1,12 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import com.visualeap.aliforreddit.util.createAccount
-import com.visualeap.aliforreddit.util.createAnonymousAccount
 import com.visualeap.aliforreddit.util.createUserToken
 import com.visualeap.aliforreddit.util.createUserlessToken
 import io.mockk.*
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -18,14 +17,9 @@ import java.sql.SQLException
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class RefreshTokenTest {
     private val tokenRepository: TokenRepository = mockk()
-    private val getCurrentAccount: GetCurrentAccount = mockk()
-    private val getUserLessToken: GetUserLessToken = mockk()
-    private val accountRepository: AccountRepository = mockk(relaxUnitFun = true)
-    private val refreshToken =
-        RefreshToken(tokenRepository, getCurrentAccount, getUserLessToken, accountRepository)
+    private val refreshToken = RefreshToken(tokenRepository)
 
     companion object {
-        private const val GRANT_TYPE = "refresh_token"
         private const val REFRESHED_ACCESS_TOKEN = "ACCESS TOKEN HAS BEEN REFRESHED"
     }
 
@@ -35,54 +29,63 @@ internal class RefreshTokenTest {
     }
 
     @Test
-    fun `refresh and return user token when user is logged in`() {
+    fun `refresh user-token when user is logged in`() {
         //Arrange
-        val storedUserToken = createUserToken()
+        val currentToken = createUserToken()
         val refreshedUserToken =
-            createUserToken(accessToken = REFRESHED_ACCESS_TOKEN, refreshToken = null)
+            createUserToken(accessToken = REFRESHED_ACCESS_TOKEN)
 
-        every { getCurrentAccount.execute(Unit) } returns createAccount(token = storedUserToken)
+        every { tokenRepository.getCurrentToken() } returns Maybe.just(currentToken)
         every {
-            tokenRepository.getRefreshedUserToken(
-                GRANT_TYPE,
-                storedUserToken.refreshToken!!
-            )
+            tokenRepository.refreshUserToken(currentToken.refreshToken)
         } returns Single.just(refreshedUserToken)
-        every { accountRepository.saveAccount(any()) } returns Completable.complete()
 
-        //Act
-        val token = refreshToken.execute(Unit)
-
-        //Assert
-        assertThat(token).isEqualTo(refreshedUserToken)
+        //Act, Assert
+        refreshToken.execute(Unit)
+            .test()
+            .assertResult(refreshedUserToken)
     }
 
     @Test
-    fun `refresh and return user-less token when no user is logged in`() {
+    fun `refresh user-less token when no user is logged in`() {
         //Arrange
-        val storedUserlessToken = createUserlessToken()
+        val currentToken = createUserlessToken()
         val refreshedUserLessToken =
-            createUserlessToken(accessToken = REFRESHED_ACCESS_TOKEN, deviceId = null)
+            createUserlessToken(accessToken = REFRESHED_ACCESS_TOKEN)
 
-        every { getCurrentAccount.execute(Unit) } returns createAnonymousAccount(storedUserlessToken)
-        every { getUserLessToken.execute(storedUserlessToken.deviceId!!) } returns refreshedUserLessToken
-        every { accountRepository.saveAccount(any()) } returns Completable.complete()
+        every { tokenRepository.getCurrentToken() } returns Maybe.just(currentToken)
+        every { tokenRepository.refreshUserLessToken(currentToken.deviceId) } returns Single.just(
+            refreshedUserLessToken
+        )
 
-        //Act
-        val token = refreshToken.execute(Unit)
-
-        //Assert
-        assertThat(token).isEqualTo(refreshedUserLessToken)
+        //Act, Assert
+        refreshToken.execute(Unit)
+            .test()
+            .assertResult(refreshedUserLessToken)
     }
 
     @Test
+    fun `throw exception when no token is currently in use`() {
+        //Arrange
+        every { tokenRepository.getCurrentToken() } returns Maybe.empty()
+
+        //Act, Assert
+        refreshToken.execute(Unit)
+            .test()
+            .assertError(IllegalStateException::class.java)
+    }
+
+    //TODO this should be the token repository responsibility
+    /*@Test
     fun `save user token`() {
         //Arrange
         val refreshedUserToken =
             createUserToken(accessToken = REFRESHED_ACCESS_TOKEN, refreshToken = null)
 
         every { getCurrentAccount.execute(Unit) } returns createAccount()
-        every { tokenRepository.getRefreshedUserToken(any(), any()) } returns Single.just(refreshedUserToken)
+        every { tokenRepository.refreshUserToken(any(), any()) } returns Single.just(
+            refreshedUserToken
+        )
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
 
         //Act
@@ -92,9 +95,9 @@ internal class RefreshTokenTest {
         val updatedAccount =
             createAccount(token = createUserToken(accessToken = refreshedUserToken.accessToken))
         verify { accountRepository.saveAccount(updatedAccount) }
-    }
+    }*/
 
-    @Test
+    /*@Test
     fun `save user-less token`() {
         //Arrange
         val storedUserlessToken = createUserlessToken()
@@ -112,22 +115,22 @@ internal class RefreshTokenTest {
         val updateAccount =
             createAnonymousAccount(createUserlessToken(accessToken = refreshedUserlessToken.accessToken))
         verify { accountRepository.saveAccount(updateAccount) }
-    }
+    }*/
 
-    @Test
+    /*@Test
     fun `throw exception when saving user token fails`() {
         //Arrange
         every { getCurrentAccount.execute(any()) } returns createAccount()
-        every { tokenRepository.getRefreshedUserToken(any(), any()) } returns Single.just(
+        every { tokenRepository.refreshUserToken(any(), any()) } returns Single.just(
             createUserToken()
         )
         every { accountRepository.saveAccount(any()) } returns Completable.error(SQLException())
 
         //Act, assert
         assertThatThrownBy { refreshToken.execute(Unit) }.isInstanceOf(SQLException::class.java)
-    }
+    }*/
 
-    @Test
+    /*@Test
     fun `throw exception when saving user-less token fails`() {
         //Arrange
         every { getCurrentAccount.execute(any()) } returns createAnonymousAccount()
@@ -136,29 +139,30 @@ internal class RefreshTokenTest {
 
         //Act, assert
         assertThatThrownBy { refreshToken.execute(Unit) }.isInstanceOf(SQLException::class.java)
-    }
+    }*/
 
-    @Test
-    fun `not throw exception when user token retrieval fails`() {
+    //TODO remove these as they are deprecated
+/*    @Test
+    fun `not throw exception when user-token retrieval fails`() {
         //Arrange
         every { getCurrentAccount.execute(Unit) } returns createAccount()
-        every { tokenRepository.getRefreshedUserToken(any(), any()) } returns Single.error(Throwable())
+//        every { tokenRepository.refreshUserToken(any(), any()) } returns Single.error(Throwable())
 
         //Act, Assert
         assertThatCode { refreshToken.execute(Unit) }.doesNotThrowAnyException()
-    }
+    }*/
 
-    @Test
+/*    @Test
     fun `not throw exception when user-less token retrieval fails`() {
         //Arrange
-        every { getCurrentAccount.execute(Unit) } returns createAnonymousAccount()
+//        every { getCurrentAccount.execute(Unit) } returns createAnonymousAccount()
         every { getUserLessToken.execute(any()) } returns null
 
         //Act, Assert
         assertThatCode { refreshToken.execute(Unit) }.doesNotThrowAnyException()
-    }
+    }*/
 
-    @Test
+/*    @Test
     fun `throw exception when refresh token is null`() {
         //Arrange
         val storedUserToken = createUserToken(refreshToken = null)
@@ -166,9 +170,9 @@ internal class RefreshTokenTest {
 
         //Act, Assert
         assertThatIllegalStateException().isThrownBy { refreshToken.execute(Unit) }
-    }
+    }*/
 
-    @Test
+/*    @Test
     fun `throw exception when refresh token is empty`() {
         //Arrange
         val storedUserToken = createUserToken(refreshToken = "")
@@ -176,9 +180,9 @@ internal class RefreshTokenTest {
 
         //Act, Assert
         assertThatIllegalStateException().isThrownBy { refreshToken.execute(Unit) }
-    }
+    }*/
 
-    @Test
+/*    @Test
     fun `throw exception when device id is null`() {
         //Arrange
         val storedUserlessToken = createUserlessToken(deviceId = null)
@@ -186,9 +190,9 @@ internal class RefreshTokenTest {
 
         //Act, Assert
         assertThatIllegalStateException().isThrownBy { refreshToken.execute(Unit) }
-    }
+    }*/
 
-    @Test
+/*    @Test
     fun `throw exception when device id is empty`() {
         //Arrange
         val storedUserlessToken = createUserlessToken(deviceId = "")
@@ -196,6 +200,6 @@ internal class RefreshTokenTest {
 
         //Act, Assert
         assertThatIllegalStateException().isThrownBy { refreshToken.execute(Unit) }
-    }
+    }*/
 }
 

@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.presentation.login
 
+import com.visualeap.aliforreddit.SyncSchedulerProvider
 import com.visualeap.aliforreddit.domain.usecase.*
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -35,7 +36,8 @@ class LoginPresenterTest {
         getUniqueString,
         getAuthUrl,
         isFinalRedirectUrl,
-        authenticateUser
+        authenticateUser,
+        SyncSchedulerProvider()
     )
 
     @BeforeEach

@@ -1,7 +1,7 @@
 package com.visualeap.aliforreddit.util
 
 import com.visualeap.aliforreddit.domain.model.Account
-import com.visualeap.aliforreddit.domain.model.User
+import com.visualeap.aliforreddit.domain.model.Redditor
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
@@ -13,39 +13,32 @@ import okhttp3.Response
 val ACCESS_TOKEN = "ACCESS TOKEN"
 val TOKEN_TYPE = "bearer"
 val REFRESH_TOKEN = "REFRESH TOKEN"
-val DEVICE_ID = "REFRESH TOKEN"
+val DEVICE_ID = "DEVICE ID"
 
 fun createUserToken(
     id: Int = 1,
     accessToken: String = ACCESS_TOKEN,
     type: String = TOKEN_TYPE,
-    refreshToken: String? = REFRESH_TOKEN
+    refreshToken: String = REFRESH_TOKEN
 ) = UserToken(id, accessToken, type, refreshToken)
 
 fun createUserlessToken(
     id: Int = 1,
     accessToken: String = ACCESS_TOKEN,
     type: String = TOKEN_TYPE,
-    deviceId: String? = DEVICE_ID
+    deviceId: String = DEVICE_ID
 ) = UserlessToken(id, accessToken, type, deviceId)
 
 fun createToken(id: Int = 1, accessToken: String = ACCESS_TOKEN, type: String = TOKEN_TYPE): Token =
     Token(id, accessToken, type)
 
 fun createAccount(
-    username: String = "Test",
-    token: Token = createUserToken(),
-    isLoggedIn: Boolean = true,
-    avatarUrl: String? = "https://www.example.com/test.png"
-) = Account(username, token, isLoggedIn, avatarUrl)
+    id: Int = 1,
+    redditor: Redditor = createRedditor(),
+    token: Token = createToken()
+) = Account(id, redditor, token)
 
-fun createUser(name: String = "Test", avatarUrl: String = "https://example.com/test.png"): User =
-    User(name, avatarUrl)
-
-fun createAnonymousAccount(
-    token: Token = createUserlessToken(),
-    isLoggedIn: Boolean = true
-) = createAccount("Anonymous", token, isLoggedIn, null)
+fun createRedditor(username: String = "TestUser") = Redditor(username)
 
 fun createBasicAuth(clientId: String = "CLIENT ID"): String = Credentials.basic(clientId, "")
 

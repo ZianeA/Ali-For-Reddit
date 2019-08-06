@@ -1,3 +1,4 @@
+/*
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.SyncSchedulerProvider
@@ -180,4 +181,4 @@ internal class SwitchLoginAccountTest {
             .test()
             .assertFailure(SQLException::class.java)
     }
-}
+}*/

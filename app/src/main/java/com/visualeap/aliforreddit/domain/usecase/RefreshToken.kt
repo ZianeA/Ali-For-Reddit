@@ -6,53 +6,37 @@ import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
-import com.visualeap.aliforreddit.domain.usecase.base.NonReactiveUseCase
+import com.visualeap.aliforreddit.domain.usecase.base.SingleUseCase
 import dagger.Reusable
+import io.reactivex.Single
 import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 import javax.inject.Inject
+import kotlin.IllegalStateException
 
 @Reusable
-class RefreshToken @Inject constructor(
-    private val tokenRepository: TokenRepository,
-    private val getCurrentAccount: GetCurrentAccount,
-    private val getUserLessToken: GetUserLessToken,
-    private val accountRepository: AccountRepository
-) :
-    NonReactiveUseCase<Token?, Unit> {
+class RefreshToken @Inject constructor(private val tokenRepository: TokenRepository) :
+    SingleUseCase<Token, Unit> {
 
-    override fun execute(params: Unit): Token? {
-        var newToken: Token? = null
+    override fun execute(params: Unit): Single<Token> {
+        return tokenRepository.getCurrentToken()
+            .doOnComplete { throw IllegalStateException("There must exist a token") }
+            .flatMapSingle { currentToken ->
+                if (currentToken is UserToken) {
+                    val refreshToken = currentToken.refreshToken
+//                    if (refreshToken.isNullOrBlank()) throw IllegalStateException("Refresh token cannot be null or empty")
 
-        val currentAccount =
-            getCurrentAccount.execute(Unit) ?: return null //this is probably an illegal state
-        val storedToken = currentAccount.token
+                    tokenRepository.refreshUserToken(refreshToken)
+                } else {
+                    val deviceId = (currentToken as UserlessToken).deviceId
+//                    if (deviceId.isNullOrBlank()) throw IllegalStateException("Device ID cannot be null or empty")
 
-        if (storedToken is UserToken) {
-            val refreshToken = storedToken.refreshToken
-            if (refreshToken.isNullOrBlank()) throw IllegalStateException("Refresh token cannot be null or empty")
-
-            //Dispose immediately since it's a synchronous call
-            tokenRepository.getRefreshedUserToken(GRANT_TYPE, refreshToken)
-                .subscribe({ newToken = it }, { /*do nothing on error*/ })
-                .dispose()
-
-            newToken?.let { saveToken(currentAccount, storedToken, it as UserToken) }
-
-        } else {
-            val deviceId = (storedToken as UserlessToken).deviceId
-            if (deviceId.isNullOrBlank()) throw IllegalStateException("Device ID cannot be null or empty")
-
-            getUserLessToken.execute(deviceId).let {
-                newToken = it
-                if (it != null) saveToken(currentAccount, storedToken, it)
+                    tokenRepository.refreshUserLessToken(deviceId)
+                }
             }
-        }
-
-        return newToken
     }
 
-    private fun saveToken(
+    //TODO caching token is the responsibility of the repository
+    /*private fun saveToken(
         currentAccount: Account,
         currentToken: Token,
         newToken: Token
@@ -67,13 +51,9 @@ class RefreshToken @Inject constructor(
         //It's not possible to test or try/catch exceptions thrown inside OnError
         var throwable: Throwable? = null
         accountRepository.saveAccount(currentAccount.copy(token = token))
-            .subscribe({ /*do nothing on complete*/ }, { throwable = it })
+            .subscribe({ *//*do nothing on complete*//* }, { throwable = it })
             .dispose()
 
         throwable?.let { throw it }
-    }
-
-    companion object {
-        private const val GRANT_TYPE = "refresh_token"
-    }
+    }*/
 }

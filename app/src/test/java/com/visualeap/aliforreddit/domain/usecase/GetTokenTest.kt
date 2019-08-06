@@ -7,6 +7,7 @@ import com.visualeap.aliforreddit.util.*
 import io.mockk.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Single
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -16,8 +17,7 @@ import java.sql.SQLException
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GetTokenTest {
     private val tokenRepository: TokenRepository = mockk()
-    private val getUserLessToken: GetUserLessToken = mockk()
-    private val getToken = GetToken(tokenRepository, getUserLessToken)
+    private val getToken = GetToken(tokenRepository)
 
     @BeforeEach
     internal fun setUp() {
@@ -29,21 +29,12 @@ class GetTokenTest {
         //Arrange
         val expectedToken = createToken()
         every { tokenRepository.getCurrentToken() } returns Maybe.just(expectedToken)
-
-        //Act
-        val token = getToken.execute(Unit)
-
-        //Assert
-        assertThat(token).isEqualTo(expectedToken)
-    }
-
-    @Test
-    fun `throw exception when getting current token fails`() {
-        //Arrange
-        every { tokenRepository.getCurrentToken() } returns Maybe.error(SQLException())
+        every { tokenRepository.getUserLessToken(any()) } returns Single.just(createUserlessToken())
 
         //Act, Assert
-        assertThatThrownBy { getToken.execute(Unit) }.isInstanceOf(SQLException::class.java)
+        getToken.execute(Unit)
+            .test()
+            .assertResult(expectedToken)
     }
 
     @Test
@@ -51,23 +42,12 @@ class GetTokenTest {
         //Arrange
         val expectedToken = createUserlessToken()
         every { tokenRepository.getCurrentToken() } returns Maybe.empty()
-        every { getUserLessToken.execute(any()) } returns expectedToken
-
-        //Act
-        val token = getToken.execute(Unit)
-
-        //Assert
-        assertThat(token).isEqualToIgnoringGivenFields(expectedToken, "deviceId")
-    }
-
-    @Test
-    fun `not throw an exception when getting user-less token fails`() {
-        //Arrange
-        every { tokenRepository.getCurrentToken() } returns Maybe.empty()
-        every { getUserLessToken.execute(any()) } returns null
+        every { tokenRepository.getUserLessToken(any()) } returns Single.just(expectedToken)
 
         //Act, Assert
-        assertThatCode { getToken.execute(Unit) }.doesNotThrowAnyException()
+        getToken.execute(Unit)
+            .test()
+            .assertResult(expectedToken)
     }
 
     //TODO Move this test to tokenRepository, because it's the one responsible for caching tokens

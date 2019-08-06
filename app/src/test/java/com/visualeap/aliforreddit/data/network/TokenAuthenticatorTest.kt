@@ -8,6 +8,7 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import io.reactivex.Single
 import okhttp3.Request
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -34,7 +35,7 @@ class TokenAuthenticatorTest {
             //Arrange
             val response = createResponse()
             val token = createToken()
-            every { refreshToken.execute(Unit) } returns token
+            every { refreshToken.execute(Unit) } returns Single.just(token)
 
             //Act
             val request = authenticator.authenticate(null, response)
@@ -50,7 +51,7 @@ class TokenAuthenticatorTest {
             //Arrange
             var response = createResponse()
             var request: Request? = null
-            every { refreshToken.execute(Unit) } returns createToken()
+            every { refreshToken.execute(Unit) } returns Single.just(createToken())
 
             //Act
             repeat(2) {
@@ -69,7 +70,7 @@ class TokenAuthenticatorTest {
             //Arrange
             var response = createResponse()
             var request: Request? = null
-            every { refreshToken.execute(Unit) } returns createToken()
+            every { refreshToken.execute(Unit) } returns Single.just(createToken())
 
             //Act
             repeat(3) {
@@ -87,7 +88,7 @@ class TokenAuthenticatorTest {
         fun `return null when new token is null`() {
             //Arrange
             val response = createResponse()
-            every { refreshToken.execute(Unit) } returns null
+            every { refreshToken.execute(Unit) } returns Single.error(Throwable())
 
             //Act
             val request = authenticator.authenticate(null, response)

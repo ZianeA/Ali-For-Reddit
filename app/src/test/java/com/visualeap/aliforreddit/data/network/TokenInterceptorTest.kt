@@ -9,6 +9,7 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import io.reactivex.Single
 import okhttp3.Interceptor
 import okhttp3.Request
 import org.assertj.core.api.Assertions.*
@@ -21,8 +22,8 @@ import org.junit.jupiter.api.TestInstance
 class TokenInterceptorTest {
 
     private val chain: Interceptor.Chain = mockk()
-    private val getAccessToken: GetToken = mockk()
-    private val tokenInterceptor = TokenInterceptor(getAccessToken)
+    private val getToken: GetToken = mockk()
+    private val tokenInterceptor = TokenInterceptor(getToken)
 
     @BeforeEach
     internal fun setUp() {
@@ -40,7 +41,7 @@ class TokenInterceptorTest {
 
             every { chain.request() } returns request
             every { chain.proceed(capture(requestSlot)) } answers { createResponse(requestSlot.captured) }
-            every { getAccessToken.execute(Unit) } returns token
+            every { getToken.execute(Unit) } returns Single.just(token)
 
             //Act
             val response = tokenInterceptor.intercept(chain)
@@ -57,7 +58,7 @@ class TokenInterceptorTest {
             val requestSlot = slot<Request>()
             every { chain.request() } returns request
             every { chain.proceed(capture(requestSlot)) } answers { createResponse(requestSlot.captured) }
-            every { getAccessToken.execute(Unit) } returns null
+            every { getToken.execute(Unit) } returns Single.error(Throwable())
 
             //Act
             val response = tokenInterceptor.intercept(chain)
