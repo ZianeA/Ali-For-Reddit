@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @Reusable
-class GetAuthUrl @Inject constructor(
+class BuildAuthUrl @Inject constructor(
     @Named("clientId") private val clientId: String,
     @Named("redirectUrl") private val redirectUrl: String
 ) :

@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -12,8 +11,8 @@ internal class GetUniqueStringTest {
     @Test
     fun `return a unique string`() {
         //Act
-        val uniqueString = GetUniqueString().execute(Unit)
-        val uniqueString2 = GetUniqueString().execute(Unit)
+        val uniqueString = GenerateAuthCode().execute(Unit)
+        val uniqueString2 = GenerateAuthCode().execute(Unit)
 
         //Assert
         assertThat(uniqueString).isNotEmpty().isNotEqualTo(uniqueString2)
@@ -22,7 +21,7 @@ internal class GetUniqueStringTest {
     @Test
     fun `return same string for the same instance`() {
         //Arrange
-        val getUniqueString = GetUniqueString()
+        val getUniqueString = GenerateAuthCode()
 
         //Act
         val uniqueString = getUniqueString.execute(Unit)

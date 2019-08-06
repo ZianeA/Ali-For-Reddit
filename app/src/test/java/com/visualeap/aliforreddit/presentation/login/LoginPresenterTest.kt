@@ -2,11 +2,8 @@ package com.visualeap.aliforreddit.presentation.login
 
 import com.visualeap.aliforreddit.SyncSchedulerProvider
 import com.visualeap.aliforreddit.domain.usecase.*
-import io.mockk.clearAllMocks
-import io.mockk.every
+import io.mockk.*
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -26,18 +23,17 @@ class LoginPresenterTest {
     }
 
     private val view: LoginView = mockk(relaxed = true)
-    private val getUniqueString: GetUniqueString = mockk(relaxed = true)
-    private val getAuthUrl: GetAuthUrl = mockk()
-    private val isFinalRedirectUrl: IsFinalRedirectUrl = mockk()
+    private val generateAuthCode: GenerateAuthCode = mockk(relaxed = true)
+    private val buildAuthUrl: BuildAuthUrl = mockk()
     private val authenticateUser: AuthenticateUser = mockk(relaxed = true)
 
     private val presenter = LoginPresenter(
         view,
-        getUniqueString,
-        getAuthUrl,
-        isFinalRedirectUrl,
+        generateAuthCode,
+        buildAuthUrl,
         authenticateUser,
-        SyncSchedulerProvider()
+        SyncSchedulerProvider(),
+        REDIRECT_URL
     )
 
     @BeforeEach
@@ -51,8 +47,8 @@ class LoginPresenterTest {
         @Test
         fun `pass auth url to view`() {
             //Arrange
-            every { getUniqueString.execute(Unit) } returns STATE
-            every { getAuthUrl.execute(STATE) } returns AUTH_URL
+            every { generateAuthCode.execute(Unit) } returns STATE
+            every { buildAuthUrl.execute(STATE) } returns AUTH_URL
 
             //Act
             presenter.start()
@@ -66,15 +62,39 @@ class LoginPresenterTest {
     inner class OnPageStarted {
 
         @Test
-        fun `hide login ui when authorization is complete`() {
-            //Arrange
-            every { isFinalRedirectUrl.execute(FINAL_REDIRECT_URL) } returns true
-
+        fun `hide login ui when url is valid`() {
             //Act
             presenter.onPageStarted(FINAL_REDIRECT_URL)
 
             //Assert
             verify { view.hideLoginPage() }
+        }
+
+        @Test
+        fun `keep login ui when url doesn't contain the redirect url`() {
+            //Act
+            presenter.onPageStarted("https://invalid.com")
+
+            //Assert
+            verify { view wasNot Called}
+        }
+
+        @Test
+        fun `keep login ui when url doesn't contain any query`() {
+            //Act
+            presenter.onPageStarted(REDIRECT_URL)
+
+            //Assert
+            verify { view wasNot Called}
+        }
+
+        @Test
+        fun `keep login ui when url is malformed`() {
+            //Act
+            presenter.onPageStarted("this is a malformed URL $REDIRECT_URL")
+
+            //Assert
+            verify { view wasNot Called}
         }
     }
 }

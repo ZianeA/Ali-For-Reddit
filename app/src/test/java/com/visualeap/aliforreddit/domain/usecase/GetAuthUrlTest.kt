@@ -12,7 +12,7 @@ class GetAuthUrlTest {
         private const val CLIENT_ID = "CLIENT_ID"
     }
 
-    private val getAuthenticationUrl = GetAuthUrl(CLIENT_ID, REDIRECT_URL)
+    private val getAuthenticationUrl = BuildAuthUrl(CLIENT_ID, REDIRECT_URL)
 
     @Test
     fun `should return correct authentication url`() {
