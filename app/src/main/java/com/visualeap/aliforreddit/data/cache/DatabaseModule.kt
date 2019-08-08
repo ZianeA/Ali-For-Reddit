@@ -3,6 +3,7 @@ package com.visualeap.aliforreddit.data.cache
 import dagger.Module
 import androidx.room.Room
 import android.app.Application
+import com.visualeap.aliforreddit.data.repository.token.TokenLocalSource
 import dagger.Provides
 import javax.inject.Singleton
 
@@ -18,7 +19,7 @@ class DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideTokenDao(database: RedditDatabase): TokenDao {
+    fun provideLocalSource(database: RedditDatabase): TokenLocalSource {
         return database.tokenDao()
     }
 }

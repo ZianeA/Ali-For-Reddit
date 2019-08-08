@@ -1,17 +1,5 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.repository.TokenRepository
-import com.visualeap.aliforreddit.util.createBasicAuth
-import com.visualeap.aliforreddit.util.createUserlessToken
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.reactivex.Single
-import org.assertj.core.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-
 //TODO these maybe useful when designing TokenRepository unit tests
 /*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

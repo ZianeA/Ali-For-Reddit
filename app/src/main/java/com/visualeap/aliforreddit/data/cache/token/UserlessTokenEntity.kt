@@ -1,8 +1,7 @@
-package com.visualeap.aliforreddit.data.cache.model
+package com.visualeap.aliforreddit.data.cache.token
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -10,8 +9,8 @@ import androidx.room.PrimaryKey
         entity = TokenEntity::class,
         parentColumns = ["id"],
         childColumns = ["id"],
-        onDelete = CASCADE,
-        onUpdate = CASCADE
+        onDelete = ForeignKey.CASCADE,
+        onUpdate = ForeignKey.CASCADE
     )]
 )
-data class UserTokenEntity(@PrimaryKey val id: Int, val refreshToken: String)
+data class UserlessTokenEntity(@PrimaryKey val id: Int, val deviceId: String)

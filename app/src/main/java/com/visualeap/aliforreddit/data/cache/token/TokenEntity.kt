@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data.cache.model
+package com.visualeap.aliforreddit.data.cache.token
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

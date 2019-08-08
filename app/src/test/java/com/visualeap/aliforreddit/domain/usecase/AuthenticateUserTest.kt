@@ -1,7 +1,5 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.SyncSchedulerProvider
-import com.visualeap.aliforreddit.domain.model.Account
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.domain.repository.RedditorRepository
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
@@ -25,8 +23,6 @@ import kotlin.IllegalArgumentException
 class AuthenticateUserTest {
 
     companion object {
-        private const val REDIRECT_URL = "https://example.com/path"
-        private const val CODE = "CODE"
         private const val STATE = "STATE"
     }
 
@@ -45,6 +41,7 @@ class AuthenticateUserTest {
     fun `fetch user token`() {
         //Arrange
         every { tokenRepository.getUserToken(CODE) } returns Single.just(createUserToken())
+        every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
         every { redditorRepository.getCurrentRedditor() } returns Single.just(createRedditor())
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
 
@@ -55,6 +52,35 @@ class AuthenticateUserTest {
     }
 
     @Test
+    fun `set the fetched user token as the current token`() {
+        //Arrange
+        val token = createUserToken()
+        every { tokenRepository.getUserToken(CODE) } returns Single.just(token)
+        every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
+
+        //Act, Assert
+        authenticateUser.execute(createParams())
+            .test()
+
+        verify { tokenRepository.setCurrentToken(token) }
+    }
+
+    @Test
+    fun `return error when setting current token fails`() {
+        //Arrange
+        val token = createUserToken()
+        every { tokenRepository.getUserToken(CODE) } returns Single.just(token)
+        every { tokenRepository.setCurrentToken(any()) } returns Completable.error(SQLException())
+        every { redditorRepository.getCurrentRedditor() } returns Single.just(createRedditor())
+        every { accountRepository.saveAccount(any()) } returns Completable.complete()
+
+        //Act, Assert
+        authenticateUser.execute(createParams())
+            .test()
+            .assertFailure(SQLException::class.java)
+    }
+
+    @Test
     fun `create a new account`() {
         //Arrange
         val token = createUserToken(id = 101)
@@ -62,13 +88,13 @@ class AuthenticateUserTest {
         val account = createAccount(id = 0, redditor = redditor, token = token)
 
         every { tokenRepository.getUserToken(any()) } returns Single.just(token)
+        every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
         every { redditorRepository.getCurrentRedditor() } returns Single.just(redditor)
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
 
         //Act, Assert
         authenticateUser.execute(createParams())
             .test()
-            .assertResult()
 
         verify { accountRepository.saveAccount(account) }
     }
@@ -77,6 +103,7 @@ class AuthenticateUserTest {
     fun `return error when creating account fails`() {
         //Arrange
         every { tokenRepository.getUserToken(any()) } returns Single.just(createUserToken())
+        every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
         every { redditorRepository.getCurrentRedditor() } returns Single.just(createRedditor())
         every { accountRepository.saveAccount(any()) } returns Completable.error(SQLException())
 
@@ -90,6 +117,7 @@ class AuthenticateUserTest {
     fun `return error when getting current redditor fails`() {
         //Arrange
         every { tokenRepository.getUserToken(any()) } returns Single.just(createUserToken())
+        every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
         every { redditorRepository.getCurrentRedditor() } returns Single.error(IOException())
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
 

@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.presentation.di
 
+import android.app.Application
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.presentation.AliForRedditApp
 import dagger.Module
@@ -15,12 +16,12 @@ class AppModule {
     @Reusable
     @Provides
     @Named("clientId")
-    fun provideClientId(app: AliForRedditApp): String = app.getString(R.string.client_id)
+    fun provideClientId(app: Application): String = app.getString(R.string.client_id)
 
     @Reusable
     @Provides
     @Named("redirectUrl")
-    fun provideRedirectUrl(app: AliForRedditApp): String = app.getString(R.string.redirect_url)
+    fun provideRedirectUrl(app: Application): String = app.getString(R.string.redirect_url)
 
     @Reusable
     @Provides

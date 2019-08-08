@@ -22,10 +22,7 @@ class RefreshToken @Inject constructor(private val tokenRepository: TokenReposit
             .doOnComplete { throw IllegalStateException("There must exist a token") }
             .flatMapSingle { currentToken ->
                 if (currentToken is UserToken) {
-                    val refreshToken = currentToken.refreshToken
-//                    if (refreshToken.isNullOrBlank()) throw IllegalStateException("Refresh token cannot be null or empty")
-
-                    tokenRepository.refreshUserToken(refreshToken)
+                    tokenRepository.refreshUserToken(currentToken.id, currentToken.refreshToken)
                 } else {
                     val deviceId = (currentToken as UserlessToken).deviceId
 //                    if (deviceId.isNullOrBlank()) throw IllegalStateException("Device ID cannot be null or empty")

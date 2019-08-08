@@ -1,5 +1,7 @@
 package com.visualeap.aliforreddit.data.network
 
+import com.visualeap.aliforreddit.data.network.token.TokenService
+import com.visualeap.aliforreddit.data.repository.token.TokenRemoteSource
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -42,6 +44,10 @@ class NetworkModule {
     @Provides
     fun provideRedditService(@Named("retrofit") retrofit: Retrofit): RedditService =
         retrofit.create<RedditService>(RedditService::class.java)
+
+    @Provides
+    fun provideTokenRemoteSource(tokenService: TokenService): TokenRemoteSource =
+        tokenService
 
     companion object {
         private const val BASE_URL = "https://oauth.reddit.com/"

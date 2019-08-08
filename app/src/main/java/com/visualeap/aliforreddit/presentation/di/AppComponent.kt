@@ -1,5 +1,7 @@
 package com.visualeap.aliforreddit.presentation.di
 
+import android.app.Application
+import com.visualeap.aliforreddit.data.cache.DatabaseModule
 import com.visualeap.aliforreddit.data.network.NetworkModule
 import com.visualeap.aliforreddit.presentation.AliForRedditApp
 import com.visualeap.aliforreddit.presentation.util.SchedulerProviderModule
@@ -14,13 +16,13 @@ import javax.inject.Singleton
 @Component(
     modules = [AndroidSupportInjectionModule::class, ActivityBindingModule::class,
         SchedulerProviderModule::class, RepositoryModule::class, AuthModule::class,
-        NetworkModule::class, AppModule::class]
+        NetworkModule::class, AppModule::class, DatabaseModule::class]
 )
 interface AppComponent {
     fun inject(application: AliForRedditApp)
 
     @Component.Factory
     interface Factory {
-        fun create(@BindsInstance app: AliForRedditApp): AppComponent
+        fun create(@BindsInstance app: Application): AppComponent
     }
 }

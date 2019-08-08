@@ -14,6 +14,7 @@ import java.net.MalformedURLException
 import javax.inject.Inject
 import javax.inject.Named
 
+//TODO After fetching token set as the current token by calling the TokenRepository's setCurrentToken method.
 @Reusable
 class AuthenticateUser @Inject constructor(
     private val tokenRepository: TokenRepository,
@@ -40,10 +41,11 @@ class AuthenticateUser @Inject constructor(
         val code = parsedFinalUrl.queryParameter("code")
             ?: return Completable.error(IllegalArgumentException("Final redirect URL did not contain the 'code' query parameter"))
 
-       //Fetch user token, and use it to fetch current redditor. Use both token and redditor to create a new Account.
+        //Fetch user token, and use it to fetch current redditor. Use both token and redditor to create a new Account.
         return tokenRepository.getUserToken(code)
             .flatMapCompletable { token ->
-                redditorRepository.getCurrentRedditor()
+                tokenRepository.setCurrentToken(token)
+                    .andThen(redditorRepository.getCurrentRedditor())
                     .flatMapCompletable { redditor ->
                         accountRepository.saveAccount(
                             Account(

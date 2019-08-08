@@ -11,11 +11,13 @@ import io.reactivex.Single
 interface TokenRepository {
     fun getUserToken(code: String): Single<UserToken>
 
-    fun refreshUserToken(refreshToken: String): Single<UserToken>
+    fun refreshUserToken(tokenId: Int, refreshToken: String): Single<UserToken>
 
     fun getUserLessToken(deviceId: String): Single<UserlessToken>
 
     fun refreshUserLessToken(deviceId: String): Single<UserlessToken>
 
     fun getCurrentToken(): Maybe<Token>
+
+    fun setCurrentToken(token: Token): Completable
 }

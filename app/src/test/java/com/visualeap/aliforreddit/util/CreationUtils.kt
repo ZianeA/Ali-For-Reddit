@@ -10,30 +10,34 @@ import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 
-val ACCESS_TOKEN = "ACCESS TOKEN"
-val TOKEN_TYPE = "bearer"
-val REFRESH_TOKEN = "REFRESH TOKEN"
-val DEVICE_ID = "DEVICE ID"
+const val ACCESS_TOKEN = "ACCESS TOKEN"
+const val TOKEN_TYPE = "bearer"
+const val REFRESH_TOKEN = "REFRESH TOKEN"
+const val DEVICE_ID = "DEVICE ID"
+const val REDIRECT_URL = "https://example.com/path"
+const val CODE = "CODE"
+const val ID = 101
+const val NOT_SET_ROW_ID = 0
 
 fun createUserToken(
-    id: Int = 1,
+    id: Int = ID,
     accessToken: String = ACCESS_TOKEN,
     type: String = TOKEN_TYPE,
     refreshToken: String = REFRESH_TOKEN
 ) = UserToken(id, accessToken, type, refreshToken)
 
 fun createUserlessToken(
-    id: Int = 1,
+    id: Int = ID,
     accessToken: String = ACCESS_TOKEN,
     type: String = TOKEN_TYPE,
     deviceId: String = DEVICE_ID
 ) = UserlessToken(id, accessToken, type, deviceId)
 
-fun createToken(id: Int = 1, accessToken: String = ACCESS_TOKEN, type: String = TOKEN_TYPE): Token =
+fun createToken(id: Int = ID, accessToken: String = ACCESS_TOKEN, type: String = TOKEN_TYPE): Token =
     Token(id, accessToken, type)
 
 fun createAccount(
-    id: Int = 1,
+    id: Int = ID,
     redditor: Redditor = createRedditor(),
     token: Token = createToken()
 ) = Account(id, redditor, token)

@@ -1,18 +1,14 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
-import com.visualeap.aliforreddit.util.createAccount
 import com.visualeap.aliforreddit.util.createUserToken
 import com.visualeap.aliforreddit.util.createUserlessToken
 import io.mockk.*
-import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.sql.SQLException
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class RefreshTokenTest {
@@ -37,7 +33,7 @@ internal class RefreshTokenTest {
 
         every { tokenRepository.getCurrentToken() } returns Maybe.just(currentToken)
         every {
-            tokenRepository.refreshUserToken(currentToken.refreshToken)
+            tokenRepository.refreshUserToken(currentToken.id, currentToken.refreshToken)
         } returns Single.just(refreshedUserToken)
 
         //Act, Assert

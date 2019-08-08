@@ -12,6 +12,7 @@ import io.reactivex.Single
 import java.util.*
 import javax.inject.Inject
 
+//TODO After fetching token set as the current token by calling the TokenRepository's setCurrentToken method.
 @Reusable
 class GetToken @Inject constructor(private val tokenRepository: TokenRepository) :
     SingleUseCase<Token, Unit> {
@@ -21,7 +22,11 @@ class GetToken @Inject constructor(private val tokenRepository: TokenRepository)
             .switchIfEmpty(
                 //This is "probably" the first app launch. We should just get the user-less token.
                 tokenRepository.getUserLessToken(generateUniqueId())
-            )
+            ).flatMap {
+                tokenRepository.setCurrentToken(it)
+                    .andThen(tokenRepository.getCurrentToken())
+                    .toSingle()
+            }
     }
 
     private fun generateUniqueId() = UUID.randomUUID().toString()
