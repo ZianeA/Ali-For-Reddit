@@ -1,10 +1,11 @@
 package com.visualeap.aliforreddit.domain.model
 
 import com.visualeap.aliforreddit.domain.model.token.Token
+import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 
 data class Account(
     val id: Int,
     val redditor: Redditor,
-    val token: Token
+    val token: UserToken
 )
