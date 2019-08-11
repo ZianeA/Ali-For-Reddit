@@ -17,8 +17,6 @@ import javax.inject.Singleton
 class TokenDataRepository @Inject constructor(
     private val remoteSource: TokenRemoteSource,
     private val localSource: TokenLocalSource
-    /*@Named("redirectUrl") private val redirectUrl: String,
-    @Named("basicAuth") private val basicAuth: String*/
 ) :
     TokenRepository {
     override fun setCurrentToken(token: Token): Completable {
@@ -45,7 +43,7 @@ class TokenDataRepository @Inject constructor(
             }
     }
 
-    override fun getUserLessToken(deviceId: String): Single<UserlessToken> {
+    override fun getUserlessToken(deviceId: String): Single<UserlessToken> {
         return remoteSource.getUserlessToken(deviceId)
             .map { UserlessToken(NOT_SET_ROW_ID, it.accessToken, it.type, deviceId) }
             .flatMap {
@@ -59,12 +57,12 @@ class TokenDataRepository @Inject constructor(
             .map {
                 UserToken(tokenId, it.accessToken, it.type, refreshToken)
             }.flatMap {
-                val rowId = localSource.updateUserToken(it)
-                localSource.getUserToken(rowId)
+                localSource.updateUserToken(it)
+                localSource.getUserToken(it.id)
             }
     }
 
-    override fun refreshUserLessToken(deviceId: String): Single<UserlessToken> {
+    override fun refreshUserlessToken(deviceId: String): Single<UserlessToken> {
         return remoteSource.getUserlessToken(deviceId)
             .map { UserlessToken(1, it.accessToken, it.type, deviceId) }
             .flatMap {
@@ -72,12 +70,4 @@ class TokenDataRepository @Inject constructor(
                 localSource.getUserlessToken()
             }
     }
-
-    //TODO move this to RemoteDataSource impl
-/*    companion object {
-        private const val USER_TOKEN_GRANT_TYPE = "authorization_code"
-        private const val REFRESH_TOKEN_GRANT_TYPE = "refresh_token"
-        private const val USERLESS_TOKEN_GRANT_TYPE =
-            "https://oauth.reddit.com/grants/installed_client"
-    }*/
 }

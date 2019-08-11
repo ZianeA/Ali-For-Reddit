@@ -1,15 +1,12 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.model.Account
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
-import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import com.visualeap.aliforreddit.domain.usecase.base.SingleUseCase
 import dagger.Reusable
 import io.reactivex.Single
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 import kotlin.IllegalStateException
 
@@ -27,7 +24,7 @@ class RefreshToken @Inject constructor(private val tokenRepository: TokenReposit
                     val deviceId = (currentToken as UserlessToken).deviceId
 //                    if (deviceId.isNullOrBlank()) throw IllegalStateException("Device ID cannot be null or empty")
 
-                    tokenRepository.refreshUserLessToken(deviceId)
+                    tokenRepository.refreshUserlessToken(deviceId)
                 }
             }
     }

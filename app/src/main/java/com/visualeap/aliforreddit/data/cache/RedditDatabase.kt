@@ -15,6 +15,7 @@ import com.visualeap.aliforreddit.data.cache.token.UserlessTokenEntity
 abstract class RedditDatabase : RoomDatabase() {
     companion object {
         const val NOT_SET_ROW_ID = 0
+        const val SINGLE_RECORD_ID = 1
     }
 
     abstract fun tokenDao(): TokenDao

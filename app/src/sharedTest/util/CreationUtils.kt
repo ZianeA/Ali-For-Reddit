@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.util
+package util
 
 import com.visualeap.aliforreddit.domain.model.Account
 import com.visualeap.aliforreddit.domain.model.Redditor

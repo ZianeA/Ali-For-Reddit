@@ -6,7 +6,7 @@ package com.visualeap.aliforreddit.domain.usecase
 internal class GetUserLessTokenTest {
     private val tokenRepository: TokenRepository = mockk()
     private val basicAuth = createBasicAuth()
-    private val getUserLessToken = GetUserLessToken(tokenRepository, basicAuth)
+    private val getUserlessToken = GetUserLessToken(tokenRepository, basicAuth)
 
     @BeforeEach
     internal fun setUp() {
@@ -18,7 +18,7 @@ internal class GetUserLessTokenTest {
         //Arrange
         val deviceId = "DEVICE ID"
         every {
-            tokenRepository.getUserLessToken(
+            tokenRepository.getUserlessToken(
                 "https://oauth.reddit.com/grants/installed_client",
                 deviceId,
                 basicAuth
@@ -26,7 +26,7 @@ internal class GetUserLessTokenTest {
         } returns Single.just(createUserlessToken(deviceId = null))
 
         //Act
-        val token = getUserLessToken.execute(deviceId)
+        val token = getUserlessToken.execute(deviceId)
 
         //Assert
         val expectedToken = createUserlessToken(deviceId = deviceId)
@@ -37,7 +37,7 @@ internal class GetUserLessTokenTest {
     fun `return null when token retrieval fails`() {
         //Arrange
         every {
-            tokenRepository.getUserLessToken(
+            tokenRepository.getUserlessToken(
                 any(),
                 any(),
                 any()
@@ -45,7 +45,7 @@ internal class GetUserLessTokenTest {
         } returns Single.error(Throwable())
 
         //Act
-        val token = getUserLessToken.execute("")
+        val token = getUserlessToken.execute("")
 
         //Assert
         assertThat(token).isNull()

@@ -1,8 +1,7 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
-import com.visualeap.aliforreddit.util.*
+import util.*
 import io.mockk.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -27,7 +26,7 @@ class GetTokenTest {
         //Arrange
         val expectedToken = createToken()
         every { tokenRepository.getCurrentToken() } returns Maybe.just(expectedToken)
-        every { tokenRepository.getUserLessToken(any()) } returns Single.just(createUserlessToken())
+        every { tokenRepository.getUserlessToken(any()) } returns Single.just(createUserlessToken())
         every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
 
         //Act, Assert
@@ -44,7 +43,7 @@ class GetTokenTest {
             Maybe.empty(),
             Maybe.just(expectedToken)
         )
-        every { tokenRepository.getUserLessToken(any()) } returns Single.just(expectedToken)
+        every { tokenRepository.getUserlessToken(any()) } returns Single.just(expectedToken)
         every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
 
         //Act, Assert
@@ -58,7 +57,7 @@ class GetTokenTest {
         //Arrange
         val fetchedToken = createUserlessToken()
         every { tokenRepository.getCurrentToken() } returns Maybe.empty()
-        every { tokenRepository.getUserLessToken(any()) } returns Single.just(fetchedToken)
+        every { tokenRepository.getUserlessToken(any()) } returns Single.just(fetchedToken)
 
         //Act
         getToken.execute(Unit)
@@ -73,7 +72,7 @@ class GetTokenTest {
         //Arrange
         val fetchedToken = createUserlessToken()
         every { tokenRepository.getCurrentToken() } returns Maybe.empty()
-        every { tokenRepository.getUserLessToken(any()) } returns Single.just(fetchedToken)
+        every { tokenRepository.getUserlessToken(any()) } returns Single.just(fetchedToken)
         every { tokenRepository.setCurrentToken(any()) } returns Completable.error(SQLException())
 
         //Act, Assert
@@ -90,7 +89,7 @@ class GetTokenTest {
 //        val expectedAccount = createAnonymousAccount(expectedToken)
 //
 //        every { getCurrentAccount.execute(Unit) }.returnsMany(null, expectedAccount)
-//        every { getUserLessToken.execute(any()) } returns expectedToken
+//        every { getUserlessToken.execute(any()) } returns expectedToken
 //        every { accountRepository.saveAccount(any()) } returns Completable.complete()
 //
 //        //Act
@@ -102,7 +101,7 @@ class GetTokenTest {
 //
 //        //Assert
 //        //Fetch the user-less token from the server only once
-//        verify(atMost = 1) { getUserLessToken.execute(any()) }
+//        verify(atMost = 1) { getUserlessToken.execute(any()) }
 //
 //        //Save the user-less token only once, and Create the correct Anonymous account
 //        verify(atMost = 1) {
@@ -121,7 +120,7 @@ class GetTokenTest {
 //    fun `throw an exception when saving token fails`() {
 //        //Arrange
 //        every { getCurrentAccount.execute(Unit) } returns null
-//        every { getUserLessToken.execute(any()) } returns createUserlessToken()
+//        every { getUserlessToken.execute(any()) } returns createUserlessToken()
 //        every { accountRepository.saveAccount(any()) } returns Completable.error(SQLException())
 //
 //        //Act, Assert

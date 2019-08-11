@@ -13,9 +13,9 @@ interface TokenRepository {
 
     fun refreshUserToken(tokenId: Int, refreshToken: String): Single<UserToken>
 
-    fun getUserLessToken(deviceId: String): Single<UserlessToken>
+    fun getUserlessToken(deviceId: String): Single<UserlessToken>
 
-    fun refreshUserLessToken(deviceId: String): Single<UserlessToken>
+    fun refreshUserlessToken(deviceId: String): Single<UserlessToken>
 
     fun getCurrentToken(): Maybe<Token>
 

@@ -14,4 +14,4 @@ import androidx.room.PrimaryKey
         onUpdate = CASCADE
     )]
 )
-data class CurrentTokenEntity(@PrimaryKey(autoGenerate = true) val id: Int, val tokenId: Int)
+data class CurrentTokenEntity(@PrimaryKey val id: Int, val tokenId: Int)

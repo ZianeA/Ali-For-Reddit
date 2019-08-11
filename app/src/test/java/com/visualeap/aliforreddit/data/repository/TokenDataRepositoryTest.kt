@@ -1,11 +1,10 @@
 package com.visualeap.aliforreddit.data.repository
 
-import com.visualeap.aliforreddit.data.cache.RedditDatabase
 import com.visualeap.aliforreddit.data.network.token.TokenResponse
 import com.visualeap.aliforreddit.data.repository.token.TokenDataRepository
 import com.visualeap.aliforreddit.data.repository.token.TokenLocalSource
 import com.visualeap.aliforreddit.data.repository.token.TokenRemoteSource
-import com.visualeap.aliforreddit.util.*
+import util.*
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable
@@ -100,7 +99,7 @@ class TokenDataRepositoryTest {
             every { local.getUserlessToken() } returns Single.just(expectedToken)
 
             //Act, Assert
-            tokenRepository.getUserLessToken(DEVICE_ID)
+            tokenRepository.getUserlessToken(DEVICE_ID)
                 .test()
                 .assertResult(expectedToken)
         }
@@ -112,7 +111,7 @@ class TokenDataRepositoryTest {
             every { remote.getUserlessToken(any()) } returns Single.just(tokenResponse)
 
             //Act
-            tokenRepository.getUserLessToken(DEVICE_ID)
+            tokenRepository.getUserlessToken(DEVICE_ID)
                 .test()
 
             //Assert
@@ -133,7 +132,7 @@ class TokenDataRepositoryTest {
             every { local.saveUserlessToken(any()) } throws SQLException()
 
             //Act, Assert
-            tokenRepository.getUserLessToken(DEVICE_ID)
+            tokenRepository.getUserlessToken(DEVICE_ID)
                 .test()
                 .assertFailure(SQLException::class.java)
         }
@@ -153,7 +152,7 @@ class TokenDataRepositoryTest {
                     REFRESH_TOKEN
                 )
             every { remote.refreshUserToken(REFRESH_TOKEN) } returns Single.just(tokenResponse)
-            every { local.updateUserToken(any()) } returns ID
+            every { local.updateUserToken(any()) } just runs
             every { local.getUserToken(any()) } returns Single.just(expectedToken)
 
             //Act, Assert
@@ -218,7 +217,7 @@ class TokenDataRepositoryTest {
             every { local.getUserlessToken() } returns Single.just(expectedToken)
 
             //Act, Assert
-            tokenRepository.refreshUserLessToken(DEVICE_ID)
+            tokenRepository.refreshUserlessToken(DEVICE_ID)
                 .test()
                 .assertResult(expectedToken)
         }
@@ -230,7 +229,7 @@ class TokenDataRepositoryTest {
             every { remote.getUserlessToken(any()) } returns Single.just(tokenResponse)
 
             //Act
-            tokenRepository.refreshUserLessToken(DEVICE_ID)
+            tokenRepository.refreshUserlessToken(DEVICE_ID)
                 .test()
 
             //Assert
@@ -252,7 +251,7 @@ class TokenDataRepositoryTest {
             every { local.updateUserlessToken(any()) } throws SQLException()
 
             //Act, Assert
-            tokenRepository.refreshUserLessToken(DEVICE_ID)
+            tokenRepository.refreshUserlessToken(DEVICE_ID)
                 .test()
                 .assertFailure(SQLException::class.java)
         }

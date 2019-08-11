@@ -1,8 +1,7 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
-import com.visualeap.aliforreddit.util.createUserToken
-import com.visualeap.aliforreddit.util.createUserlessToken
+import util.*
 import io.mockk.*
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -50,7 +49,7 @@ internal class RefreshTokenTest {
             createUserlessToken(accessToken = REFRESHED_ACCESS_TOKEN)
 
         every { tokenRepository.getCurrentToken() } returns Maybe.just(currentToken)
-        every { tokenRepository.refreshUserLessToken(currentToken.deviceId) } returns Single.just(
+        every { tokenRepository.refreshUserlessToken(currentToken.deviceId) } returns Single.just(
             refreshedUserLessToken
         )
 
@@ -101,7 +100,7 @@ internal class RefreshTokenTest {
             createUserlessToken(accessToken = REFRESHED_ACCESS_TOKEN, deviceId = null)
 
         every { getCurrentAccount.execute(Unit) } returns createAnonymousAccount(token = storedUserlessToken)
-        every { getUserLessToken.execute(storedUserlessToken.deviceId!!) } returns refreshedUserlessToken
+        every { getUserlessToken.execute(storedUserlessToken.deviceId!!) } returns refreshedUserlessToken
         every { accountRepository.saveAccount(any()) } returns Completable.complete()
 
         //Act
@@ -130,7 +129,7 @@ internal class RefreshTokenTest {
     fun `throw exception when saving user-less token fails`() {
         //Arrange
         every { getCurrentAccount.execute(any()) } returns createAnonymousAccount()
-        every { getUserLessToken.execute(any()) } returns createUserlessToken()
+        every { getUserlessToken.execute(any()) } returns createUserlessToken()
         every { accountRepository.saveAccount(any()) } returns Completable.error(SQLException())
 
         //Act, assert
@@ -152,7 +151,7 @@ internal class RefreshTokenTest {
     fun `not throw exception when user-less token retrieval fails`() {
         //Arrange
 //        every { getCurrentAccount.execute(Unit) } returns createAnonymousAccount()
-        every { getUserLessToken.execute(any()) } returns null
+        every { getUserlessToken.execute(any()) } returns null
 
         //Act, Assert
         assertThatCode { refreshToken.execute(Unit) }.doesNotThrowAnyException()

@@ -26,7 +26,7 @@ class GetUserLessToken @Inject constructor(
         var token: UserlessToken? = null
 
         //Dispose immediately because we can treat this as a synchronous call
-        tokenRepository.getUserLessToken(
+        tokenRepository.getUserlessToken(
             GRANT_TYPE,
             params,
             basicAuth

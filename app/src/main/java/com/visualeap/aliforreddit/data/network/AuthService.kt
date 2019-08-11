@@ -20,7 +20,7 @@ interface AuthService {
 
     @FormUrlEncoded
     @POST(URL_PATH)
-    fun getUserLessToken(
+    fun getUserlessToken(
         @Field(GRANT_TYPE) grantType: String,
         @Field("device_id") deviceId: String,
         @Header(HttpHeaders.AUTHORIZATION) basicAuth: String

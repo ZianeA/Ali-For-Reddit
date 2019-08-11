@@ -3,7 +3,7 @@ package com.visualeap.aliforreddit.domain.usecase
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.domain.repository.RedditorRepository
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
-import com.visualeap.aliforreddit.util.*
+import util.*
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable

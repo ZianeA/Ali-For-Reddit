@@ -23,6 +23,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        test {
+            java.srcDirs += "$projectDir/src/sharedTest"
+        }
+
+        androidTest {
+            java.srcDirs += "$projectDir/src/sharedTest"
+        }
+    }
 }
 
 dependencies {

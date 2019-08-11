@@ -2,8 +2,7 @@ package com.visualeap.aliforreddit.data.network
 
 import com.visualeap.aliforreddit.domain.usecase.RefreshToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
-import com.visualeap.aliforreddit.util.createResponse
-import com.visualeap.aliforreddit.util.createToken
+import util.*
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk

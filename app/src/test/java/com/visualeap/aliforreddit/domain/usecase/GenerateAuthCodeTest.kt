@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class GetUniqueStringTest {
+internal class GenerateAuthCodeTest {
 
     @Test
     fun `return a unique string`() {

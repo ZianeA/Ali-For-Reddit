@@ -1,11 +1,7 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.model.Account
 import com.visualeap.aliforreddit.domain.model.token.Token
-import com.visualeap.aliforreddit.domain.model.token.UserlessToken
-import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
-import com.visualeap.aliforreddit.domain.usecase.base.NonReactiveUseCase
 import com.visualeap.aliforreddit.domain.usecase.base.SingleUseCase
 import dagger.Reusable
 import io.reactivex.Single
@@ -21,7 +17,7 @@ class GetToken @Inject constructor(private val tokenRepository: TokenRepository)
         return tokenRepository.getCurrentToken()
             .switchIfEmpty(
                 //This is "probably" the first app launch. We should just get the user-less token.
-                tokenRepository.getUserLessToken(generateUniqueId())
+                tokenRepository.getUserlessToken(generateUniqueId())
             ).flatMap {
                 tokenRepository.setCurrentToken(it)
                     .andThen(tokenRepository.getCurrentToken())

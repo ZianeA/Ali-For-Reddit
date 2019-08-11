@@ -5,7 +5,7 @@ import org.junit.jupiter.api.TestInstance
 import org.assertj.core.api.Assertions.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class GetAuthUrlTest {
+class BuildAuthUrlTest {
 
     companion object {
         private const val REDIRECT_URL = "URI"
