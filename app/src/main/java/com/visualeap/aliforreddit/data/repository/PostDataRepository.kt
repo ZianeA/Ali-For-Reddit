@@ -12,26 +12,6 @@ class PostDataRepository @Inject constructor(private val redditService: RedditSe
     PostRepository {
 
     override fun getPosts(): Single<List<Post>> {
-        //TODO remove this
-//        val okHttpClient = OkHttpClient.Builder()
-//            .addInterceptor(Interceptor {
-//                Log.i(PostDataRepository::class.java.simpleName, "Hello from interceptor")
-//                val response = it.proceed(it.request())
-////                response.newBuilder().code(HttpURLConnection.HTTP_FORBIDDEN).build()
-//                response
-//            })
-//            .addInterceptor(interceptor)
-//            .authenticator(authenticator)
-//            .build()
-//
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl("https://oauth.reddit.com/")
-//            .addConverterFactory(MoshiConverterFactory.create())
-//            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-//            .client(okHttpClient)
-//            .build()
-
         return redditService.getPosts()
-//        return Single.just(emptyList())
     }
 }

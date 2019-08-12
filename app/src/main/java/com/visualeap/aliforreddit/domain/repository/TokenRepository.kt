@@ -7,7 +7,6 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 
-//TODO Move all the constants, i.e. grantType, basicAuth, to data layer repository
 interface TokenRepository {
     fun getUserToken(code: String): Single<UserToken>
 

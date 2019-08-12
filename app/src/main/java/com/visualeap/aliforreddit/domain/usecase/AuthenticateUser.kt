@@ -14,7 +14,6 @@ import java.net.MalformedURLException
 import javax.inject.Inject
 import javax.inject.Named
 
-//TODO After fetching token set as the current token by calling the TokenRepository's setCurrentToken method.
 @Reusable
 class AuthenticateUser @Inject constructor(
     private val tokenRepository: TokenRepository,

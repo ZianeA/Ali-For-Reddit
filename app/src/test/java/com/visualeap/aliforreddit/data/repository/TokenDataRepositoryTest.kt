@@ -198,7 +198,6 @@ class TokenDataRepositoryTest {
         }
     }
 
-    //TODO test that there should be only one user-less token
     @Nested
     inner class RefreshUserlessToken {
         @Test

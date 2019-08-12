@@ -8,7 +8,6 @@ import io.reactivex.Single
 import java.util.*
 import javax.inject.Inject
 
-//TODO After fetching token set as the current token by calling the TokenRepository's setCurrentToken method.
 @Reusable
 class GetToken @Inject constructor(private val tokenRepository: TokenRepository) :
     SingleUseCase<Token, Unit> {
@@ -20,22 +19,9 @@ class GetToken @Inject constructor(private val tokenRepository: TokenRepository)
                 tokenRepository.getUserlessToken(generateUniqueId())
             ).flatMap {
                 tokenRepository.setCurrentToken(it)
-                    .andThen(tokenRepository.getCurrentToken())
-                    .toSingle()
+                    .toSingle { it }
             }
     }
 
     private fun generateUniqueId() = UUID.randomUUID().toString()
-
-    //TODO Remove this
-/*    private fun saveUserlessToken(token: UserlessToken) {
-        //It's not possible to test or try/catch exceptions thrown inside OnError
-        var throwable: Throwable? = null
-
-        accountRepository.saveAccount(Account.createAnonymousAccount(token, true))
-            .subscribe({ *//*Do nothing on complete*//* }, { throwable = it })
-            .dispose()
-
-        throwable?.let { throw it }
-    }*/
 }

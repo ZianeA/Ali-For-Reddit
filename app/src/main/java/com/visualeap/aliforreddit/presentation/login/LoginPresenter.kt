@@ -10,8 +10,6 @@ import okhttp3.HttpUrl
 import javax.inject.Inject
 import javax.inject.Named
 
-//TODO isFinalRedirectUrl is not a use-case, It should be a method inside LoginPresenter
-//  Rename GetAuthUrl to BuildAuthUrl, and GetUniqueString to GenerateAuthCode.
 @FragmentScope
 class LoginPresenter @Inject constructor(
     private val view: LoginView,
