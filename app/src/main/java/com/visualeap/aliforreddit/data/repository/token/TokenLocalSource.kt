@@ -8,12 +8,11 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 
 interface TokenLocalSource {
-    fun saveUserToken(userToken: UserToken): Int
+    fun addUserToken(userToken: UserToken): Single<Int>
     fun getUserToken(id: Int): Single<UserToken>
-    fun saveUserlessToken(userlessToken: UserlessToken): Int
+    fun setUserlessToken(userlessToken: UserlessToken): Completable
     fun getUserlessToken(): Single<UserlessToken>
-    fun updateUserToken(userToken: UserToken)
-    fun updateUserlessToken(userlessToken: UserlessToken)
+    fun updateUserToken(userToken: UserToken): Completable
     fun getCurrentToken(): Maybe<Token>
     fun setCurrentToken(token: Token): Completable
 }

@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data.repository
+package com.visualeap.aliforreddit.data.repository.redditor
 
 import com.visualeap.aliforreddit.domain.model.Redditor
 import com.visualeap.aliforreddit.domain.repository.RedditorRepository

@@ -2,67 +2,47 @@ package com.visualeap.aliforreddit.data.cache.token
 
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
-import com.visualeap.aliforreddit.data.cache.RedditDatabase
 import com.visualeap.aliforreddit.data.cache.RedditDatabase.Companion.NOT_SET_ROW_ID
 import com.visualeap.aliforreddit.data.cache.RedditDatabase.Companion.SINGLE_RECORD_ID
-import com.visualeap.aliforreddit.data.repository.token.TokenLocalSource
-import com.visualeap.aliforreddit.domain.model.token.Token
-import com.visualeap.aliforreddit.domain.model.token.UserToken
-import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import java.lang.IllegalStateException
-import java.lang.UnsupportedOperationException
 
 @Dao
-abstract class TokenDao : TokenLocalSource {
+abstract class TokenDao {
     @Insert
-    protected abstract fun saveUserTokenEntity(token: UserTokenEntity)
+    protected abstract fun addUserTokenEntity(token: UserTokenEntity)
 
     @Insert
-    protected abstract fun saveUserlessTokenEntity(token: UserlessTokenEntity)
+    protected abstract fun addUserlessTokenEntity(token: UserlessTokenEntity)
 
     @Insert
-    protected abstract fun saveTokenEntity(token: TokenEntity): Long
+    protected abstract fun addTokenEntity(token: TokenEntity): Long
 
     @Transaction
-    override fun saveUserToken(userToken: UserToken): Int {
-        userToken.run {
-            val rowId = saveTokenEntity(TokenEntity(NOT_SET_ROW_ID, accessToken, type)).toInt()
-            saveUserTokenEntity(UserTokenEntity(rowId, refreshToken))
-            return rowId
-        }
+    open fun addUserToken(tokenEntity: TokenEntity, userTokenEntity: UserTokenEntity): Int {
+        val rowId = addTokenEntity(tokenEntity).toInt()
+        addUserTokenEntity(userTokenEntity.copy(id = rowId))
+        return rowId
     }
 
     @Query("SELECT * FROM UserlessTokenEntity")
-    protected abstract fun getAllUserlessTokenEntities(): List<UserlessTokenEntity>
+    abstract fun getAllUserlessTokenEntities(): Single<List<UserlessTokenEntity>>
 
     @Transaction
-    override fun saveUserlessToken(userlessToken: UserlessToken): Int {
-        if (getAllUserlessTokenEntities().isNotEmpty()) throw UnsupportedOperationException(
-            "Only one user-less token can be created/saved per app. " +
-                    "Use updateUserlessToken if you wish to update the stored user-less token"
-        )
-
-        userlessToken.run {
-            val rowId = saveTokenEntity(TokenEntity(NOT_SET_ROW_ID, accessToken, type)).toInt()
-            saveUserlessTokenEntity(UserlessTokenEntity(rowId, deviceId))
-            return rowId
-        }
+    open fun addUserlessToken(tokenEntity: TokenEntity, userlessTokenEntity: UserlessTokenEntity) {
+        val rowId = addTokenEntity(tokenEntity).toInt()
+        addUserlessTokenEntity(userlessTokenEntity.copy(id = rowId))
     }
 
-    @Query("SELECT * FROM UserTokenEntity ut INNER JOIN TokenEntity t ON t.id = ut.id WHERE ut.id =:id")
-    abstract override fun getUserToken(id: Int): Single<UserToken>
+    @Query("SELECT * FROM UserTokenEntity u WHERE u.id =:id")
+    abstract fun getUserTokenEntity(id: Int): Single<UserTokenEntity>
 
-    @Query("SELECT * FROM UserlessTokenEntity ult INNER JOIN TokenEntity t ON t.id = ult.id")
-    protected abstract fun getAllUserlessTokens(): Single<List<UserlessToken>>
+    @Query("SELECT * FROM UserlessTokenEntity u WHERE u.id =:id")
+    abstract fun getUserlessTokenEntity(id: Int): Single<UserlessTokenEntity>
 
-    override fun getUserlessToken(): Single<UserlessToken> =
-        getAllUserlessTokens().map {
-            if (it.size > 1) throw IllegalStateException("There should only be a single user-less token")
-            it.single()
-        }
+    @Query("SELECT * FROM TokenEntity t WHERE t.id =:id")
+    abstract fun getTokenEntity(id: Int): Single<TokenEntity>
 
     @Update
     protected abstract fun updateUserTokenEntity(token: UserTokenEntity)
@@ -74,36 +54,23 @@ abstract class TokenDao : TokenLocalSource {
     protected abstract fun updateTokenEntity(token: TokenEntity)
 
     @Transaction
-    override fun updateUserToken(userToken: UserToken) {
-        userToken.run {
-            updateTokenEntity(TokenEntity(id, accessToken, type))
-            updateUserTokenEntity(UserTokenEntity(id, refreshToken))
-        }
+    open fun updateUserToken(tokenEntity: TokenEntity, userTokenEntity: UserTokenEntity) {
+        updateTokenEntity(tokenEntity)
+        updateUserTokenEntity(userTokenEntity)
     }
 
     @Transaction
-    override fun updateUserlessToken(userlessToken: UserlessToken) {
-        userlessToken.run {
-            updateTokenEntity(TokenEntity(id, accessToken, type))
-            updateUserlessTokenEntity(UserlessTokenEntity(id, deviceId))
-        }
+    open fun updateUserlessToken(
+        tokenEntity: TokenEntity,
+        userlessTokenEntity: UserlessTokenEntity
+    ) {
+        updateTokenEntity(tokenEntity)
+        updateUserlessTokenEntity(userlessTokenEntity)
     }
 
-    @Query("SELECT * FROM CurrentTokenEntity ct INNER JOIN TokenEntity t ON ct.tokenId = t.id INNER JOIN UserTokenEntity ut ON t.id = ut.id")
-    abstract fun getCurrentUserToken(): Maybe<UserToken>
-
-    @Query("SELECT * FROM CurrentTokenEntity ct INNER JOIN TokenEntity t ON ct.tokenId = t.id INNER JOIN UserlessTokenEntity ult ON t.id = ult.id")
-    abstract fun getCurrentUserlessToken(): Maybe<UserlessToken>
-
-    override fun getCurrentToken(): Maybe<Token> {
-        return Maybe.concat(getCurrentUserlessToken(), getCurrentUserToken())
-            .singleElement()
-    }
+    @Query("SELECT * FROM CurrentTokenEntity c INNER JOIN TokenEntity t ON c.tokenId = t.id")
+    abstract fun getCurrentTokenEntity(): Maybe<TokenEntity>
 
     @Insert(onConflict = REPLACE)
-    abstract fun insertCurrentTokenEntity(currentTokenEntity: CurrentTokenEntity): Completable
-
-    override fun setCurrentToken(token: Token): Completable {
-        return insertCurrentTokenEntity(CurrentTokenEntity(SINGLE_RECORD_ID, token.id))
-    }
+    abstract fun addCurrentTokenEntity(currentTokenEntity: CurrentTokenEntity): Completable
 }

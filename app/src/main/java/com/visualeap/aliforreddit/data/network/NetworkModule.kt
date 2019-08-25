@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.data.network
 
-import com.visualeap.aliforreddit.data.network.token.TokenService
+import com.visualeap.aliforreddit.data.network.token.TokenRs
 import com.visualeap.aliforreddit.data.repository.token.TokenRemoteSource
 import dagger.Module
 import dagger.Provides
@@ -46,7 +46,7 @@ class NetworkModule {
         retrofit.create<RedditService>(RedditService::class.java)
 
     @Provides
-    fun provideTokenRemoteSource(tokenService: TokenService): TokenRemoteSource =
+    fun provideTokenRemoteSource(tokenService: TokenRs): TokenRemoteSource =
         tokenService
 
     companion object {

@@ -6,6 +6,6 @@ import io.reactivex.Single
 
 interface AccountRepository {
     fun getAccounts(): Single<List<Account>>
-    fun saveAccount(account: Account): Completable
+    fun addAccount(account: Account): Completable
     fun updateAccount(account: Account): Completable
 }

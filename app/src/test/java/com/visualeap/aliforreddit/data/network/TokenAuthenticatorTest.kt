@@ -2,7 +2,6 @@ package com.visualeap.aliforreddit.data.network
 
 import com.visualeap.aliforreddit.domain.usecase.RefreshToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
-import util.*
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -14,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import util.domain.createResponse
+import util.domain.createToken
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TokenAuthenticatorTest {

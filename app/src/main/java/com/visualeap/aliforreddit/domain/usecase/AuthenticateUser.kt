@@ -1,7 +1,6 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.domain.model.Account
-import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.domain.repository.RedditorRepository
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
@@ -12,7 +11,6 @@ import io.reactivex.*
 import okhttp3.HttpUrl
 import java.net.MalformedURLException
 import javax.inject.Inject
-import javax.inject.Named
 
 @Reusable
 class AuthenticateUser @Inject constructor(
@@ -46,7 +44,7 @@ class AuthenticateUser @Inject constructor(
                 tokenRepository.setCurrentToken(token)
                     .andThen(redditorRepository.getCurrentRedditor())
                     .flatMapCompletable { redditor ->
-                        accountRepository.saveAccount(
+                        accountRepository.addAccount(
                             Account(
                                 0,
                                 redditor,

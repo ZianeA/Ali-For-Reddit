@@ -3,7 +3,6 @@ package com.visualeap.aliforreddit.domain.usecase
 import com.visualeap.aliforreddit.domain.repository.AccountRepository
 import com.visualeap.aliforreddit.domain.repository.RedditorRepository
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
-import util.*
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
+import util.domain.*
 import java.io.IOException
 import java.net.MalformedURLException
 import java.sql.SQLException
@@ -43,7 +43,7 @@ class AuthenticateUserTest {
         every { tokenRepository.getUserToken(CODE) } returns Single.just(createUserToken())
         every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
         every { redditorRepository.getCurrentRedditor() } returns Single.just(createRedditor())
-        every { accountRepository.saveAccount(any()) } returns Completable.complete()
+        every { accountRepository.addAccount(any()) } returns Completable.complete()
 
         //Act, Assert
         authenticateUser.execute(createParams())
@@ -72,7 +72,7 @@ class AuthenticateUserTest {
         every { tokenRepository.getUserToken(CODE) } returns Single.just(token)
         every { tokenRepository.setCurrentToken(any()) } returns Completable.error(SQLException())
         every { redditorRepository.getCurrentRedditor() } returns Single.just(createRedditor())
-        every { accountRepository.saveAccount(any()) } returns Completable.complete()
+        every { accountRepository.addAccount(any()) } returns Completable.complete()
 
         //Act, Assert
         authenticateUser.execute(createParams())
@@ -90,13 +90,13 @@ class AuthenticateUserTest {
         every { tokenRepository.getUserToken(any()) } returns Single.just(token)
         every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
         every { redditorRepository.getCurrentRedditor() } returns Single.just(redditor)
-        every { accountRepository.saveAccount(any()) } returns Completable.complete()
+        every { accountRepository.addAccount(any()) } returns Completable.complete()
 
         //Act, Assert
         authenticateUser.execute(createParams())
             .test()
 
-        verify { accountRepository.saveAccount(account) }
+        verify { accountRepository.addAccount(account) }
     }
 
     @Test
@@ -105,7 +105,7 @@ class AuthenticateUserTest {
         every { tokenRepository.getUserToken(any()) } returns Single.just(createUserToken())
         every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
         every { redditorRepository.getCurrentRedditor() } returns Single.just(createRedditor())
-        every { accountRepository.saveAccount(any()) } returns Completable.error(SQLException())
+        every { accountRepository.addAccount(any()) } returns Completable.error(SQLException())
 
         //Act, assert
         authenticateUser.execute(createParams())
@@ -119,7 +119,7 @@ class AuthenticateUserTest {
         every { tokenRepository.getUserToken(any()) } returns Single.just(createUserToken())
         every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
         every { redditorRepository.getCurrentRedditor() } returns Single.error(IOException())
-        every { accountRepository.saveAccount(any()) } returns Completable.complete()
+        every { accountRepository.addAccount(any()) } returns Completable.complete()
 
         //Act, assert
         authenticateUser.execute(createParams())

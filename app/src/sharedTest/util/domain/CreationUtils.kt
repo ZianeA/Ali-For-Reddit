@@ -1,4 +1,4 @@
-package util
+package util.domain
 
 import com.visualeap.aliforreddit.domain.model.Account
 import com.visualeap.aliforreddit.domain.model.Redditor
@@ -19,6 +19,7 @@ const val REDIRECT_URL = "https://example.com/path"
 const val CODE = "CODE"
 const val ID = 101
 const val NOT_SET_ROW_ID = 0
+const val SINGLE_RECORD_ID = 1
 
 fun createUserToken(
     id: Int = ID,
@@ -65,3 +66,6 @@ fun createResponse(request: Request = createRequest()): Response {
 fun createRequest(): Request = Request.Builder()
     .url("https://www.example.com")
     .build()
+
+val randomInteger: Int
+    get() = Random.nextInt()

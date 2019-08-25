@@ -2,7 +2,6 @@ package com.visualeap.aliforreddit.data.network
 
 import com.visualeap.aliforreddit.domain.usecase.GetToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
-import util.*
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -15,6 +14,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import util.domain.createRequest
+import util.domain.createResponse
+import util.domain.createToken
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TokenInterceptorTest {
@@ -38,7 +40,11 @@ class TokenInterceptorTest {
             val request = createRequest()
 
             every { chain.request() } returns request
-            every { chain.proceed(capture(requestSlot)) } answers { createResponse(requestSlot.captured) }
+            every { chain.proceed(capture(requestSlot)) } answers {
+                createResponse(
+                    requestSlot.captured
+                )
+            }
             every { getToken.execute(Unit) } returns Single.just(token)
 
             //Act
@@ -55,7 +61,11 @@ class TokenInterceptorTest {
             val request = createRequest()
             val requestSlot = slot<Request>()
             every { chain.request() } returns request
-            every { chain.proceed(capture(requestSlot)) } answers { createResponse(requestSlot.captured) }
+            every { chain.proceed(capture(requestSlot)) } answers {
+                createResponse(
+                    requestSlot.captured
+                )
+            }
             every { getToken.execute(Unit) } returns Single.error(Throwable())
 
             //Act

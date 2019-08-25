@@ -1,7 +1,6 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
-import util.*
 import io.mockk.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -9,6 +8,8 @@ import io.reactivex.Single
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import util.domain.createToken
+import util.domain.createUserlessToken
 import java.sql.SQLException
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
