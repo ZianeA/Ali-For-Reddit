@@ -7,8 +7,9 @@ import dagger.Reusable
 import io.reactivex.Single
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@Reusable
+@Singleton
 class GetToken @Inject constructor(private val tokenRepository: TokenRepository) :
     SingleUseCase<Token, Unit> {
 

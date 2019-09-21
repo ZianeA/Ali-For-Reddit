@@ -1,6 +1,7 @@
 package util.domain
 
 import com.visualeap.aliforreddit.domain.model.Account
+import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Redditor
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
@@ -51,6 +52,15 @@ fun createAccount(
 ) = Account(id, redditor, token)
 
 fun createRedditor(username: String = "TestUser") = Redditor(username)
+
+fun createPost(
+    id: String = "cz4ht1",
+    authorName: String = "Alawa",
+    title: String = "This is a test title",
+    text: String = "This is just test text.",
+    score: Int = 200,
+    commentCount: Int = 0
+) = Post(id, authorName, title, text, score, commentCount)
 
 fun createBasicAuth(clientId: String = "CLIENT ID"): String = Credentials.basic(clientId, "")
 

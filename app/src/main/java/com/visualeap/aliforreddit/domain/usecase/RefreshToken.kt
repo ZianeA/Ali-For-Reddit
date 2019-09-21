@@ -8,9 +8,10 @@ import com.visualeap.aliforreddit.domain.usecase.base.SingleUseCase
 import dagger.Reusable
 import io.reactivex.Single
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.IllegalStateException
 
-@Reusable
+@Singleton
 class RefreshToken @Inject constructor(private val tokenRepository: TokenRepository) :
     SingleUseCase<Token, Unit> {
 

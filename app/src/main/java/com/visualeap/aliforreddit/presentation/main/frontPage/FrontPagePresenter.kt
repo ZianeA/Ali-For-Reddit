@@ -13,13 +13,12 @@ class FrontPagePresenter @Inject constructor(
     private val repository: PostRepository,
     private val schedulerProvider: SchedulerProvider
 ) {
-
     private val disposables = CompositeDisposable()
 
     fun start() {
         val disposable = repository.getPosts()
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.displayPosts(it) }, {/*TODO implement on error*/})
+            .subscribe({ view.displayPosts(it) }, { println("OnError was called: ${it.message}")/*TODO implement on error*/})
 
         disposables.add(disposable)
     }

@@ -37,7 +37,7 @@ class TokenDataRepository @Inject constructor(
         return remoteSource.getUserlessToken(deviceId)
             .flatMap {
                 localSource.setUserlessToken(it)
-                localSource.getUserlessToken()
+                    .andThen(localSource.getUserlessToken())
             }
     }
 
@@ -47,7 +47,7 @@ class TokenDataRepository @Inject constructor(
                 UserToken(tokenId, it.accessToken, it.type, refreshToken)
             }.flatMap {
                 localSource.updateUserToken(it)
-                localSource.getUserToken(it.id)
+                    .andThen(localSource.getUserToken(it.id))
             }
     }
 
@@ -55,7 +55,7 @@ class TokenDataRepository @Inject constructor(
         return remoteSource.getUserlessToken(deviceId)
             .flatMap {
                 localSource.setUserlessToken(it)
-                localSource.getUserlessToken()
+                    .andThen(localSource.getUserlessToken())
             }
     }
 }

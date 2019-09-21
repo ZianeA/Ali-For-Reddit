@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageContainerFragment
 import com.visualeap.aliforreddit.presentation.login.LoginActivity
+import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageContainerFragment
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -92,22 +92,22 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView {
 
 //        val toggle = ActionBarDrawerToggle(
 //            this,
-//            drawer_layout,
-//            toolbar,
+//            drawerLayout,
+//            /*toolbar*/,
 //            R.string.navigation_drawer_open,
 //            R.string.navigation_drawer_close
 //        )
-//        drawer_layout.addDrawerListener(toggle)
 //        toggle.syncState()
+//        drawerLayout.addDrawerListener(toggle)
 
         drawerNavigationView.setNavigationItemSelectedListener(onDrawerItemSelectedListener)
 
         //TODO this is temporally
         profileImage.setOnClickListener {
             startActivityForResult(
-                Intent(this, LoginActivity::class.java),
-                REQUEST_CODE_LOGIN
+                Intent(this, LoginActivity::class.java), REQUEST_CODE_LOGIN
             )
+//            drawerLayout.openDrawer(GravityCompat.START)
         }
     }
 

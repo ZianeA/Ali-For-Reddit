@@ -5,22 +5,10 @@
     android:layout_height="match_parent"
     tools:context="com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/section_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
-
-    <androidx.core.widget.NestedScrollView
+    <com.airbnb.epoxy.EpoxyRecyclerView
+        android:id="@+id/frontPageRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/lorem_ipsum" />
-    </androidx.core.widget.NestedScrollView>
+    </com.airbnb.epoxy.EpoxyRecyclerView>
 
 </FrameLayout>

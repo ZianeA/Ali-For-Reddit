@@ -1,6 +1,8 @@
 package com.visualeap.aliforreddit.data.network
 
+import com.visualeap.aliforreddit.data.network.post.PostRs
 import com.visualeap.aliforreddit.data.network.token.TokenRs
+import com.visualeap.aliforreddit.data.repository.post.PostRemoteSource
 import com.visualeap.aliforreddit.data.repository.token.TokenRemoteSource
 import dagger.Module
 import dagger.Provides
@@ -46,8 +48,10 @@ class NetworkModule {
         retrofit.create<RedditService>(RedditService::class.java)
 
     @Provides
-    fun provideTokenRemoteSource(tokenService: TokenRs): TokenRemoteSource =
-        tokenService
+    fun provideTokenRemoteSource(tokenRs: TokenRs): TokenRemoteSource = tokenRs
+
+    @Provides
+    fun providePostRemoteSource(postRs: PostRs): PostRemoteSource = postRs
 
     companion object {
         private const val BASE_URL = "https://oauth.reddit.com/"

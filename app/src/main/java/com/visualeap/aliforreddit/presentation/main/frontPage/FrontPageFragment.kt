@@ -10,7 +10,9 @@ import androidx.core.os.bundleOf
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Post
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.android.synthetic.main.fragment_home.view.frontPageRecyclerView
 import javax.inject.Inject
 
 class FrontPageFragment : Fragment(), FrontPageView {
@@ -18,22 +20,25 @@ class FrontPageFragment : Fragment(), FrontPageView {
     @Inject
     lateinit var presenter: FrontPagePresenter
 
+    private val epoxyController = FrontPageEpoxyController()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_home, container, false)
-        rootView.section_label.text = getString(
-            R.string.section_format, arguments?.getInt(
-                ARG_SECTION_NUMBER
-            )
-        )
+//        rootView.section_label.text = getString(
+//            R.string.section_format, arguments?.getInt(
+//                ARG_SECTION_NUMBER
+//            )
+//        )
+        rootView.frontPageRecyclerView.setController(epoxyController)
         return rootView
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         presenter.start()
     }
 
@@ -42,13 +47,13 @@ class FrontPageFragment : Fragment(), FrontPageView {
         super.onAttach(context)
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         presenter.stop()
     }
 
     override fun displayPosts(posts: List<Post>) {
-        //TODO implement
+        epoxyController.posts = posts
     }
 
     companion object {

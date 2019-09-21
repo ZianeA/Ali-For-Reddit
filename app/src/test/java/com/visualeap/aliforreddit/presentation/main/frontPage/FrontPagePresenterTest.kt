@@ -10,13 +10,14 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
+import util.domain.createPost
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
 class FrontPagePresenterTest {
 
     companion object {
-        private val POSTS_LIST = listOf(Post())
+        private val POSTS_LIST = listOf(createPost())
         private val POST_LIST_SINGLE = Single.just(POSTS_LIST)
     }
 

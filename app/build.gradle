@@ -6,6 +6,10 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
 
+kapt {
+    correctErrorTypes = true
+}
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -73,4 +77,9 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$room_version"
     // Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
+
+    def epoxy_version = "3.7.0"
+    implementation "com.airbnb.android:epoxy:$epoxy_version"
+    // Add the annotation processor if you are using Epoxy's annotations (recommended)
+    kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
 }

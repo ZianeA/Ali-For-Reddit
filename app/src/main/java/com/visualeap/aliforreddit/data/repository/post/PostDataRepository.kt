@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data.repository
+package com.visualeap.aliforreddit.data.repository.post
 
 import com.visualeap.aliforreddit.data.network.RedditService
 import com.visualeap.aliforreddit.domain.model.Post
@@ -8,10 +8,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PostDataRepository @Inject constructor(private val redditService: RedditService) :
+class PostDataRepository @Inject constructor(private val postRemoteSource: PostRemoteSource) :
     PostRepository {
-
     override fun getPosts(): Single<List<Post>> {
-        return redditService.getPosts()
+        return postRemoteSource.getPosts("androiddev")
     }
 }

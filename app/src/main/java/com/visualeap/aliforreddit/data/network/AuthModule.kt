@@ -22,9 +22,9 @@ class AuthModule {
     @Singleton
     @Provides
     @Named("authOkHttpClient")
-    fun provideAuthOkHttpClient(interceptor: HttpLoggingInterceptor): OkHttpClient =
+    fun provideAuthOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(interceptor)
+            .addInterceptor(loggingInterceptor)
             .build()
 
     @Singleton

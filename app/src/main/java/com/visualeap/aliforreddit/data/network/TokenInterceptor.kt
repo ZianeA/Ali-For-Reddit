@@ -4,6 +4,7 @@ import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.usecase.GetToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import dagger.Reusable
+import io.reactivex.schedulers.Schedulers
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
@@ -20,7 +21,8 @@ class TokenInterceptor @Inject constructor(private val getToken: GetToken) :
             .subscribe({ token = it }, { /*on error*/ })
 
         val safeToken = token ?: return chain.proceed(chain.request())
-        val newRequest = chain.request().newBuilder()
+        val newRequest = chain.request()
+            .newBuilder()
             .header(HttpHeaders.AUTHORIZATION, "${safeToken.type} ${safeToken.accessToken}")
             .build()
         return chain.proceed(newRequest)
