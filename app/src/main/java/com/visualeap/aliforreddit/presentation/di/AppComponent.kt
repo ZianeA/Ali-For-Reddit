@@ -6,7 +6,7 @@ import com.visualeap.aliforreddit.data.network.NetworkModule
 import com.visualeap.aliforreddit.presentation.AliForRedditApp
 import com.visualeap.aliforreddit.presentation.util.SchedulerProviderModule
 import com.visualeap.aliforreddit.data.repository.RepositoryModule
-import com.visualeap.aliforreddit.data.network.AuthModule
+import com.visualeap.aliforreddit.data.network.auth.AuthModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.support.AndroidSupportInjectionModule

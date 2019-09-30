@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.data.network
 
+import com.visualeap.aliforreddit.data.network.auth.TokenAuthenticator
 import com.visualeap.aliforreddit.domain.usecase.RefreshToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import io.mockk.clearAllMocks
@@ -20,7 +21,8 @@ import util.domain.createToken
 class TokenAuthenticatorTest {
 
     private val refreshToken: RefreshToken = mockk()
-    private val authenticator = TokenAuthenticator(refreshToken)
+    private val authenticator =
+        TokenAuthenticator(refreshToken)
 
     @BeforeEach
     internal fun setUp() {

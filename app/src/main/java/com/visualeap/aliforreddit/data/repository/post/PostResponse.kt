@@ -1,8 +1,7 @@
-package com.visualeap.aliforreddit.data.network.post
+package com.visualeap.aliforreddit.data.repository.post
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import com.visualeap.aliforreddit.domain.model.Post
 
 @JsonClass(generateAdapter = true)
 data class PostResponse(val data: Data) {
@@ -17,7 +16,9 @@ data class PostResponse(val data: Data) {
                 val title: String,
                 @Json(name = "selftext") val text: String,
                 val score: Int,
-                @Json(name = "num_comments") val commentCount: Int
+                @Json(name = "num_comments") val commentCount: Int,
+                @Json(name = "subreddit_id") val subredditId: String,
+                @Json(name = "subreddit") val subredditName: String
             )
         }
     }

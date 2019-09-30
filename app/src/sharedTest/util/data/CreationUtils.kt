@@ -1,8 +1,11 @@
 package util.data
 
+import com.visualeap.aliforreddit.data.cache.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.cache.token.TokenEntity
 import com.visualeap.aliforreddit.data.cache.token.UserTokenEntity
 import com.visualeap.aliforreddit.data.cache.token.UserlessTokenEntity
+import com.visualeap.aliforreddit.data.repository.post.PostEntity
+import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 import util.domain.*
 
 fun createTokenEntity(

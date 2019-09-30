@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data.network
+package com.visualeap.aliforreddit.data.network.auth
 
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.usecase.RefreshToken
@@ -25,7 +25,10 @@ class TokenAuthenticator @Inject constructor(private val refreshToken: RefreshTo
             val safeToken = token ?: return null
             return response.request().newBuilder()
                 .header(HttpHeaders.AUTHORIZATION, "${safeToken.type} ${safeToken.accessToken}")
-                .header(ATTEMPT_HEADER, ATTEMPT_HEADER_VALUE)
+                .header(
+                    ATTEMPT_HEADER,
+                    ATTEMPT_HEADER_VALUE
+                )
                 .build();
         }
     }

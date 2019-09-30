@@ -1,8 +1,13 @@
 package util.domain
 
+import com.visualeap.aliforreddit.data.cache.redditor.RedditorEntity
+import com.visualeap.aliforreddit.data.repository.post.PostEntity
+import com.visualeap.aliforreddit.data.repository.post.PostWithRedditor
+import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 import com.visualeap.aliforreddit.domain.model.Account
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Redditor
+import com.visualeap.aliforreddit.domain.model.Subreddit
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
@@ -51,16 +56,58 @@ fun createAccount(
     token: UserToken = createUserToken()
 ) = Account(id, redditor, token)
 
-fun createRedditor(username: String = "TestUser") = Redditor(username)
+//region Redditor
+private const val REDDITOR_USERNAME = "FakeUsername"
+
+fun createRedditor(username: String = REDDITOR_USERNAME) = Redditor(username)
+
+fun createRedditorEntity(username: String = REDDITOR_USERNAME) = RedditorEntity(username)
+//endregion
+
+//region Subreddit
+private const val SUBREDDIT_NAME = "FakeSubreddit"
+private const val SUBREDDIT_ID = "FakeSubredditId"
+
+fun createSubreddit(id: String = SUBREDDIT_ID, name: String = SUBREDDIT_NAME) =
+    Subreddit(id, name)
+
+fun createSubredditEntity(id: String = SUBREDDIT_ID, name: String = SUBREDDIT_NAME) =
+    SubredditEntity(id, name)
+//endregion
+
+//region Post
+private const val POST_ID = "FakePostId"
+private const val POST_TITLE = "This is a fake title"
+private const val POST_TEXT = "This is a fake text."
+private const val POST_SCORE = 201
+private const val POST_COMMENT_COUNT = 202
 
 fun createPost(
-    id: String = "cz4ht1",
-    authorName: String = "Alawa",
-    title: String = "This is a test title",
-    text: String = "This is just test text.",
-    score: Int = 200,
-    commentCount: Int = 0
-) = Post(id, authorName, title, text, score, commentCount)
+    id: String = POST_ID,
+    author: Redditor = createRedditor(),
+    title: String = POST_TITLE,
+    text: String = POST_TEXT,
+    score: Int = POST_SCORE,
+    commentCount: Int = POST_COMMENT_COUNT,
+    subreddit: Subreddit = createSubreddit()
+) = Post(id, author, title, text, score, commentCount, subreddit)
+
+fun createPostEntity(
+    id: String = POST_ID,
+    authorName: String = REDDITOR_USERNAME,
+    title: String = POST_TITLE,
+    text: String = POST_TEXT,
+    score: Int = POST_SCORE,
+    commentCount: Int = POST_COMMENT_COUNT,
+    subredditId: String = SUBREDDIT_ID
+) = PostEntity(id, authorName, title, text, score, commentCount, subredditId)
+
+fun createPostWithRedditor(
+    postEntity: PostEntity = createPostEntity(),
+    redditorEntity: RedditorEntity = createRedditorEntity(),
+    subredditEntity: SubredditEntity = createSubredditEntity()
+) = PostWithRedditor(postEntity, redditorEntity, subredditEntity)
+//endregion
 
 fun createBasicAuth(clientId: String = "CLIENT ID"): String = Credentials.basic(clientId, "")
 
@@ -79,3 +126,6 @@ fun createRequest(): Request = Request.Builder()
 
 val randomInteger: Int
     get() = Random.nextInt()
+
+val randomString: String
+    get() = randomInteger.toString()

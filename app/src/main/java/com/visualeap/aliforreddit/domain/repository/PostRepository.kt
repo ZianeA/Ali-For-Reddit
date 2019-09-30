@@ -1,8 +1,10 @@
 package com.visualeap.aliforreddit.domain.repository
 
+import androidx.paging.PagedList
 import com.visualeap.aliforreddit.domain.model.Post
-import io.reactivex.Single
+import io.reactivex.Observable
 
 interface PostRepository {
-    fun getPosts(): Single<List<Post>>
+    fun getHomePosts(): Observable<PagedList<Post>>
+    fun getPostsBySubreddit(subreddit: String): Observable<PagedList<Post>>
 }

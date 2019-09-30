@@ -4,12 +4,13 @@ import androidx.room.Room
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 import com.visualeap.aliforreddit.data.cache.RedditDatabase
+import com.visualeap.aliforreddit.data.repository.account.AccountDao
+import com.visualeap.aliforreddit.data.repository.account.AccountEntity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import util.domain.NOT_SET_ROW_ID
-import util.domain.createAccount
 import util.domain.randomInteger
 
 @RunWith(AndroidJUnit4::class)
@@ -34,15 +35,19 @@ internal class AccountDaoTest {
     @Test
     fun insertAndGetAccountEntity() {
         //Arrange
-        val account = AccountEntity(NOT_SET_ROW_ID, "RandomUsername", randomInteger)
+        val account = AccountEntity(
+            NOT_SET_ROW_ID,
+            "RandomUsername",
+            randomInteger
+        )
 
         //Act
-        accountDao.addAccountEntity(account)
+        accountDao.add(account)
             .test()
             .assertResult()
 
         //Assert
-        accountDao.getAllAccountEntities()
+        accountDao.getAll()
             .test()
             .assertValue { it.size == 1 && it.first() == account.copy(id = 1) }
     }

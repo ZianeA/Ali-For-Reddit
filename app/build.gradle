@@ -70,7 +70,7 @@ dependencies {
     testImplementation "org.assertj:assertj-core:3.12.2"
 //    testImplementation 'com.squareup.okhttp3:mockwebserver:3.14.2'
 
-    def room_version = "2.1.0" // 2.1.0 for latest stable version
+    def room_version = "2.2.0-rc01" // 2.1.0 for latest stable version
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     // optional - RxJava support for Room
@@ -82,4 +82,12 @@ dependencies {
     implementation "com.airbnb.android:epoxy:$epoxy_version"
     // Add the annotation processor if you are using Epoxy's annotations (recommended)
     kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
+    implementation "com.airbnb.android:epoxy-paging:$epoxy_version"
+
+    def paging_version = "2.1.0"
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+    // alternatively - without Android dependencies for testing
+    testImplementation "androidx.paging:paging-common-ktx:$paging_version"
+    // optional - RxJava support
+    implementation "androidx.paging:paging-rxjava2-ktx:$paging_version"
 }

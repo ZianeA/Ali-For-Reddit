@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.data.repository.token
 
-import com.visualeap.aliforreddit.data.network.token.TokenResponse
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import io.reactivex.Single

@@ -1,6 +1,6 @@
-package com.visualeap.aliforreddit.data.network
+package com.visualeap.aliforreddit.data.network.auth
 
-import com.visualeap.aliforreddit.data.network.token.TokenResponse
+import com.visualeap.aliforreddit.data.network.auth.token.TokenResponse
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import io.reactivex.Single
 import retrofit2.http.Field

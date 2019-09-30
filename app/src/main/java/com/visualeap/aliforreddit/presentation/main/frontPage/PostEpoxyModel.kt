@@ -6,29 +6,34 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.visualeap.aliforreddit.R
+import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.presentation.util.KotlinEpoxyHolder
 
 @EpoxyModelClass(layout = R.layout.item_post)
 abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
-    @EpoxyAttribute
-    lateinit var title: String
-    @EpoxyAttribute
-    lateinit var text: String
-    @EpoxyAttribute
-    lateinit var authorName: String
-    @EpoxyAttribute
-    lateinit var score: String
-    @EpoxyAttribute
-    lateinit var commentCount: String
+    //    @EpoxyAttribute
+//    lateinit var title: String
+//    @EpoxyAttribute
+//    lateinit var text: String
+//    @EpoxyAttribute
+//    lateinit var authorName: String
+//    @EpoxyAttribute
+//    lateinit var score: String
+//    @EpoxyAttribute
+//    lateinit var commentCount: String
 //    @EpoxyAttribute lateinit var imageUrl: Uri
+    @EpoxyAttribute
+    lateinit var post: Post
 
     override fun bind(holder: PostHolder) {
 //        holder.imageView.setImageURI(imageUrl)
-        holder.postTitle.text = title
-        holder.postText.text = text
-        holder.postedByAndAt.text = authorName
-        holder.postScore.text = score
-        holder.postCommentCount.text = commentCount
+        post.apply {
+            holder.postTitle.text = title
+            holder.postText.text = text
+            holder.postedByAndAt.text = author.username
+            holder.postScore.text = score.toString()
+            holder.postCommentCount.text = commentCount.toString()
+        }
     }
 }
 

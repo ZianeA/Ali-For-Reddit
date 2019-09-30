@@ -1,12 +1,11 @@
-package com.visualeap.aliforreddit.data.network.token
+package com.visualeap.aliforreddit.data.network.auth.token
 
-import com.visualeap.aliforreddit.data.network.AuthService
+import com.visualeap.aliforreddit.data.network.auth.AuthService
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.reactivex.Single
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

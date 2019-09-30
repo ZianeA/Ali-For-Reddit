@@ -1,7 +1,7 @@
-package com.visualeap.aliforreddit.data.network.token
+package com.visualeap.aliforreddit.data.network.auth.token
 
 import com.visualeap.aliforreddit.data.cache.RedditDatabase.Companion.NOT_SET_ROW_ID
-import com.visualeap.aliforreddit.data.network.AuthService
+import com.visualeap.aliforreddit.data.network.auth.AuthService
 import com.visualeap.aliforreddit.data.repository.token.TokenRemoteSource
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken

@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.paging.PagedList
+import com.airbnb.epoxy.EpoxyAsyncUtil
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Post
 import dagger.android.support.AndroidSupportInjection
@@ -52,8 +54,8 @@ class FrontPageFragment : Fragment(), FrontPageView {
         presenter.stop()
     }
 
-    override fun displayPosts(posts: List<Post>) {
-        epoxyController.posts = posts
+    override fun displayPosts(posts: PagedList<Post>) {
+        epoxyController.submitList(posts)
     }
 
     companion object {

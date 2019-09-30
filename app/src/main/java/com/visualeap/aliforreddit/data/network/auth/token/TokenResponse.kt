@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data.network.token
+package com.visualeap.aliforreddit.data.network.auth.token
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

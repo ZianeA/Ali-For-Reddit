@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.data.network
 
+import com.visualeap.aliforreddit.data.network.auth.TokenInterceptor
 import com.visualeap.aliforreddit.domain.usecase.GetToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import io.mockk.clearAllMocks
@@ -23,7 +24,8 @@ class TokenInterceptorTest {
 
     private val chain: Interceptor.Chain = mockk()
     private val getToken: GetToken = mockk()
-    private val tokenInterceptor = TokenInterceptor(getToken)
+    private val tokenInterceptor =
+        TokenInterceptor(getToken)
 
     @BeforeEach
     internal fun setUp() {

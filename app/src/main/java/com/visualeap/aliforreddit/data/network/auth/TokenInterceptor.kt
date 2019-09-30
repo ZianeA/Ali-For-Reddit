@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data.network
+package com.visualeap.aliforreddit.data.network.auth
 
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.usecase.GetToken

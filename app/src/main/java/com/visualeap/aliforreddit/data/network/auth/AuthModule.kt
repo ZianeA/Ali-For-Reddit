@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data.network
+package com.visualeap.aliforreddit.data.network.auth
 
 import dagger.Module
 import dagger.Provides
