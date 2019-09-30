@@ -11,6 +11,7 @@ import androidx.paging.PagedList
 import com.airbnb.epoxy.EpoxyAsyncUtil
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Post
+import com.visualeap.aliforreddit.presentation.di.FragmentScope
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*

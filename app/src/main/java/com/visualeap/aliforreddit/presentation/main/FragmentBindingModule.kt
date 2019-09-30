@@ -8,7 +8,6 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class FragmentBindingModule {
-
     @FragmentScope
     @ContributesAndroidInjector(modules = [FrontPageModule::class])
     abstract fun frontPageFragment(): FrontPageFragment

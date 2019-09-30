@@ -1,9 +1,11 @@
 package com.visualeap.aliforreddit.data.repository.post
 
 import androidx.paging.PagedList
+import com.jakewharton.rxrelay2.BehaviorRelay
 import com.visualeap.aliforreddit.data.network.RedditService
 import com.visualeap.aliforreddit.data.repository.Mapper
 import com.visualeap.aliforreddit.domain.model.Post
+import com.visualeap.aliforreddit.domain.util.NetworkState
 import com.visualeap.aliforreddit.domain.util.applySchedulers
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import dagger.Reusable
@@ -11,8 +13,7 @@ import io.reactivex.Completable
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-@Reusable
-class PostBoundaryCallback @Inject constructor(
+class PostBoundaryCallback(
     private val redditService: RedditService,
     private val postDao: PostDao,
     private val schedulerProvider: SchedulerProvider,
@@ -25,6 +26,7 @@ class PostBoundaryCallback @Inject constructor(
         private const val NETWORK_PAGE_SIZE = 50
     }
 
+    val replay: BehaviorRelay<NetworkState> = BehaviorRelay.create()
     private var isRequestInProgress = false
     private var nextPageKey: String? = null
 
@@ -41,6 +43,7 @@ class PostBoundaryCallback @Inject constructor(
     private fun requestAndSaveData() {
         if (isRequestInProgress) return
 
+        replay.accept(NetworkState.LOADING)
         isRequestInProgress = true
         val disposable = redditService.getHomePosts(NETWORK_PAGE_SIZE, nextPageKey)
             /*.delay(10, TimeUnit.SECONDS)*/ //TODO remove this delay
@@ -58,6 +61,8 @@ class PostBoundaryCallback @Inject constructor(
             }
             .doFinally { isRequestInProgress = false }
             .applySchedulers(schedulerProvider)
-            .subscribe({/*onSuccess*/}, {/*onError*/ println(it) })
+            .subscribe(
+                { replay.accept(NetworkState.LOADED) },
+                { replay.accept(NetworkState.error(it)) })
     }
 }

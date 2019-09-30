@@ -8,12 +8,13 @@ import com.airbnb.epoxy.EpoxyModel
 import com.airbnb.epoxy.paging.PagedListEpoxyController
 import com.visualeap.aliforreddit.domain.model.Redditor
 import com.visualeap.aliforreddit.domain.model.Subreddit
+import com.visualeap.aliforreddit.presentation.util.IoSchedulerProvider
+import java.util.concurrent.Executor
 
 
 class FrontPageEpoxyController :
     PagedListEpoxyController<Post>(
-        /*modelBuildingHandler = EpoxyAsyncUtil.getAsyncBackgroundHandler(),
-        diffingHandler = EpoxyAsyncUtil.getAsyncBackgroundHandler()*/
+        diffingHandler = EpoxyAsyncUtil.getAsyncBackgroundHandler()
     ) {
     override fun buildItemModel(currentPosition: Int, item: Post?): EpoxyModel<*> {
         return if (item == null) {
