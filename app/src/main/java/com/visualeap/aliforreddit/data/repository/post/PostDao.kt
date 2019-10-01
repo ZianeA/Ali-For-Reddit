@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.visualeap.aliforreddit.data.cache.redditor.RedditorEntity
+import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 
 @Dao

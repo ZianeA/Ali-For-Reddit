@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.data.repository.post
 
-import com.visualeap.aliforreddit.data.cache.redditor.RedditorEntity
+import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.Mapper
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 import com.visualeap.aliforreddit.domain.model.Redditor
@@ -9,7 +9,6 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

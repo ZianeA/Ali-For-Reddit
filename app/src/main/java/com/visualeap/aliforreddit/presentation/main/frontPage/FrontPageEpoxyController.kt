@@ -17,43 +17,8 @@ class FrontPageEpoxyController :
         diffingHandler = EpoxyAsyncUtil.getAsyncBackgroundHandler()
     ) {
     override fun buildItemModel(currentPosition: Int, item: Post?): EpoxyModel<*> {
-        return if (item == null) {
-            //TODO deal with this
-            val placeHolder = Post(
-                "101",
-                Redditor("PlaceHolderUsername"),
-                "PlaceHolder Title",
-                "PlaceHolder Text",
-                69,
-                69,
-                Subreddit("202", "PlaceHolder Subreddit")
-            )
-            PostEpoxyModel_()
-                .id(-currentPosition)
-                .post(placeHolder)
-        } else {
-            PostEpoxyModel_()
-                .id(item.id)
-                .post(item)
-        }
+        return PostEpoxyModel_()
+            .id(item!!.id) //Placeholders are disabled
+            .post(item)
     }
-
-    /*var posts = listOf<Post>()
-        set(value) {
-            field = value
-            requestModelBuild()
-        }*/
-
-    /*override fun buildModels() {
-        posts.forEach {
-            PostEpoxyModel_()
-                .id(it.id)
-                .title(it.title)
-                .text(it.text)
-                *//*.authorName(it.authorName)*//*
-                .score(it.score.toString())
-                .commentCount(it.commentCount.toString())
-                .addTo(this)
-        }
-    }*/
 }

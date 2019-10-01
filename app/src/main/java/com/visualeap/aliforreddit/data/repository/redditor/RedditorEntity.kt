@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data.cache.redditor
+package com.visualeap.aliforreddit.data.repository.redditor
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

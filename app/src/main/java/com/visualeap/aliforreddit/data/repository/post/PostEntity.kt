@@ -3,7 +3,7 @@ package com.visualeap.aliforreddit.data.repository.post
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.visualeap.aliforreddit.data.cache.redditor.RedditorEntity
+import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 
 //TODO change redditor parentColumns to id
@@ -29,5 +29,6 @@ data class PostEntity(
     val text: String,
     val score: Int,
     val commentCount: Int,
-    val subredditId: String
+    val subredditId: String,
+    val created: Long
 )

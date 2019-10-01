@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.data.repository.post
 
-import com.visualeap.aliforreddit.data.cache.redditor.RedditorEntity
+import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.Mapper
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 import com.visualeap.aliforreddit.domain.model.Post
@@ -18,7 +18,16 @@ class PostWithRedditorMapper @Inject constructor(
     override fun mapReverse(model: Post): PostWithRedditor {
         return model.run {
             PostWithRedditor(
-                PostEntity(id, author.username, title, text, score, commentCount, subreddit.id),
+                PostEntity(
+                    id,
+                    author.username,
+                    title,
+                    text,
+                    score,
+                    commentCount,
+                    subreddit.id,
+                    created
+                ),
                 redditorEntityMapper.mapReverse(author),
                 subredditEntityMapper.mapReverse(subreddit)
             )
@@ -34,7 +43,8 @@ class PostWithRedditorMapper @Inject constructor(
                 postEntity.text,
                 postEntity.score,
                 postEntity.commentCount,
-                subredditEntityMapper.map(subredditEntity)
+                subredditEntityMapper.map(subredditEntity),
+                postEntity.created
             )
         }
     }

@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.data.repository.redditor
 
-import com.visualeap.aliforreddit.data.cache.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.Mapper
 import com.visualeap.aliforreddit.domain.model.Redditor
 import dagger.Reusable
@@ -13,6 +12,10 @@ class RedditorEntityMapper @Inject constructor() : Mapper<RedditorEntity, Reddit
     }
 
     override fun mapReverse(model: Redditor): RedditorEntity {
-        return model.run { RedditorEntity(username) }
+        return model.run {
+            RedditorEntity(
+                username
+            )
+        }
     }
 }

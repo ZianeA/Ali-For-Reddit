@@ -36,7 +36,9 @@ class FrontPageFragment : Fragment(), FrontPageView {
 //                ARG_SECTION_NUMBER
 //            )
 //        )
-        rootView.frontPageRecyclerView.setController(epoxyController)
+        val recyclerView = rootView.frontPageRecyclerView
+        recyclerView.setController(epoxyController)
+        recyclerView.setItemSpacingDp(8)
         return rootView
     }
 

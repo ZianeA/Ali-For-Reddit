@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.data.repository
 
-import com.visualeap.aliforreddit.data.cache.redditor.RedditorEntity
+import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.account.AccountDataRepository
 import com.visualeap.aliforreddit.data.repository.post.*
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorDataRepository

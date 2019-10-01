@@ -4,7 +4,7 @@ import dagger.Module
 import androidx.room.Room
 import android.app.Application
 import com.visualeap.aliforreddit.data.repository.account.AccountDao
-import com.visualeap.aliforreddit.data.cache.redditor.RedditorDao
+import com.visualeap.aliforreddit.data.repository.redditor.RedditorDao
 import com.visualeap.aliforreddit.data.repository.post.PostDao
 import com.visualeap.aliforreddit.data.cache.token.TokenDao
 import com.visualeap.aliforreddit.data.cache.token.TokenLs

@@ -1,146 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    app:cardElevation="1dp"
     android:layout_height="wrap_content">
 
-    <com.visualeap.aliforreddit.presentation.util.RoundedImageView
-        android:id="@+id/subredditImage"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:isCircular="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/avatar_default" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:paddingBottom="8dp"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/subredditName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        app:layout_constraintStart_toEndOf="@+id/subredditImage"
-        app:layout_constraintTop_toTopOf="@+id/subredditImage"
-        tools:text="r/AmItheAsshole" />
+        <com.visualeap.aliforreddit.presentation.util.RoundedImageView
+            android:id="@+id/subredditImage"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:isCircular="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/avatar_default" />
 
-    <TextView
-        android:id="@+id/postedByAndAt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/subredditImage"
-        app:layout_constraintStart_toEndOf="@+id/subredditImage"
-        tools:text="Posted by u/outbackmusic • 8h" />
+        <TextView
+            android:id="@+id/subredditName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintStart_toEndOf="@+id/subredditImage"
+            app:layout_constraintTop_toTopOf="@+id/subredditImage"
+            tools:text="r/AmItheAsshole" />
 
-    <TextView
-        android:id="@+id/postTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/subredditImage"
-        app:layout_constraintTop_toBottomOf="@+id/subredditImage"
-        tools:text="What's video game you dislike that everybody loves?" />
+        <TextView
+            android:id="@+id/postedByAndAt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/subredditImage"
+            app:layout_constraintStart_toEndOf="@+id/subredditImage"
+            tools:text="Posted by u/outbackmusic • 8h" />
 
-    <TextView
-        android:id="@+id/postText"
-        android:layout_width="0dp"
-        android:layout_height="66dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/postTitle"
-        app:layout_constraintTop_toBottomOf="@+id/postTitle"
-        tools:text="It can't be just me … i hope.  I'm not doing them on purpose, it often just happens while describing the facial expressions of my characters. I'm really glad nobody is filming me while i write. At least i hope nobody does." />
+        <TextView
+            android:id="@+id/postTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/subredditImage"
+            app:layout_constraintTop_toBottomOf="@+id/subredditImage"
+            tools:text="What's video game you dislike that everybody loves?" />
 
-    <ImageView
-        android:id="@+id/upvoteImage"
-        android:layout_width="30dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:tint="@android:color/darker_gray"
-        app:layout_constraintDimensionRatio="h,1:1"
-        app:layout_constraintStart_toStartOf="@+id/postText"
-        app:layout_constraintTop_toBottomOf="@+id/postText"
-        app:srcCompat="@drawable/ic_arrow_up" />
+        <TextView
+            android:id="@+id/postText"
+            android:layout_width="0dp"
+            android:layout_height="66dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/postTitle"
+            app:layout_constraintTop_toBottomOf="@+id/postTitle"
+            tools:text="It can't be just me … i hope.  I'm not doing them on purpose, it often just happens while describing the facial expressions of my characters. I'm really glad nobody is filming me while i write. At least i hope nobody does." />
 
-    <ImageView
-        android:id="@+id/downvoteImage"
-        android:layout_width="30dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:tint="@android:color/darker_gray"
-        app:layout_constraintDimensionRatio="h,1:1"
-        app:layout_constraintStart_toEndOf="@+id/postScore"
-        app:layout_constraintTop_toTopOf="@+id/upvoteImage"
-        app:srcCompat="@drawable/ic_arrow_down" />
+        <ImageView
+            android:id="@+id/upvoteImage"
+            android:layout_width="30dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:tint="@android:color/darker_gray"
+            app:layout_constraintDimensionRatio="h,1:1"
+            app:layout_constraintStart_toStartOf="@+id/postText"
+            app:layout_constraintTop_toBottomOf="@+id/postText"
+            app:srcCompat="@drawable/ic_arrow_up" />
 
-    <TextView
-        android:id="@+id/postScore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toBottomOf="@+id/upvoteImage"
-        app:layout_constraintStart_toEndOf="@+id/upvoteImage"
-        app:layout_constraintTop_toTopOf="@+id/upvoteImage"
-        tools:text="508" />
+        <ImageView
+            android:id="@+id/downvoteImage"
+            android:layout_width="30dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:tint="@android:color/darker_gray"
+            app:layout_constraintDimensionRatio="h,1:1"
+            app:layout_constraintStart_toEndOf="@+id/postScore"
+            app:layout_constraintTop_toTopOf="@+id/upvoteImage"
+            app:srcCompat="@drawable/ic_arrow_down" />
 
-    <ImageView
-        android:id="@+id/commentImage"
-        android:layout_width="30dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:tint="@android:color/darker_gray"
-        app:layout_constraintDimensionRatio="h,1:1"
-        app:layout_constraintEnd_toStartOf="@+id/postCommentCount"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/downvoteImage"
-        app:layout_constraintTop_toTopOf="@+id/downvoteImage"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:srcCompat="@drawable/ic_comment" />
+        <TextView
+            android:id="@+id/postScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintBottom_toBottomOf="@+id/upvoteImage"
+            app:layout_constraintStart_toEndOf="@+id/upvoteImage"
+            app:layout_constraintTop_toTopOf="@+id/upvoteImage"
+            tools:text="508" />
 
-    <TextView
-        android:id="@+id/postCommentCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toBottomOf="@+id/commentImage"
-        app:layout_constraintEnd_toStartOf="@+id/shareImage"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/commentImage"
-        app:layout_constraintTop_toTopOf="@+id/commentImage"
-        tools:text="7.4k" />
+        <ImageView
+            android:id="@+id/commentImage"
+            android:layout_width="30dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:tint="@android:color/darker_gray"
+            app:layout_constraintDimensionRatio="h,1:1"
+            app:layout_constraintEnd_toStartOf="@+id/postCommentCount"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@+id/downvoteImage"
+            app:layout_constraintTop_toTopOf="@+id/downvoteImage"
+            app:srcCompat="@drawable/ic_comment" />
 
-    <ImageView
-        android:id="@+id/shareImage"
-        android:layout_width="30dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
-        android:tint="@android:color/darker_gray"
-        app:layout_constraintBottom_toBottomOf="@+id/commentImage"
-        app:layout_constraintDimensionRatio="h,1:1"
-        app:layout_constraintEnd_toStartOf="@+id/share"
-        app:layout_constraintTop_toTopOf="@+id/commentImage"
-        app:srcCompat="@drawable/ic_share" />
+        <TextView
+            android:id="@+id/postCommentCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintBottom_toBottomOf="@+id/commentImage"
+            app:layout_constraintEnd_toStartOf="@+id/shareImage"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/commentImage"
+            app:layout_constraintTop_toTopOf="@+id/commentImage"
+            tools:text="7.4k" />
 
-    <TextView
-        android:id="@+id/share"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toBottomOf="@+id/shareImage"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/shareImage"
-        tools:text="Share" />
+        <ImageView
+            android:id="@+id/shareImage"
+            android:layout_width="30dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:tint="@android:color/darker_gray"
+            app:layout_constraintBottom_toBottomOf="@+id/commentImage"
+            app:layout_constraintDimensionRatio="h,1:1"
+            app:layout_constraintEnd_toStartOf="@+id/share"
+            app:layout_constraintTop_toTopOf="@+id/commentImage"
+            app:srcCompat="@drawable/ic_share" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintBottom_toBottomOf="@+id/shareImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/shareImage"
+            tools:text="Share" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

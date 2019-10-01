@@ -1,6 +1,6 @@
 package util.domain
 
-import com.visualeap.aliforreddit.data.cache.redditor.RedditorEntity
+import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.post.PostEntity
 import com.visualeap.aliforreddit.data.repository.post.PostWithRedditor
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
@@ -61,7 +61,8 @@ private const val REDDITOR_USERNAME = "FakeUsername"
 
 fun createRedditor(username: String = REDDITOR_USERNAME) = Redditor(username)
 
-fun createRedditorEntity(username: String = REDDITOR_USERNAME) = RedditorEntity(username)
+fun createRedditorEntity(username: String = REDDITOR_USERNAME) =
+    RedditorEntity(username)
 //endregion
 
 //region Subreddit
@@ -81,6 +82,7 @@ private const val POST_TITLE = "This is a fake title"
 private const val POST_TEXT = "This is a fake text."
 private const val POST_SCORE = 201
 private const val POST_COMMENT_COUNT = 202
+private const val POST_CREATED: Long = 1569878021
 
 fun createPost(
     id: String = POST_ID,
@@ -89,8 +91,9 @@ fun createPost(
     text: String = POST_TEXT,
     score: Int = POST_SCORE,
     commentCount: Int = POST_COMMENT_COUNT,
-    subreddit: Subreddit = createSubreddit()
-) = Post(id, author, title, text, score, commentCount, subreddit)
+    subreddit: Subreddit = createSubreddit(),
+    created: Long = POST_CREATED
+) = Post(id, author, title, text, score, commentCount, subreddit, created)
 
 fun createPostEntity(
     id: String = POST_ID,
@@ -99,8 +102,9 @@ fun createPostEntity(
     text: String = POST_TEXT,
     score: Int = POST_SCORE,
     commentCount: Int = POST_COMMENT_COUNT,
-    subredditId: String = SUBREDDIT_ID
-) = PostEntity(id, authorName, title, text, score, commentCount, subredditId)
+    subredditId: String = SUBREDDIT_ID,
+    created: Long = POST_CREATED
+) = PostEntity(id, authorName, title, text, score, commentCount, subredditId, created)
 
 fun createPostWithRedditor(
     postEntity: PostEntity = createPostEntity(),

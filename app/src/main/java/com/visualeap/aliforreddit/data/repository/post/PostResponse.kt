@@ -11,14 +11,15 @@ data class PostResponse(val data: Data) {
         data class PostHolder(@Json(name = "data") val post: Post) {
             @JsonClass(generateAdapter = true)
             data class Post(
-                val id: String,
+                @Json(name = "name") val id: String,
                 @Json(name = "author") val authorName: String,
                 val title: String,
                 @Json(name = "selftext") val text: String,
                 val score: Int,
                 @Json(name = "num_comments") val commentCount: Int,
-                @Json(name = "subreddit_id") val subredditId: String,
-                @Json(name = "subreddit") val subredditName: String
+                @Json(name = "subreddit_id") val subredditId: String,//TODO Remove as unneeded
+                @Json(name = "subreddit") val subredditName: String,
+                @Json(name= "created_utc") val created: Long
             )
         }
     }

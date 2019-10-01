@@ -1,6 +1,7 @@
 package com.visualeap.aliforreddit.data.repository.post
 
 import androidx.paging.PagedList
+import androidx.paging.RxPagedListBuilder
 import androidx.paging.toLiveData
 import androidx.paging.toObservable
 import com.airbnb.epoxy.EpoxyAsyncUtil
@@ -41,20 +42,20 @@ class PostDataRepository @Inject constructor(
             postWithRedditorMapper
         )
         postBoundaryCallback.replay.subscribe()
-//        val config = PagedList.Config.Builder()
-//            .setPageSize(DATABASE_PAGE_SIZE)
-//            .setEnablePlaceholders(true)
-//            .build()
-//        return RxPagedListBuilder(postFactory, config)
-//            .setBoundaryCallback(postBoundaryCallback)
-//            .buildObservable()
-
-        return postDao.getAll()
-            .map(postWithRedditorMapper::map)
-            .toObservable(
-                pageSize = DATABASE_PAGE_SIZE,
-                boundaryCallback = postBoundaryCallback
-            )
+        val config = PagedList.Config.Builder()
+            .setPageSize(DATABASE_PAGE_SIZE)
+            .setEnablePlaceholders(false)
+            .build()
+        return RxPagedListBuilder(postFactory, config)
+            .setBoundaryCallback(postBoundaryCallback)
+            .buildObservable()
+//
+//        return postDao.getAll()
+//            .map(postWithRedditorMapper::map)
+//            .toObservable(
+//                pageSize = DATABASE_PAGE_SIZE,
+//                boundaryCallback = postBoundaryCallback
+//            )
     }
 
     companion object {

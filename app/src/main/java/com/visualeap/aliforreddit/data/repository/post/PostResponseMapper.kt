@@ -25,7 +25,8 @@ class PostResponseMapper @Inject constructor() :
                     text,
                     score,
                     commentCount,
-                    Subreddit(subredditId, subredditName)
+                    Subreddit(subredditId, subredditName),
+                    created
                 )
             }
         }

@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/lightGray"
     tools:context="com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageFragment">
 
     <com.airbnb.epoxy.EpoxyRecyclerView
         android:id="@+id/frontPageRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </com.airbnb.epoxy.EpoxyRecyclerView>
+        android:layout_height="match_parent"></com.airbnb.epoxy.EpoxyRecyclerView>
 
 </FrameLayout>

@@ -6,8 +6,8 @@ import com.visualeap.aliforreddit.data.repository.account.AccountDao
 import com.visualeap.aliforreddit.data.repository.account.AccountEntity
 import com.visualeap.aliforreddit.data.repository.post.PostDao
 import com.visualeap.aliforreddit.data.repository.post.PostEntity
-import com.visualeap.aliforreddit.data.cache.redditor.RedditorDao
-import com.visualeap.aliforreddit.data.cache.redditor.RedditorEntity
+import com.visualeap.aliforreddit.data.repository.redditor.RedditorDao
+import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.cache.token.TokenDao
 import com.visualeap.aliforreddit.data.cache.token.CurrentTokenEntity
 import com.visualeap.aliforreddit.data.cache.token.TokenEntity
