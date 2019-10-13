@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    app:cardElevation="1dp"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    app:cardElevation="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:paddingBottom="8dp"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp">
 
         <com.visualeap.aliforreddit.presentation.util.RoundedImageView
             android:id="@+id/subredditImage"
@@ -17,10 +17,12 @@
             android:layout_height="40dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:background="@drawable/circle"
             app:isCircular="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/avatar_default" />
+            tools:srcCompat="@drawable/ic_subreddit_default"
+            tools:backgroundTint="@color/colorAccent" />
 
         <TextView
             android:id="@+id/subredditName"

@@ -6,18 +6,11 @@ import androidx.room.PrimaryKey
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 
-//TODO change redditor parentColumns to id
 @Entity(
     foreignKeys = [ForeignKey(
-        entity = RedditorEntity::class,
-        parentColumns = ["username"],
-        childColumns = ["authorName"],
-        onDelete = ForeignKey.CASCADE,
-        onUpdate = ForeignKey.CASCADE
-    ), ForeignKey(
         entity = SubredditEntity::class,
-        parentColumns = ["id"],
-        childColumns = ["subredditId"],
+        parentColumns = ["name"],
+        childColumns = ["subredditName"],
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE
     )]
@@ -29,6 +22,6 @@ data class PostEntity(
     val text: String,
     val score: Int,
     val commentCount: Int,
-    val subredditId: String,
+    val subredditName: String,
     val created: Long
 )

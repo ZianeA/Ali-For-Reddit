@@ -18,7 +18,7 @@ class FrontPagePresenter @Inject constructor(
     private val disposables = CompositeDisposable()
 
     fun start() {
-        val disposable = repository.getHomePosts({ /*onNext*/ }, { /*onError*/ })
+        val disposable = repository.getHomePosts({ print(it.status)/*onNext*/ }, { print(it.message)/*onError*/ })
             .applySchedulers(schedulerProvider)
             .subscribe(
                 { view.displayPosts(it) },

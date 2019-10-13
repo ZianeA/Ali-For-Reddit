@@ -5,11 +5,9 @@ import androidx.room.Relation
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 
-data class PostWithRedditor(
+data class PostWithSubredditEntity(
     @Embedded
     val postEntity: PostEntity,
-    @Relation(parentColumn = "authorName", entityColumn = "username")
-    val redditorEntity: RedditorEntity,
-    @Relation(parentColumn = "subredditId", entityColumn = "id")
+    @Relation(parentColumn = "subredditName", entityColumn = "name")
     val subredditEntity: SubredditEntity
 )

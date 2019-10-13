@@ -11,13 +11,12 @@ import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 @Dao
 interface PostDao {
     //LIMIT :requestedLoadSize OFFSET :position
-//    @Query("SELECT * FROM PostEntity p INNER JOIN RedditorEntity r ON p.authorName = r.username INNER JOIN SubredditEntity s ON p.subredditId = s.id")
+//    @Query("SELECT * FROM PostEntity p INNER JOIN RedditorEntity r ON p.authorName = r.username INNER JOIN SubredditEntity s ON p.subredditName = s.id")
     @Query("SELECT * FROM PostEntity")
-    fun getAll(): DataSource.Factory<Int, PostWithRedditor>
+    fun getAll(): DataSource.Factory<Int, PostWithSubredditEntity>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addAll(
-        redditors: List<RedditorEntity>,
         subreddits: List<SubredditEntity>,
         posts: List<PostEntity>
     )
@@ -27,20 +26,5 @@ interface PostDao {
     // One solution is to just replace, but this is also problematic see https://stackoverflow.com/questions/45677230/android-room-persistence-library-upsert
     // This is why I opted for the current solution.
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun add(redditor: RedditorEntity, subreddit: SubredditEntity, post: PostEntity)
-
-//    @Insert
-//    protected abstract fun addRedditorEntities(vararg redditors: Redditor)
-//
-//    @Insert
-//    protected abstract fun addSubredditEntities(vararg subreddits: Subreddit)
-//
-//    @Transaction
-//    fun addAll(
-//        posts: List<PostEntity>,
-//        redditors: List<RedditorEntity>,
-//        subreddits: List<Subreddit>
-//    ) {
-//        AddPostEntities(*posts.toTypedArray())
-//    }
+    fun add(subreddit: SubredditEntity, post: PostEntity)
 }

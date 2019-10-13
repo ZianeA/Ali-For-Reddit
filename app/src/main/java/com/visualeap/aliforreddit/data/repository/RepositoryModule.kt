@@ -1,12 +1,12 @@
 package com.visualeap.aliforreddit.data.repository
 
-import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.account.AccountDataRepository
 import com.visualeap.aliforreddit.data.repository.post.*
-import com.visualeap.aliforreddit.data.repository.redditor.RedditorDataRepository
-import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntityMapper
+import com.visualeap.aliforreddit.data.repository.redditor.*
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntityMapper
+import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
+import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponseMapper
 import com.visualeap.aliforreddit.data.repository.token.TokenDataRepository
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Redditor
@@ -33,14 +33,20 @@ interface RepositoryModule {
     fun provideRedditorRepository(RedditorDataRepository: RedditorDataRepository): RedditorRepository
 
     @Binds
-    fun providePostWithRedditorMapper(mapper: PostWithRedditorMapper): Mapper<PostWithRedditor, Post>
+    fun providePostWithSubredditEntityMapper(mapper: PostWithSubredditEntityMapper): Mapper<PostWithSubredditEntity, Post>
 
     @Binds
-    fun providePostResponseMapper(mapper: PostResponseMapper): Mapper<PostResponse, List<Post>>
+    fun providePostWithSubredditResponseMapper(mapper: PostWithSubredditResponseMapper): Mapper<PostWithSubredditResponse, List<Post>>
 
     @Binds
     fun provideRedditorEntityMapper(mapper: RedditorEntityMapper): Mapper<RedditorEntity, Redditor>
 
     @Binds
+    fun provideRedditorResponseMapper(mapper: RedditorResponseMapper): Mapper<RedditorResponse, Redditor>
+
+    @Binds
     fun provideSubredditEntityMapper(mapper: SubredditEntityMapper): Mapper<SubredditEntity, Subreddit>
+
+    @Binds
+    fun provideSubredditResponseMapper(mapper: SubredditResponseMapper): Mapper<SubredditResponse, List<Subreddit>>
 }

@@ -1,44 +1,40 @@
 package com.visualeap.aliforreddit.data.repository.post
 
-import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.Mapper
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 import com.visualeap.aliforreddit.domain.model.Post
-import com.visualeap.aliforreddit.domain.model.Redditor
 import com.visualeap.aliforreddit.domain.model.Subreddit
 import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
-class PostWithRedditorMapper @Inject constructor(
-    private val redditorEntityMapper: Mapper<RedditorEntity, Redditor>,
+class PostWithSubredditEntityMapper @Inject constructor(
     private val subredditEntityMapper: Mapper<SubredditEntity, Subreddit>
 ) :
-    Mapper<PostWithRedditor, Post> {
-    override fun mapReverse(model: Post): PostWithRedditor {
+    Mapper<PostWithSubredditEntity, Post> {
+    override fun mapReverse(model: Post): PostWithSubredditEntity {
         return model.run {
-            PostWithRedditor(
+            PostWithSubredditEntity(
                 PostEntity(
                     id,
-                    author.username,
+                    authorName,
                     title,
                     text,
                     score,
                     commentCount,
-                    subreddit.id,
+                    subreddit.name,
                     created
                 ),
-                redditorEntityMapper.mapReverse(author),
                 subredditEntityMapper.mapReverse(subreddit)
             )
         }
     }
 
-    override fun map(model: PostWithRedditor): Post {
+    override fun map(model: PostWithSubredditEntity): Post {
         return model.run {
             Post(
                 postEntity.id,
-                redditorEntityMapper.map(redditorEntity),
+                postEntity.authorName,
                 postEntity.title,
                 postEntity.text,
                 postEntity.score,

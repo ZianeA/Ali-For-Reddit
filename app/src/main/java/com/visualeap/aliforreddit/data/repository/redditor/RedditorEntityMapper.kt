@@ -8,14 +8,10 @@ import javax.inject.Inject
 @Reusable
 class RedditorEntityMapper @Inject constructor() : Mapper<RedditorEntity, Redditor> {
     override fun map(model: RedditorEntity): Redditor {
-        return model.run { Redditor(username) }
+        return model.run { Redditor(username, id) }
     }
 
     override fun mapReverse(model: Redditor): RedditorEntity {
-        return model.run {
-            RedditorEntity(
-                username
-            )
-        }
+        return model.run { RedditorEntity(username, id) }
     }
 }

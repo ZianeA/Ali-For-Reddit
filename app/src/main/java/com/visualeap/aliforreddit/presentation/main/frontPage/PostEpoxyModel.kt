@@ -1,14 +1,21 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage
 
-import android.text.format.DateUtils
+import android.content.Context
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
 import android.text.format.DateUtils.*
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
+import com.bumptech.glide.Glide
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Post
+import com.visualeap.aliforreddit.domain.model.Subreddit
 import com.visualeap.aliforreddit.presentation.util.KotlinEpoxyHolder
 import java.util.concurrent.TimeUnit
 
@@ -23,18 +30,41 @@ abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
 
     override fun bind(holder: PostHolder) {
 //        holder.imageView.setImageURI(imageUrl)
-        post.apply {
-            holder.postTitle.text = title
-            holder.postText.text = text
-            holder.postedByAndAt.text = "Posted by u/${author.username} • ${fromatTime(created)}"
-            holder.postScore.text = score.toString()
-            holder.postCommentCount.text = commentCount.toString()
-            holder.subredditName.text = "r/${subreddit.name}"
+        holder.apply {
+            val subreddit = post.subreddit
+
+            postTitle.text = post.title
+            postText.text = post.text
+            postedByAndAt.text = "Posted by u/${post.authorName} • ${formatTime(post.created)}"
+            postScore.text = post.score.toString()
+            postCommentCount.text = post.commentCount.toString()
+            subredditName.text = "r/${subreddit.name}"
+
+            //Subreddits' icons have no alpha/transparency.
+            subredditImage.background.setColorFilter(
+                Color.parseColor(
+                    subreddit.primaryColor ?: subreddit.keyColor ?: "#33a8ff"
+                ), PorterDuff.Mode.MULTIPLY
+            )
+
+            if (subreddit.iconUrl.isNullOrEmpty()) {
+                //If a subreddit has no icon we use a default subreddit icon.
+                subredditImage.scaleType = ImageView.ScaleType.CENTER
+                val defaultSubredditIcon =
+                    ContextCompat.getDrawable(view.context, R.drawable.ic_subreddit_default)
+                subredditImage.setImageDrawable(defaultSubredditIcon)
+            } else {
+                subredditImage.scaleType = ImageView.ScaleType.FIT_CENTER
+
+                Glide.with(view)
+                    .load(subreddit.iconUrl)
+                    .into(subredditImage);
+            }
         }
     }
 
     //TODO extract this method and unit test it. Maybe make an extension method with a name toTimeStamp
-    private fun fromatTime(created: Long): String {
+    private fun formatTime(created: Long): String {
         val createdInMillis = TimeUnit.SECONDS.toMillis(created)
         val now = System.currentTimeMillis()
         val timeSpan = now - createdInMillis
@@ -54,6 +84,13 @@ abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
 }
 
 class PostHolder : KotlinEpoxyHolder() {
+    lateinit var view: View
+
+    override fun bindView(itemView: View) {
+        super.bindView(itemView)
+        view = itemView
+    }
+
     val postTitle by bind<TextView>(R.id.postTitle)
     val postText by bind<TextView>(R.id.postText)
     val postScore by bind<TextView>(R.id.postScore)

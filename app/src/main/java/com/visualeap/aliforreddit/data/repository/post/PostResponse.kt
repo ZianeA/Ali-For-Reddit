@@ -17,9 +17,8 @@ data class PostResponse(val data: Data) {
                 @Json(name = "selftext") val text: String,
                 val score: Int,
                 @Json(name = "num_comments") val commentCount: Int,
-                @Json(name = "subreddit_id") val subredditId: String,//TODO Remove as unneeded
-                @Json(name = "subreddit") val subredditName: String,
-                @Json(name= "created_utc") val created: Long
+                @Json(name = "subreddit_id") val subredditId: String,
+                @Json(name = "created_utc") val created: Long
             )
         }
     }

@@ -6,7 +6,7 @@ import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 import com.visualeap.aliforreddit.data.cache.RedditDatabase
 import com.visualeap.aliforreddit.data.repository.post.PostDao
-import com.visualeap.aliforreddit.data.repository.post.PostWithRedditor
+import com.visualeap.aliforreddit.data.repository.post.PostWithSubredditEntity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -45,7 +45,7 @@ internal class PostDaoTest {
 
         val factory = postDao.getAll()
         val posts = (factory.create() as LimitOffsetDataSource).loadRange(0, 1)
-        assert(posts == listOf(PostWithRedditor(post, redditor, subreddit)))
+        assert(posts == listOf(PostWithSubredditEntity(post, redditor, subreddit)))
     }
 
     @Test
@@ -62,7 +62,7 @@ internal class PostDaoTest {
         val actualPost = (factory.create() as LimitOffsetDataSource)
             .loadRange(0, 1)
             .first()
-        val expectedPost = PostWithRedditor(post, redditor, subreddit)
+        val expectedPost = PostWithSubredditEntity(post, redditor, subreddit)
         assert(actualPost == expectedPost)
     }
 }

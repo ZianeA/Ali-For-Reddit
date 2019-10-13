@@ -1,16 +1,21 @@
 package com.visualeap.aliforreddit.data.network
 
 import com.visualeap.aliforreddit.data.repository.post.PostResponse
+import com.visualeap.aliforreddit.data.repository.redditor.RedditorResponse
+import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
 import io.reactivex.Single
 import retrofit2.http.*
 
 interface RedditService {
     @GET("/r/{subreddit}")
-    fun getPosts(@Path("subreddit") subredditName: String): Single<PostResponse>
+    fun getPostsBySubreddit(@Path("subreddit") subredditName: String): Single<PostResponse>
 
     @GET(".")
     fun getHomePosts(@Query("limit") limit: Int, @Query("after") after: String?): Single<PostResponse>
 
-    /*@GET("/r/{subreddit}/about")
-    fun getSubreddit(@Path("subreddit") subredditName: String): Single<Subreddit>*/
+    @GET("/api/info")
+    fun getSubreddit(@Query("id") subredditIds: String): Single<SubredditResponse>
+
+    @GET("/user/{username}/about")
+    fun getRedditor(@Path("username") username: String): Single<RedditorResponse>
 }

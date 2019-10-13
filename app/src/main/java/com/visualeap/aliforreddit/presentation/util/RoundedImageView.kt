@@ -5,10 +5,12 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.graphics.drawable.toBitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import com.visualeap.aliforreddit.R
 
-class RoundedImageView : AppCompatImageView {
 
+class RoundedImageView : AppCompatImageView {
     private var isCircular = false
     private var cornerRadius = 0
 
@@ -45,29 +47,27 @@ class RoundedImageView : AppCompatImageView {
                     R.styleable.RoundedImageView_cornerRadius,
                     DEFAULT_RADIUS
                 )
-
-            isCircular = getBoolean(R.styleable.RoundedImageView_isCircular, false)
+            isCircular = getBoolean(R.styleable.RoundedImageView_isCircular, true)
 
             recycle()
         }
+
+        //Request another setImageDrawable because isCircular and cornerRadius were not set yet when this method was initially called
+        setImageDrawable(drawable)
     }
 
-    //Get the correct width and height values by waiting until they are calculated.
-    // View.post and layout events won't work in preview mode.
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-
-        //When the bitmap's height and width are not set to ImageView's, corner radius won't work as expected.
-        drawable?.let {
-            val width = MeasureSpec.getSize(widthMeasureSpec)
-            val height = MeasureSpec.getSize(heightMeasureSpec)
-
+    override fun setImageDrawable(drawable: Drawable?) {
+        if (drawable != null && drawable.intrinsicWidth > 0) {
             val roundedDrawable =
-                RoundedBitmapDrawableFactory.create(resources, it.toBitmap(width, height))
+                RoundedBitmapDrawableFactory.create(
+                    resources,
+                    drawable.toBitmap()
+                )
             roundedDrawable.cornerRadius = cornerRadius.toFloat()
             roundedDrawable.isCircular = isCircular
-
-            setImageDrawable(roundedDrawable)
+            super.setImageDrawable(roundedDrawable)
+        } else {
+            super.setImageDrawable(drawable)
         }
     }
 
