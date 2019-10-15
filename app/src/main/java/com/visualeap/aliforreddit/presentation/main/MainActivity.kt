@@ -7,6 +7,7 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.presentation.di.ActivityScope
 import com.visualeap.aliforreddit.presentation.login.LoginActivity
@@ -16,27 +17,21 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.IllegalStateException
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView {
-
+class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
+    FragNavController.RootFragmentListener {
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Fragment>
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = androidInjector
-
-    private val tag = MainActivity::class.java.simpleName
+    val fragNavController: FragNavController =
+        FragNavController(supportFragmentManager, R.id.fragment_container)
 
     private val onBottomNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(
-                            R.id.fragment_container,
-                            FrontPageContainerFragment()
-                        )
-                        .commit();
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_dashboard -> {
@@ -86,22 +81,15 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView {
             onBottomNavigationItemSelectedListener
         )
 
-        // Set default selection
+        // Set default tab selection
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.navigation_home
         }
 
-//        val toggle = ActionBarDrawerToggle(
-//            this,
-//            drawerLayout,
-//            /*toolbar*/,
-//            R.string.navigation_drawer_open,
-//            R.string.navigation_drawer_close
-//        )
-//        toggle.syncState()
-//        drawerLayout.addDrawerListener(toggle)
-
         drawerNavigationView.setNavigationItemSelectedListener(onDrawerItemSelectedListener)
+
+        fragNavController.rootFragmentListener = this
+        fragNavController.initialize(FragNavController.TAB1, savedInstanceState)
 
         //TODO this is temporally
         profileImage.setOnClickListener {
@@ -123,4 +111,21 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView {
             super.onBackPressed()
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        fragNavController.onSaveInstanceState(outState)
+    }
+
+    override val numberOfRootFragments: Int
+        get() = 1
+
+    override fun getRootFragment(index: Int): Fragment {
+        when (index) {
+            FragNavController.TAB1 -> return FrontPageContainerFragment()
+        }
+        throw IllegalStateException("Invalid tab index")
+    }
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = androidInjector
 }

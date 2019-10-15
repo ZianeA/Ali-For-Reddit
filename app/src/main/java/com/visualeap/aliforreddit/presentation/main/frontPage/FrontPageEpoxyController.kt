@@ -3,6 +3,7 @@ package com.visualeap.aliforreddit.presentation.main.frontPage
 import com.airbnb.epoxy.AsyncEpoxyController
 import com.visualeap.aliforreddit.domain.model.Post
 import android.R.id
+import android.view.View
 import com.airbnb.epoxy.EpoxyAsyncUtil
 import com.airbnb.epoxy.EpoxyModel
 import com.airbnb.epoxy.paging.PagedListEpoxyController
@@ -12,7 +13,7 @@ import com.visualeap.aliforreddit.presentation.util.IoSchedulerProvider
 import java.util.concurrent.Executor
 
 
-class FrontPageEpoxyController :
+class FrontPageEpoxyController(private val onPostClickListener: View.OnClickListener) :
     PagedListEpoxyController<Post>(
         diffingHandler = EpoxyAsyncUtil.getAsyncBackgroundHandler()
     ) {
@@ -20,5 +21,6 @@ class FrontPageEpoxyController :
         return PostEpoxyModel_()
             .id(item!!.id) //Placeholders are disabled
             .post(item)
+            .listener(onPostClickListener)
     }
 }

@@ -21,24 +21,27 @@ import java.util.concurrent.TimeUnit
 
 @EpoxyModelClass(layout = R.layout.item_post)
 abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
-    @EpoxyAttribute
-    lateinit var post: Post
-
     companion object {
         private const val MONTH_IN_MILLIS: Long = WEEK_IN_MILLIS * 4
     }
+
+    @EpoxyAttribute
+    lateinit var post: Post
+
+    @EpoxyAttribute
+    lateinit var listener: View.OnClickListener
 
     override fun bind(holder: PostHolder) {
 //        holder.imageView.setImageURI(imageUrl)
         holder.apply {
             val subreddit = post.subreddit
-
             postTitle.text = post.title
             postText.text = post.text
             postedByAndAt.text = "Posted by u/${post.authorName} • ${formatTime(post.created)}"
             postScore.text = post.score.toString()
             postCommentCount.text = post.commentCount.toString()
             subredditName.text = "r/${subreddit.name}"
+            view.setOnClickListener(listener)
 
             //Subreddits' icons have no alpha/transparency.
             subredditImage.background.setColorFilter(

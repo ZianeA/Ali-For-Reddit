@@ -9,9 +9,11 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.paging.PagedList
 import com.airbnb.epoxy.EpoxyAsyncUtil
+import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
+import com.visualeap.aliforreddit.presentation.main.postDetail.PostDetailFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
@@ -23,7 +25,13 @@ class FrontPageFragment : Fragment(), FrontPageView {
     @Inject
     lateinit var presenter: FrontPagePresenter
 
-    private val epoxyController = FrontPageEpoxyController()
+    @Inject
+    lateinit var fragNavController: FragNavController
+
+    //TODO Refactor, move to presenter
+    private val epoxyController = FrontPageEpoxyController(View.OnClickListener {
+        fragNavController.pushFragment(PostDetailFragment())
+    })
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +46,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
 //        )
         val recyclerView = rootView.frontPageRecyclerView
         recyclerView.setController(epoxyController)
-        recyclerView.setItemSpacingDp(8)
+        recyclerView.setItemSpacingDp(8) //TODO Make this a constant
         return rootView
     }
 

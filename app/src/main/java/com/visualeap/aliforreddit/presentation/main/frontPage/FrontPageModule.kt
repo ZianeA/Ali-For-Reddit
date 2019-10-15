@@ -6,7 +6,6 @@ import dagger.Module
 
 @Module
 abstract class FrontPageModule {
-
     @FragmentScope
     @Binds
     abstract fun provideFrontPageView(frontPageFragment: FrontPageFragment): FrontPageView
