@@ -10,6 +10,13 @@ class CommentListingJsonAdapter(private val commentAdapter: JsonAdapter<Comment>
     override fun fromJson(reader: JsonReader): List<Comment>? {
         val comments = mutableListOf<Comment>()
 
+        // When a comment has no replies, the replies field is going to be an empty string.
+        // If we try to parse it we get the following exception: "Expected BEGIN_OBJECT but was STRING"
+        if(reader.peek() == JsonReader.Token.STRING){
+            reader.skipValue()
+            return null
+        }
+
         reader.beginObject()
         while (reader.hasNext()) {
             if (reader.nextName() == "data") {

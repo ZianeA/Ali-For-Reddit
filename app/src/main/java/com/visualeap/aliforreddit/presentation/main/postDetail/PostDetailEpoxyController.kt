@@ -14,6 +14,7 @@ class PostDetailEpoxyController : AsyncEpoxyController() {
         test(comments)
     }
 
+    //TODO rename method
     private fun test(commentList: List<Comment>){
         commentList.forEach {
             CommentEpoxyModel_()

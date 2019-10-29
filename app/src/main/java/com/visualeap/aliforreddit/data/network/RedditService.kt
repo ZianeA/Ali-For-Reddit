@@ -21,6 +21,6 @@ interface RedditService {
     fun getRedditor(@Path("username") username: String): Single<RedditorResponse>
 
     //TODO remove ?limit=10
-    @GET("/r/{subreddit}/comments/{postId}?limit=10")
+    @GET("/r/{subreddit}/comments/{postId}")
     fun getCommentsByPost(@Path("subreddit") subredditName: String, @Path("postId") postId: String): Single<CommentResponse>
 }
