@@ -69,24 +69,25 @@
 
         <ImageView
             android:id="@+id/upvoteImage"
-            android:layout_width="30dp"
+            android:layout_width="24dp"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
             android:tint="@android:color/darker_gray"
+            app:layout_constraintBottom_toBottomOf="@+id/postScore"
             app:layout_constraintDimensionRatio="h,1:1"
             app:layout_constraintStart_toStartOf="@+id/postText"
-            app:layout_constraintTop_toBottomOf="@+id/postText"
+            app:layout_constraintTop_toTopOf="@+id/postScore"
             app:srcCompat="@drawable/ic_arrow_up" />
 
         <ImageView
             android:id="@+id/downvoteImage"
-            android:layout_width="30dp"
+            android:layout_width="24dp"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
             android:tint="@android:color/darker_gray"
+            app:layout_constraintBottom_toBottomOf="@+id/postScore"
             app:layout_constraintDimensionRatio="h,1:1"
             app:layout_constraintStart_toEndOf="@+id/postScore"
-            app:layout_constraintTop_toTopOf="@+id/upvoteImage"
+            app:layout_constraintTop_toTopOf="@+id/postScore"
             app:srcCompat="@drawable/ic_arrow_down" />
 
         <TextView
@@ -94,24 +95,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintBottom_toBottomOf="@+id/upvoteImage"
             app:layout_constraintStart_toEndOf="@+id/upvoteImage"
-            app:layout_constraintTop_toTopOf="@+id/upvoteImage"
+            app:layout_constraintTop_toBottomOf="@+id/postText"
             tools:text="508" />
 
         <ImageView
             android:id="@+id/commentImage"
-            android:layout_width="30dp"
+            android:layout_width="20dp"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
             android:tint="@android:color/darker_gray"
+            app:layout_constraintBottom_toBottomOf="@+id/postCommentCount"
             app:layout_constraintDimensionRatio="h,1:1"
             app:layout_constraintEnd_toStartOf="@+id/postCommentCount"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toEndOf="@+id/downvoteImage"
-            app:layout_constraintTop_toTopOf="@+id/downvoteImage"
+            app:layout_constraintTop_toTopOf="@+id/postCommentCount"
             app:srcCompat="@drawable/ic_comment" />
 
         <TextView
@@ -121,23 +123,22 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintBottom_toBottomOf="@+id/commentImage"
             app:layout_constraintEnd_toStartOf="@+id/shareImage"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/commentImage"
-            app:layout_constraintTop_toTopOf="@+id/commentImage"
+            app:layout_constraintTop_toTopOf="@+id/postScore"
             tools:text="7.4k" />
 
         <ImageView
             android:id="@+id/shareImage"
-            android:layout_width="30dp"
+            android:layout_width="20dp"
             android:layout_height="0dp"
             android:layout_marginEnd="8dp"
             android:tint="@android:color/darker_gray"
-            app:layout_constraintBottom_toBottomOf="@+id/commentImage"
+            app:layout_constraintBottom_toBottomOf="@+id/share"
             app:layout_constraintDimensionRatio="h,1:1"
             app:layout_constraintEnd_toStartOf="@+id/share"
-            app:layout_constraintTop_toTopOf="@+id/commentImage"
+            app:layout_constraintTop_toTopOf="@+id/share"
             app:srcCompat="@drawable/ic_share" />
 
         <TextView
@@ -146,9 +147,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintBottom_toBottomOf="@+id/shareImage"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/shareImage"
+            app:layout_constraintTop_toTopOf="@+id/postCommentCount"
             tools:text="Share" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

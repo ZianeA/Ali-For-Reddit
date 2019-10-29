@@ -1,5 +1,7 @@
 package util.domain
 
+import com.visualeap.aliforreddit.data.repository.comment.CommentEntity
+import com.visualeap.aliforreddit.data.repository.comment.CommentResponse
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.post.PostEntity
 import com.visualeap.aliforreddit.data.repository.post.PostResponse
@@ -8,10 +10,7 @@ import com.visualeap.aliforreddit.data.repository.post.PostWithSubredditResponse
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorResponse
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
-import com.visualeap.aliforreddit.domain.model.Account
-import com.visualeap.aliforreddit.domain.model.Post
-import com.visualeap.aliforreddit.domain.model.Redditor
-import com.visualeap.aliforreddit.domain.model.Subreddit
+import com.visualeap.aliforreddit.domain.model.*
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
@@ -124,8 +123,8 @@ fun createSubredditResponse(
 
 //region Post
 private const val POST_ID = "FakePostId"
-private const val POST_TITLE = "This is a fake title"
-private const val POST_TEXT = "This is a fake text."
+private const val POST_TITLE = "This is a fake post title"
+private const val POST_TEXT = "This is a fake post text."
 private const val POST_SCORE = 201
 private const val POST_COMMENT_COUNT = 202
 private const val POST_CREATED: Long = 1569878021
@@ -191,6 +190,69 @@ fun createPostWithSubredditResponse(
     postResponse: PostResponse = createPostResponse(),
     subredditResponse: SubredditResponse = createSubredditResponse()
 ) = PostWithSubredditResponse(postResponse, subredditResponse)
+//endregion
+
+//region comment
+const val COMMENT_ID = "FakeCommentId"
+const val NESTED_COMMENT_ID = "FakeNestedCommentId"
+private const val COMMENT_TEXT = "This is a fake comment text."
+private const val COMMENT_SCORE = 201
+private const val COMMENT_CREATION_DATE: Long = 1569878021
+private const val COMMENT_DEPTH = 0
+const val NESTED_COMMENT_DEPTH = 1
+
+fun createComment(
+    id: String = COMMENT_ID,
+    authorName: String = REDDITOR_USERNAME,
+    text: String = COMMENT_TEXT,
+    score: Int = COMMENT_SCORE,
+    creationDate: Long = COMMENT_CREATION_DATE,
+    depth: Int = COMMENT_DEPTH,
+    postId: String = POST_ID,
+    parentId: String? = null,
+    replies: List<Comment>? = listOf(
+        createComment(
+            id = NESTED_COMMENT_ID,
+            parentId = COMMENT_ID,
+            depth = NESTED_COMMENT_DEPTH,
+            replies = null
+        )
+    )
+) = Comment(id, authorName, text, score, creationDate, depth, postId, parentId, replies)
+
+fun createCommentResponse(
+    id: String = COMMENT_ID,
+    authorName: String = REDDITOR_USERNAME,
+    text: String = COMMENT_TEXT,
+    score: Int = COMMENT_SCORE,
+    creationDate: Long = COMMENT_CREATION_DATE,
+    depth: Int = COMMENT_DEPTH,
+    postId: String = POST_ID,
+    parentId: String = POST_ID,
+    replies: List<CommentResponse.Comment>? = createCommentResponse(
+        id = NESTED_COMMENT_ID,
+        parentId = COMMENT_ID,
+        depth = NESTED_COMMENT_DEPTH,
+        replies = null
+    ).comments
+) = CommentResponse(
+    listOf(
+        CommentResponse.Comment(
+            id, authorName, text, score, creationDate, depth, postId, parentId, replies
+        )
+    )
+)
+
+fun createCommentEntity(
+    id: String = COMMENT_ID,
+    authorName: String = REDDITOR_USERNAME,
+    text: String = COMMENT_TEXT,
+    score: Int = COMMENT_SCORE,
+    creationDate: Long = COMMENT_CREATION_DATE,
+    depth: Int = COMMENT_DEPTH,
+    postId: String = POST_ID,
+    parentId: String? = null
+) = CommentEntity(id, authorName, text, score, creationDate, depth, postId, parentId)
 //endregion
 
 fun createBasicAuth(clientId: String = "CLIENT ID"): String = Credentials.basic(clientId, "")

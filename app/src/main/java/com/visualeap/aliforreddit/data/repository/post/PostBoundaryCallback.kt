@@ -21,8 +21,7 @@ class PostBoundaryCallback(
 ) : PagedList.BoundaryCallback<Post>() {
 
     companion object {
-        //TODO change to 50
-        private const val NETWORK_PAGE_SIZE = 50
+        private const val NETWORK_PAGE_SIZE = 25
     }
 
     val replay: BehaviorRelay<NetworkState> = BehaviorRelay.create()

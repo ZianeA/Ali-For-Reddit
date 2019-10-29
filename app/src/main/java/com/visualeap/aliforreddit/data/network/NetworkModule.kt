@@ -1,8 +1,10 @@
 package com.visualeap.aliforreddit.data.network
 
+import com.squareup.moshi.Moshi
 import com.visualeap.aliforreddit.data.network.auth.TokenAuthenticator
 import com.visualeap.aliforreddit.data.network.auth.TokenInterceptor
 import com.visualeap.aliforreddit.data.network.auth.token.TokenRs
+import com.visualeap.aliforreddit.data.repository.comment.CommentJsonAdapterFactory
 import com.visualeap.aliforreddit.data.repository.token.TokenRemoteSource
 import dagger.Module
 import dagger.Provides
@@ -16,7 +18,6 @@ import javax.inject.Singleton
 
 @Module
 class NetworkModule {
-
     @Singleton
     @Provides
     @Named("okHttpClient")
@@ -34,13 +35,21 @@ class NetworkModule {
     @Singleton
     @Provides
     @Named("retrofit")
-    fun provideRetrofit(@Named("okHttpClient") okHttpClient: OkHttpClient): Retrofit =
-        Retrofit.Builder()
+    fun provideRetrofit(@Named("okHttpClient") okHttpClient: OkHttpClient): Retrofit {
+        //TODO Refactor
+        val moshi = Moshi.Builder()
+            .add(CommentJsonAdapterFactory())
+            .add(ApplicationJsonAdapterFactory.INSTANCE)
+            /*.add(KotlinJsonAdapterFactory())*/ //TODO Remove
+            .build()
+
+        return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(okHttpClient)
             .build()
+    }
 
     @Singleton
     @Provides

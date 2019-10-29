@@ -8,6 +8,7 @@ import com.visualeap.aliforreddit.data.repository.redditor.RedditorDao
 import com.visualeap.aliforreddit.data.repository.post.PostDao
 import com.visualeap.aliforreddit.data.cache.token.TokenDao
 import com.visualeap.aliforreddit.data.cache.token.TokenLs
+import com.visualeap.aliforreddit.data.repository.comment.CommentDao
 import com.visualeap.aliforreddit.data.repository.token.TokenLocalSource
 import dagger.Provides
 import javax.inject.Singleton
@@ -48,5 +49,11 @@ class DatabaseModule {
     @Provides
     fun providePostDao(database: RedditDatabase): PostDao {
         return database.postDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideCommentDao(database: RedditDatabase): CommentDao {
+        return database.commentDao()
     }
 }

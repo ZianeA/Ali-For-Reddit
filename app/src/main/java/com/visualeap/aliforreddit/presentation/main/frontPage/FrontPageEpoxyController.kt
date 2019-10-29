@@ -13,7 +13,7 @@ import com.visualeap.aliforreddit.presentation.util.IoSchedulerProvider
 import java.util.concurrent.Executor
 
 
-class FrontPageEpoxyController(private val onPostClickListener: View.OnClickListener) :
+class FrontPageEpoxyController(private val onPostClickListener: ((clickedPost: Post) -> Unit)) :
     PagedListEpoxyController<Post>(
         diffingHandler = EpoxyAsyncUtil.getAsyncBackgroundHandler()
     ) {
@@ -21,6 +21,6 @@ class FrontPageEpoxyController(private val onPostClickListener: View.OnClickList
         return PostEpoxyModel_()
             .id(item!!.id) //Placeholders are disabled
             .post(item)
-            .listener(onPostClickListener)
+            .listener(View.OnClickListener { onPostClickListener.invoke(item) })
     }
 }

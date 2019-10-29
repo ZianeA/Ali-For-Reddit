@@ -1,5 +1,9 @@
 package com.visualeap.aliforreddit.domain.model
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class Post(
     val id: String,
     val authorName: String,
@@ -9,4 +13,4 @@ data class Post(
     val commentCount: Int,
     val subreddit: Subreddit,
     val created: Long
-)
+) : Parcelable

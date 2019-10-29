@@ -1,6 +1,7 @@
 package com.visualeap.aliforreddit.data.repository
 
 import com.visualeap.aliforreddit.data.repository.account.AccountDataRepository
+import com.visualeap.aliforreddit.data.repository.comment.*
 import com.visualeap.aliforreddit.data.repository.post.*
 import com.visualeap.aliforreddit.data.repository.redditor.*
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
@@ -8,29 +9,30 @@ import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntityMappe
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponseMapper
 import com.visualeap.aliforreddit.data.repository.token.TokenDataRepository
+import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Redditor
 import com.visualeap.aliforreddit.domain.model.Subreddit
-import com.visualeap.aliforreddit.domain.repository.AccountRepository
-import com.visualeap.aliforreddit.domain.repository.PostRepository
-import com.visualeap.aliforreddit.domain.repository.RedditorRepository
-import com.visualeap.aliforreddit.domain.repository.TokenRepository
+import com.visualeap.aliforreddit.domain.repository.*
 import dagger.Binds
 import dagger.Module
 
 @Module
 interface RepositoryModule {
     @Binds
-    fun providePostRepository(postDataRepository: PostDataRepository): PostRepository
+    fun providePostRepository(postRepo: PostDataRepository): PostRepository
 
     @Binds
-    fun provideAccountRepository(accountDataRepository: AccountDataRepository): AccountRepository
+    fun provideAccountRepository(accountRepo: AccountDataRepository): AccountRepository
 
     @Binds
-    fun provideTokenRepository(tokenDataRepository: TokenDataRepository): TokenRepository
+    fun provideTokenRepository(tokenRepo: TokenDataRepository): TokenRepository
 
     @Binds
-    fun provideRedditorRepository(RedditorDataRepository: RedditorDataRepository): RedditorRepository
+    fun provideRedditorRepository(redditorRepo: RedditorDataRepository): RedditorRepository
+
+    @Binds
+    fun provideCommentRepository(commentRepo: CommentDataRepository): CommentRepository
 
     @Binds
     fun providePostWithSubredditEntityMapper(mapper: PostWithSubredditEntityMapper): Mapper<PostWithSubredditEntity, Post>
@@ -49,4 +51,10 @@ interface RepositoryModule {
 
     @Binds
     fun provideSubredditResponseMapper(mapper: SubredditResponseMapper): Mapper<SubredditResponse, List<Subreddit>>
+
+    @Binds
+    fun provideCommentResponseMapper(mapper: CommentResponseMapper): Mapper<CommentResponse, List<Comment>>
+
+    @Binds
+    fun provideCommentEntityMapper(mapper: CommentEntityMapper) : Mapper<List<CommentEntity>, List<Comment>>
 }

@@ -13,109 +13,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!--<com.google.android.material.appbar.AppBarLayout-->
-        <!--android:id="@+id/appBarLayout"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:paddingBottom="@dimen/appbar_padding_bottom"-->
-        <!--android:theme="@style/AppTheme.AppBarOverlay"-->
-        <!--app:elevation="0dp"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent">-->
-
-        <!--<androidx.appcompat.widget.Toolbar-->
-        <!--android:id="@+id/toolbar"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="?attr/actionBarSize"-->
-        <!--android:background="?attr/colorPrimary"-->
-        <!--app:popupTheme="@style/AppTheme.PopupOverlay"-->
-        <!--app:title="@string/app_name" />-->
-
-        <!--</com.google.android.material.appbar.AppBarLayout>-->
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/appBar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:paddingBottom="8dp"
-            app:cardElevation="4dp"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <com.visualeap.aliforreddit.presentation.util.RoundedImageView
-                    android:id="@+id/profileImage"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    app:cornerRadius="4dp"
-                    app:isCircular="false"
-                    app:layout_constraintBottom_toBottomOf="@+id/searchBarBackground"
-                    app:layout_constraintDimensionRatio="h,1:1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/searchBarBackground"
-                    app:srcCompat="@drawable/avatar_default" />
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/searchBarBackground"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    app:cardBackgroundColor="#f6f7f8"
-                    app:cardCornerRadius="4dp"
-                    app:cardElevation="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/profileImage"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                </androidx.cardview.widget.CardView>
-
-                <TextView
-                    android:id="@+id/searchBarHint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="Search"
-                    android:textColor="#a4a7a8"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/searchBarBackground"
-                    app:layout_constraintStart_toEndOf="@+id/searchBarIcon"
-                    app:layout_constraintTop_toTopOf="@+id/searchBarBackground" />
-
-                <ImageView
-                    android:id="@+id/searchBarIcon"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginBottom="0dp"
-                    android:tint="#a4a7a8"
-                    app:layout_constraintBottom_toBottomOf="@+id/searchBarHint"
-                    app:layout_constraintDimensionRatio="h,1:1"
-                    app:layout_constraintStart_toStartOf="@+id/searchBarBackground"
-                    app:layout_constraintTop_toTopOf="@+id/searchBarHint"
-                    app:srcCompat="@drawable/ic_search" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.cardview.widget.CardView>
-
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-            app:layout_constraintTop_toBottomOf="@+id/appBar" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"

@@ -13,11 +13,13 @@ import com.visualeap.aliforreddit.data.cache.token.CurrentTokenEntity
 import com.visualeap.aliforreddit.data.cache.token.TokenEntity
 import com.visualeap.aliforreddit.data.cache.token.UserTokenEntity
 import com.visualeap.aliforreddit.data.cache.token.UserlessTokenEntity
+import com.visualeap.aliforreddit.data.repository.comment.CommentDao
+import com.visualeap.aliforreddit.data.repository.comment.CommentEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 
 @Database(
     entities = [TokenEntity::class, UserTokenEntity::class, UserlessTokenEntity::class,
-        CurrentTokenEntity::class, AccountEntity::class, RedditorEntity::class, PostEntity::class, SubredditEntity::class],
+        CurrentTokenEntity::class, AccountEntity::class, RedditorEntity::class, PostEntity::class, SubredditEntity::class, CommentEntity::class],
     version = 1
 )
 abstract class RedditDatabase : RoomDatabase() {
@@ -30,4 +32,5 @@ abstract class RedditDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun redditorDao(): RedditorDao
     abstract fun postDao(): PostDao
+    abstract fun commentDao(): CommentDao
 }

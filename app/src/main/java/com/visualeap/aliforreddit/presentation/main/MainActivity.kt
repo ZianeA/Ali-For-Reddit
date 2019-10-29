@@ -92,12 +92,12 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
         fragNavController.initialize(FragNavController.TAB1, savedInstanceState)
 
         //TODO this is temporally
-        profileImage.setOnClickListener {
+        /*profileImage.setOnClickListener {
             startActivityForResult(
                 Intent(this, LoginActivity::class.java), REQUEST_CODE_LOGIN
             )
 //            drawerLayout.openDrawer(GravityCompat.START)
-        }
+        }*/
     }
 
     companion object {

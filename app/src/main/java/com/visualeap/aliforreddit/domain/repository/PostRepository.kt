@@ -5,6 +5,7 @@ import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.util.NetworkState
 import io.reactivex.Observable
 import io.reactivex.Observer
+import io.reactivex.Single
 import java.util.function.Consumer
 
 interface PostRepository {
@@ -13,4 +14,6 @@ interface PostRepository {
         onNext: (t: NetworkState) -> Unit,
         onError: (t: Throwable) -> Unit
     ): Observable<PagedList<Post>>
+
+    fun getPostById(id: String): Single<Post>
 }

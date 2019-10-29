@@ -1,0 +1,62 @@
+package com.visualeap.aliforreddit.data.repository.comment
+
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
+import com.visualeap.aliforreddit.data.repository.comment.CommentResponse.*
+
+class CommentListingJsonAdapter(private val commentAdapter: JsonAdapter<Comment>) :
+    JsonAdapter<List<Comment>>() {
+    override fun fromJson(reader: JsonReader): List<Comment>? {
+        val comments = mutableListOf<Comment>()
+
+        reader.beginObject()
+        while (reader.hasNext()) {
+            if (reader.nextName() == "data") {
+                reader.beginObject()
+                while (reader.hasNext()) {
+                    if (reader.nextName() == "children") {
+                        reader.beginArray()
+                        while (reader.hasNext()) {
+                            reader.beginObject()
+                            while (reader.hasNext()) {
+                                when (reader.selectName(CHILDREN_OPTIONS)) {
+                                    0 -> {
+                                        val kind = reader.nextString()
+                                        if (kind == "more") {
+                                            reader.skipName()
+                                            reader.skipValue()
+                                        }
+                                    }
+                                    1 -> comments.add(commentAdapter.fromJson(reader)!!)
+                                    -1 -> {
+                                        reader.skipName()
+                                        reader.skipValue()
+                                    }
+                                }
+                            }
+                            reader.endObject()
+                        }
+                        reader.endArray()
+                    } else {
+                        reader.skipValue()
+                    }
+                }
+                reader.endObject()
+            } else {
+                reader.skipValue()
+            }
+        }
+        reader.endObject()
+
+        return comments
+    }
+
+    override fun toJson(writer: JsonWriter, value: List<Comment>?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    companion object {
+        private val CHILDREN_OPTIONS = JsonReader.Options.of("kind", "data")
+    }
+}

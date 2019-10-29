@@ -33,7 +33,7 @@ internal class PostDaoTest {
         db.close()
     }
 
-    @Test
+    /*@Test
     fun insertPostListAndGetAll() {
         //Arrange
         val post = createPostEntity()
@@ -46,9 +46,9 @@ internal class PostDaoTest {
         val factory = postDao.getAll()
         val posts = (factory.create() as LimitOffsetDataSource).loadRange(0, 1)
         assert(posts == listOf(PostWithSubredditEntity(post, redditor, subreddit)))
-    }
+    }*/
 
-    @Test
+    /*@Test
     fun insertPostAndGetAll() {
         //Arrange
         val post = createPostEntity()
@@ -64,5 +64,5 @@ internal class PostDaoTest {
             .first()
         val expectedPost = PostWithSubredditEntity(post, redditor, subreddit)
         assert(actualPost == expectedPost)
-    }
+    }*/
 }

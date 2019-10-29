@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.data.network
 
+import com.visualeap.aliforreddit.data.repository.comment.CommentResponse
 import com.visualeap.aliforreddit.data.repository.post.PostResponse
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorResponse
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
@@ -18,4 +19,8 @@ interface RedditService {
 
     @GET("/user/{username}/about")
     fun getRedditor(@Path("username") username: String): Single<RedditorResponse>
+
+    //TODO remove ?limit=10
+    @GET("/r/{subreddit}/comments/{postId}?limit=10")
+    fun getCommentsByPost(@Path("subreddit") subredditName: String, @Path("postId") postId: String): Single<CommentResponse>
 }

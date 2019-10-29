@@ -9,6 +9,7 @@ import com.visualeap.aliforreddit.domain.repository.PostRepository
 import com.visualeap.aliforreddit.domain.util.NetworkState
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import io.reactivex.Observable
+import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,6 +22,10 @@ class PostDataRepository @Inject constructor(
     private val postWithSubredditResponseMapper: @JvmSuppressWildcards Mapper<PostWithSubredditResponse, List<Post>>
 ) :
     PostRepository {
+    override fun getPostById(id: String): Single<Post> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun getPostsBySubreddit(subreddit: String): Observable<PagedList<Post>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

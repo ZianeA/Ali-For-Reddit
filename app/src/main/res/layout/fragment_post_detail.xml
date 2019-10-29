@@ -5,10 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".presentation.main.postDetail.PostDetailFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!--<include layout="@layout/item_post"/>-->
+    <com.airbnb.epoxy.EpoxyRecyclerView
+        android:id="@+id/postDetailRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent" />
 
 </FrameLayout>

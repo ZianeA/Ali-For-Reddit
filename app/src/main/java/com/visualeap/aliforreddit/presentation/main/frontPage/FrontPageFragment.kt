@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.paging.PagedList
 import com.airbnb.epoxy.EpoxyAsyncUtil
@@ -29,9 +30,9 @@ class FrontPageFragment : Fragment(), FrontPageView {
     lateinit var fragNavController: FragNavController
 
     //TODO Refactor, move to presenter
-    private val epoxyController = FrontPageEpoxyController(View.OnClickListener {
-        fragNavController.pushFragment(PostDetailFragment())
-    })
+    private val epoxyController = FrontPageEpoxyController {
+        fragNavController.pushFragment(PostDetailFragment.newInstance(it))
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,11 +40,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_home, container, false)
-//        rootView.section_label.text = getString(
-//            R.string.section_format, arguments?.getInt(
-//                ARG_SECTION_NUMBER
-//            )
-//        )
+
         val recyclerView = rootView.frontPageRecyclerView
         recyclerView.setController(epoxyController)
         recyclerView.setItemSpacingDp(8) //TODO Make this a constant
@@ -52,6 +49,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
 
     override fun onStart() {
         super.onStart()
+        /*if (arguments?.getInt(ARG_SECTION_NUMBER) == 2)*/
         presenter.start()
     }
 
@@ -62,6 +60,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
 
     override fun onStop() {
         super.onStop()
+        /*if (arguments?.getInt(ARG_SECTION_NUMBER) == 2)*/
         presenter.stop()
     }
 
