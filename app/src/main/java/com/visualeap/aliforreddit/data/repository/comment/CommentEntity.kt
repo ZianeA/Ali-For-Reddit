@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.visualeap.aliforreddit.data.repository.post.PostEntity
 import com.visualeap.aliforreddit.domain.model.Comment
 
+//TODO add self reference
 @Entity(
     foreignKeys = [ForeignKey(
         entity = PostEntity::class,
