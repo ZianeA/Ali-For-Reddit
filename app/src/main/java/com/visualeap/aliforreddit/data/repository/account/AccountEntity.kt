@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
-import com.visualeap.aliforreddit.data.cache.token.TokenEntity
+import com.visualeap.aliforreddit.data.repository.token.TokenEntity
 
 @Entity(
     foreignKeys = [ForeignKey(

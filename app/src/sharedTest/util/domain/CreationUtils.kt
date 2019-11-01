@@ -1,5 +1,11 @@
 package util.domain
 
+import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity
+import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity.*
+import com.visualeap.aliforreddit.data.repository.token.TokenEntity
+import com.visualeap.aliforreddit.data.repository.token.UserTokenEntity
+import com.visualeap.aliforreddit.data.repository.token.UserlessTokenEntity
+import com.visualeap.aliforreddit.data.repository.token.TokenResponse
 import com.visualeap.aliforreddit.data.repository.comment.CommentEntity
 import com.visualeap.aliforreddit.data.repository.comment.CommentResponse
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
@@ -10,6 +16,8 @@ import com.visualeap.aliforreddit.data.repository.post.PostWithSubredditResponse
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorResponse
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
+import com.visualeap.aliforreddit.data.repository.token.TokenWithUserTokenEntity
+import com.visualeap.aliforreddit.data.repository.token.TokenWithUserlessTokenEntity
 import com.visualeap.aliforreddit.domain.model.*
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
@@ -30,6 +38,7 @@ const val ID = 101
 const val NOT_SET_ROW_ID = 0
 const val SINGLE_RECORD_ID = 1
 
+//region Token
 fun createUserToken(
     id: Int = ID,
     accessToken: String = ACCESS_TOKEN,
@@ -52,6 +61,42 @@ fun createToken(
     return if (Random.nextBoolean()) createUserlessToken(id, accessToken, type)
     else createUserToken(id, accessToken, type)
 }
+
+fun createTokenResponse(
+    accessToken: String = ACCESS_TOKEN,
+    type: String = TOKEN_TYPE,
+    refreshToken: String? = REFRESH_TOKEN
+) = TokenResponse(accessToken, type, refreshToken)
+
+fun createTokenEntity(
+    id: Int = ID,
+    accessToken: String = ACCESS_TOKEN,
+    type: String = TOKEN_TYPE
+) = TokenEntity(id, accessToken, type)
+
+fun createUserTokenEntity(id: Int = ID, refreshToken: String = REFRESH_TOKEN) =
+    UserTokenEntity(id, refreshToken)
+
+fun createUserlessTokenEntity(id: Int = ID, deviceId: String = DEVICE_ID) =
+    UserlessTokenEntity(id, deviceId)
+
+fun createTokenWithUserTokenEntity(
+    token: TokenEntity = createTokenEntity(),
+    userToken: UserTokenEntity = createUserTokenEntity()
+) = TokenWithUserTokenEntity(token, userToken)
+
+fun createTokenWithUserlessTokenEntity(
+    token: TokenEntity = createTokenEntity(),
+    userlessToken: UserlessTokenEntity = createUserlessTokenEntity()
+) =
+    TokenWithUserlessTokenEntity(token, userlessToken)
+
+fun createCurrentTokenEntity(
+    id: Int = SINGLE_RECORD_ID,
+    tokenId: Int = ID,
+    tokenType: TokenType = TokenType.USER
+) = CurrentTokenEntity(id, tokenId, tokenType)
+//endregion
 
 fun createAccount(
     id: Int = ID,

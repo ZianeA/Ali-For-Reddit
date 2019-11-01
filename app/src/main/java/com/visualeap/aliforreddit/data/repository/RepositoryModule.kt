@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.data.repository
 
+import com.visualeap.aliforreddit.data.repository.token.TokenResponse
 import com.visualeap.aliforreddit.data.repository.account.AccountDataRepository
 import com.visualeap.aliforreddit.data.repository.comment.*
 import com.visualeap.aliforreddit.data.repository.post.*
@@ -8,11 +9,14 @@ import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntityMapper
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponseMapper
-import com.visualeap.aliforreddit.data.repository.token.TokenDataRepository
+import com.visualeap.aliforreddit.data.repository.token.*
 import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Redditor
 import com.visualeap.aliforreddit.domain.model.Subreddit
+import com.visualeap.aliforreddit.domain.model.token.Token
+import com.visualeap.aliforreddit.domain.model.token.UserToken
+import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.*
 import dagger.Binds
 import dagger.Module
@@ -56,5 +60,11 @@ interface RepositoryModule {
     fun provideCommentResponseMapper(mapper: CommentResponseMapper): Mapper<CommentResponse, List<Comment>>
 
     @Binds
-    fun provideCommentEntityMapper(mapper: CommentEntityMapper) : Mapper<List<CommentEntity>, List<Comment>>
+    fun provideCommentEntityMapper(mapper: CommentEntityMapper): Mapper<List<CommentEntity>, List<Comment>>
+
+    @Binds
+    fun provideUserTokenMapper(mapper: TokenWithUserTokenEntityMapper): Mapper<TokenWithUserTokenEntity, UserToken>
+
+    @Binds
+    fun provideUserlessTokenMapper(mapper: TokenWithUserlessTokenEntityMapper): Mapper<TokenWithUserlessTokenEntity, UserlessToken>
 }

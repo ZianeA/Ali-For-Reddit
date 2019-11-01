@@ -50,13 +50,6 @@ class PostDataRepository @Inject constructor(
         return RxPagedListBuilder(postFactory, config)
             .setBoundaryCallback(postBoundaryCallback)
             .buildObservable()
-//
-//        return postDao.getAll()
-//            .map(postWithSubredditEntityMapper::map)
-//            .toObservable(
-//                pageSize = DATABASE_PAGE_SIZE,
-//                boundaryCallback = postBoundaryCallback
-//            )
     }
 
     companion object {

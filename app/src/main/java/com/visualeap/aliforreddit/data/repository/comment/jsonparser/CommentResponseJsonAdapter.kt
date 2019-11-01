@@ -1,8 +1,9 @@
-package com.visualeap.aliforreddit.data.repository.comment
+package com.visualeap.aliforreddit.data.repository.comment.jsonparser
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
+import com.visualeap.aliforreddit.data.repository.comment.CommentResponse
 
 class CommentResponseJsonAdapter(private val commentListAdapter: JsonAdapter<List<CommentResponse.Comment>>) :
     JsonAdapter<CommentResponse>() {

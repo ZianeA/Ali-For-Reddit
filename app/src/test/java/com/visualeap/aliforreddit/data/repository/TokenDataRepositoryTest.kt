@@ -1,8 +1,13 @@
 package com.visualeap.aliforreddit.data.repository
 
-import com.visualeap.aliforreddit.data.repository.token.TokenDataRepository
-import com.visualeap.aliforreddit.data.repository.token.TokenLocalSource
-import com.visualeap.aliforreddit.data.repository.token.TokenRemoteSource
+import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity.*
+import com.visualeap.aliforreddit.data.repository.token.TokenDao
+import com.visualeap.aliforreddit.data.network.auth.AuthService
+import com.visualeap.aliforreddit.data.repository.token.TokenResponse
+import com.visualeap.aliforreddit.data.repository.token.*
+import com.visualeap.aliforreddit.domain.model.token.Token
+import com.visualeap.aliforreddit.domain.model.token.UserToken
+import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable
@@ -20,9 +25,27 @@ import java.sql.SQLException
 @ExtendWith(MockKExtension::class)
 class TokenDataRepositoryTest {
 
-    private val remote: TokenRemoteSource = mockk()
-    private val local: TokenLocalSource = mockk()
-    private val tokenRepository: TokenDataRepository = TokenDataRepository(remote, local)
+    private val remote: AuthService = mockk()
+    private val local: TokenDao = mockk()
+    private val basicAuth = createBasicAuth()
+    private val userTokenMapper: Mapper<TokenWithUserTokenEntity, UserToken> = mockk()
+    private val userlessTokenMapper: Mapper<TokenWithUserlessTokenEntity, UserlessToken> = mockk()
+    private val tokenRepository: TokenDataRepository =
+        TokenDataRepository(
+            remote,
+            local,
+            userTokenMapper,
+            userlessTokenMapper,
+            REDIRECT_URL,
+            basicAuth
+        )
+
+    companion object {
+        private const val USER_TOKEN_GRANT_TYPE = "authorization_code"
+        private const val REFRESH_TOKEN_GRANT_TYPE = "refresh_token"
+        private const val USERLESS_TOKEN_GRANT_TYPE =
+            "https://oauth.reddit.com/grants/installed_client"
+    }
 
     @BeforeEach
     internal fun setUp() {
@@ -34,41 +57,55 @@ class TokenDataRepositoryTest {
         @Test
         fun `return user token`() {
             //Arrange
-            val fetchedToken = createUserToken()
-            val expectedToken = createUserToken(
-                ID,
-                fetchedToken.accessToken,
-                fetchedToken.type,
-                fetchedToken.refreshToken
+            val tokenResponse = createTokenResponse()
+            val userToken = createUserToken(id = NOT_SET_ROW_ID)
+            val tokenWithUserTokenEntity = createTokenWithUserTokenEntity()
+            every {
+                remote.getUserToken(
+                    USER_TOKEN_GRANT_TYPE,
+                    CODE,
+                    REDIRECT_URL,
+                    basicAuth
+                )
+            } returns Single.just(tokenResponse)
+            every { userTokenMapper.mapReverse(userToken) } returns tokenWithUserTokenEntity
+            every { local.addUserToken(tokenWithUserTokenEntity) } returns ID
+            every { local.getTokenWithUserTokenEntity(ID) } returns Single.just(
+                tokenWithUserTokenEntity
             )
-            every { remote.getUserToken(CODE) } returns Single.just(fetchedToken)
-            every { local.addUserToken(any()) } returns Single.just(ID)
-            every { local.getUserToken(ID) } returns Single.just(expectedToken)
+            every { userTokenMapper.map(tokenWithUserTokenEntity) } returns userToken
 
             //Act, Assert
             tokenRepository.getUserToken(CODE)
                 .test()
-                .assertResult(expectedToken)
+                .assertResult(userToken)
         }
 
         @Test
         fun `cache user token`() {
             //Arrange
-            val userToken = createUserToken(id = NOT_SET_ROW_ID)
-            every { remote.getUserToken(any()) } returns Single.just(userToken)
+            val tokenWithUserTokenEntity = createTokenWithUserTokenEntity()
+            every { remote.getUserToken(any(), any(), any(), any()) } returns Single.just(
+                createTokenResponse()
+            )
+            every { userTokenMapper.mapReverse(any()) } returns tokenWithUserTokenEntity
+            every { local.addUserToken(any()) } returns ID
 
             //Act
             tokenRepository.getUserToken(CODE)
                 .test()
 
             //Assert
-            verify { local.addUserToken(userToken) }
+            verify { local.addUserToken(tokenWithUserTokenEntity) }
         }
 
         @Test
         fun `return error when caching user token fails`() {
             //Arrange
-            every { remote.getUserToken(any()) } returns Single.just(createUserToken())
+            every { remote.getUserToken(any(), any(), any(), any()) } returns Single.just(
+                createTokenResponse()
+            )
+            every { userTokenMapper.mapReverse(any()) } returns createTokenWithUserTokenEntity()
             every { local.addUserToken(any()) } throws SQLException()
 
             //Act, Assert
@@ -83,42 +120,52 @@ class TokenDataRepositoryTest {
         @Test
         fun `return user-less token`() {
             //Arrange
-            val fetchedToken = createUserlessToken()
-            val expectedToken =
-                createUserlessToken(
-                    ID,
-                    fetchedToken.accessToken,
-                    fetchedToken.type,
-                    DEVICE_ID
+            val tokenWithUserlessToken = createTokenWithUserlessTokenEntity()
+            val tokenResponse = createTokenResponse(refreshToken = null)
+            val userlessToken = createUserlessToken(id = NOT_SET_ROW_ID)
+            every {
+                remote.getUserlessToken(
+                    USERLESS_TOKEN_GRANT_TYPE,
+                    DEVICE_ID,
+                    basicAuth
                 )
-            every { remote.getUserlessToken(DEVICE_ID) } returns Single.just(fetchedToken)
-            every { local.setUserlessToken(any()) } returns Completable.complete()
-            every { local.getUserlessToken() } returns Single.just(expectedToken)
+            } returns Single.just(tokenResponse)
+            every { userlessTokenMapper.mapReverse(userlessToken) } returns tokenWithUserlessToken
+            every { local.setUserlessToken(tokenWithUserlessToken) } just runs
+            every { local.getTokenWithUserlessTokenEntity() } returns tokenWithUserlessToken
+            every { userlessTokenMapper.map(tokenWithUserlessToken) } returns userlessToken
 
             //Act, Assert
             tokenRepository.getUserlessToken(DEVICE_ID)
                 .test()
-                .assertResult(expectedToken)
+                .assertResult(userlessToken)
         }
 
         @Test
         fun `cache user-less token`() {
             //Arrange
-            val fetchedToken = createUserlessToken(id = NOT_SET_ROW_ID)
-            every { remote.getUserlessToken(any()) } returns Single.just(fetchedToken)
+            val tokenWithUserlessToken = createTokenWithUserlessTokenEntity()
+            every { remote.getUserlessToken(any(), any(), any()) } returns Single.just(
+                createTokenResponse(refreshToken = null)
+            )
+            every { userlessTokenMapper.mapReverse(any()) } returns tokenWithUserlessToken
+            every { local.setUserlessToken(any()) } just runs
 
             //Act
             tokenRepository.getUserlessToken(DEVICE_ID)
                 .test()
 
             //Assert
-            verify { local.setUserlessToken(fetchedToken) }
+            verify { local.setUserlessToken(tokenWithUserlessToken) }
         }
 
         @Test
         fun `return error when caching user-less token fails`() {
             //Arrange
-            every { remote.getUserlessToken(any()) } returns Single.just(createUserlessToken())
+            every { remote.getUserlessToken(any(), any(), any()) } returns Single.just(
+                createTokenResponse(refreshToken = null)
+            )
+            every { userlessTokenMapper.mapReverse(any()) } returns createTokenWithUserlessTokenEntity()
             every { local.setUserlessToken(any()) } throws SQLException()
 
             //Act, Assert
@@ -133,95 +180,64 @@ class TokenDataRepositoryTest {
         @Test
         fun `return refreshed user token`() {
             //Arrange
-            val fetchedToken = createUserToken()
-            val expectedToken =
-                createUserToken(
-                    ID,
-                    fetchedToken.accessToken,
-                    fetchedToken.type,
-                    REFRESH_TOKEN
+            val tokenResponse = createTokenResponse()
+            val userToken = createUserToken(id = NOT_SET_ROW_ID)
+            val tokenWithUserTokenEntity = createTokenWithUserTokenEntity()
+            every {
+                remote.refreshUserToken(REFRESH_TOKEN_GRANT_TYPE, REFRESH_TOKEN)
+            } returns Single.just(tokenResponse)
+            every { userTokenMapper.mapReverse(userToken) } returns tokenWithUserTokenEntity
+            every {
+                local.updateUserToken(
+                    tokenWithUserTokenEntity.tokenEntity,
+                    tokenWithUserTokenEntity.userTokenEntity
                 )
-            every { remote.refreshUserToken(REFRESH_TOKEN) } returns Single.just(fetchedToken)
-            every { local.updateUserToken(any()) } returns Completable.complete()
-            every { local.getUserToken(any()) } returns Single.just(expectedToken)
+            } returns Completable.complete()
+            every {
+                local.getTokenWithUserTokenEntity(tokenWithUserTokenEntity.tokenEntity.id)
+            } returns Single.just(tokenWithUserTokenEntity)
+            every { userTokenMapper.map(tokenWithUserTokenEntity) } returns userToken
 
             //Act, Assert
             tokenRepository.refreshUserToken(ID, REFRESH_TOKEN)
                 .test()
-                .assertResult(expectedToken)
+                .assertResult(userToken)
         }
 
         @Test
         fun `update cached user token`() {
             //Arrange
-            val fetchedToken = createUserToken()
-            every { remote.refreshUserToken(any()) } returns Single.just(fetchedToken)
+            val tokenWithUserTokenEntity = createTokenWithUserTokenEntity()
+            every { remote.refreshUserToken(any(), any()) } returns Single.just(
+                createTokenResponse()
+            )
+            every { userTokenMapper.mapReverse(any()) } returns tokenWithUserTokenEntity
+            every { local.updateUserToken(any(), any()) } returns Completable.complete()
 
             //Act
-            val expectedToken = createUserToken(
-                ID,
-                fetchedToken.accessToken,
-                fetchedToken.type,
-                REFRESH_TOKEN
-            )
             tokenRepository.refreshUserToken(ID, REFRESH_TOKEN)
                 .test()
 
             //Assert
-            verify { local.updateUserToken(expectedToken) }
+            verify {
+                local.updateUserToken(
+                    tokenWithUserTokenEntity.tokenEntity,
+                    tokenWithUserTokenEntity.userTokenEntity
+                )
+            }
         }
 
         @Test
         fun `return error when updating cached user token fails`() {
             //Arrange
-            every { remote.refreshUserToken(any()) } returns Single.just(createUserToken())
-            every { local.updateUserToken(any()) } throws SQLException()
+            every { remote.refreshUserToken(any(), any()) } returns Single.just(
+                createTokenResponse()
+            )
+            every { userTokenMapper.mapReverse(any()) } returns createTokenWithUserTokenEntity()
+            every { local.updateUserToken(any(), any()) } throws SQLException()
 
             //Act, Assert
-            tokenRepository.refreshUserToken(101, REFRESH_TOKEN)
-                .test()
-                .assertFailure(SQLException::class.java)
-        }
-    }
-
-    @Nested
-    inner class RefreshUserlessToken {
-        @Test
-        fun `return refreshed user-less token`() {
-            //Arrange
-            val userlessToken = createUserlessToken(id = randomInteger)
-            every { remote.getUserlessToken(DEVICE_ID) } returns Single.just(createUserlessToken())
-            every { local.setUserlessToken(any()) } returns Completable.complete()
-            every { local.getUserlessToken() } returns Single.just(userlessToken)
-
-            //Act, Assert
-            tokenRepository.refreshUserlessToken(DEVICE_ID)
-                .test()
-                .assertResult(userlessToken)
-        }
-
-        @Test
-        fun `update the cached user-less token`() {
-            //Arrange
-            val fetchedToken = createUserlessToken()
-            every { remote.getUserlessToken(any()) } returns Single.just(fetchedToken)
-
-            //Act
-            tokenRepository.refreshUserlessToken(DEVICE_ID)
-                .test()
-
-            //Assert
-            verify { local.setUserlessToken(fetchedToken) }
-        }
-
-        @Test
-        fun `return error when updating cached user-less token fails`() {
-            //Arrange
-            every { remote.getUserlessToken(any()) } returns Single.just(createUserlessToken())
-            every { local.setUserlessToken(any()) } throws SQLException()
-
-            //Act, Assert
-            tokenRepository.refreshUserlessToken(DEVICE_ID)
+            tokenRepository.refreshUserToken(ID, REFRESH_TOKEN)
                 .test()
                 .assertFailure(SQLException::class.java)
         }
@@ -230,15 +246,46 @@ class TokenDataRepositoryTest {
     @Nested
     inner class GetCurrentToken {
         @Test
-        fun `return current token`() {
+        fun `return current token when it's a user token`() {
             //Arrange
-            val expectedToken = createUserToken()
-            every { local.getCurrentToken() } returns Maybe.just(expectedToken)
+            val currentTokenEntity = createCurrentTokenEntity(tokenType = TokenType.USER)
+            val tokenWithUserTokenEntity = createTokenWithUserTokenEntity()
+            val userToken = createUserToken()
+            every { local.getCurrentTokenEntity() } returns Maybe.just(currentTokenEntity)
+            every { local.getTokenWithUserTokenEntity(currentTokenEntity.tokenId) } returns Single.just(
+                tokenWithUserTokenEntity
+            )
+            every { userTokenMapper.map(tokenWithUserTokenEntity) } returns userToken
 
             //Act, Assert
             tokenRepository.getCurrentToken()
                 .test()
-                .assertResult(expectedToken)
+                .assertResult(userToken)
+        }
+
+        @Test
+        fun `return current token when it's a userless token`() {
+            val currentTokenEntity = createCurrentTokenEntity(tokenType = TokenType.USERLESS)
+            val tokenWithUserlessTokenEntity = createTokenWithUserlessTokenEntity()
+            val userlessToken = createUserlessToken()
+            every { local.getCurrentTokenEntity() } returns Maybe.just(currentTokenEntity)
+            every { local.getTokenWithUserlessTokenEntity() } returns tokenWithUserlessTokenEntity
+            every { userlessTokenMapper.map(tokenWithUserlessTokenEntity) } returns userlessToken
+
+            //Act, Assert
+            tokenRepository.getCurrentToken()
+                .test()
+                .assertResult(userlessToken)
+        }
+
+        @Test
+        fun `complete when there's no current token`() {
+            every { local.getCurrentTokenEntity() } returns Maybe.empty()
+
+            //Act, Assert
+            tokenRepository.getCurrentToken()
+                .test()
+                .assertResult()
         }
     }
 
@@ -247,14 +294,14 @@ class TokenDataRepositoryTest {
         @Test
         fun `set current token`() {
             //Arrange
-            every { local.setCurrentToken(any()) } returns Completable.complete()
+            every { local.setCurrentTokenEntity(any()) } returns Completable.complete()
             //Act
-            val token = createUserToken()
-            tokenRepository.setCurrentToken(token)
+            tokenRepository.setCurrentToken(createUserToken())
                 .test()
+                .assertResult()
 
             //Assert
-            verify { local.setCurrentToken(token) }
+            verify { local.setCurrentTokenEntity(createCurrentTokenEntity()) }
         }
     }
 }

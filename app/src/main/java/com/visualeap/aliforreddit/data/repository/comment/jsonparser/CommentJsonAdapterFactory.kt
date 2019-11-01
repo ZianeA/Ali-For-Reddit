@@ -1,6 +1,7 @@
-package com.visualeap.aliforreddit.data.repository.comment
+package com.visualeap.aliforreddit.data.repository.comment.jsonparser
 
 import com.squareup.moshi.*
+import com.visualeap.aliforreddit.data.repository.comment.CommentResponse
 import java.lang.reflect.Type
 
 class CommentJsonAdapterFactory : JsonAdapter.Factory {
@@ -17,12 +18,16 @@ class CommentJsonAdapterFactory : JsonAdapter.Factory {
             rawType == CommentResponse::class.java -> {
                 val adapter: JsonAdapter<List<CommentResponse.Comment>> =
                     moshi.adapter(commentListType)
-                CommentResponseJsonAdapter(adapter)
+                CommentResponseJsonAdapter(
+                    adapter
+                )
             }
             type == commentListType -> {
                 val adapter: JsonAdapter<CommentResponse.Comment> =
                     moshi.adapter(CommentResponse.Comment::class.javaObjectType)
-                CommentListingJsonAdapter(adapter)
+                CommentListingJsonAdapter(
+                    adapter
+                )
             }
             else -> null
         }

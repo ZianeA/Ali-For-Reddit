@@ -1,11 +1,9 @@
-package com.visualeap.aliforreddit.data.cache.account
+package com.visualeap.aliforreddit.data.repository.account
 
 import androidx.room.Room
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 import com.visualeap.aliforreddit.data.cache.RedditDatabase
-import com.visualeap.aliforreddit.data.repository.account.AccountDao
-import com.visualeap.aliforreddit.data.repository.account.AccountEntity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

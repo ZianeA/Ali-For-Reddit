@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data.repository.comment
+package com.visualeap.aliforreddit.data.repository.comment.jsonparser
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader

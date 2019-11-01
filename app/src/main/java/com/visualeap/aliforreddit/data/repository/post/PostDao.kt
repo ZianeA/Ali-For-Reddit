@@ -10,8 +10,6 @@ import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 
 @Dao
 interface PostDao {
-    //LIMIT :requestedLoadSize OFFSET :position
-//    @Query("SELECT * FROM PostEntity p INNER JOIN RedditorEntity r ON p.authorName = r.username INNER JOIN SubredditEntity s ON p.subredditName = s.id")
     @Query("SELECT * FROM PostEntity")
     fun getAll(): DataSource.Factory<Int, PostWithSubredditEntity>
 

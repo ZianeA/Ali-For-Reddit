@@ -6,10 +6,8 @@ import android.app.Application
 import com.visualeap.aliforreddit.data.repository.account.AccountDao
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorDao
 import com.visualeap.aliforreddit.data.repository.post.PostDao
-import com.visualeap.aliforreddit.data.cache.token.TokenDao
-import com.visualeap.aliforreddit.data.cache.token.TokenLs
+import com.visualeap.aliforreddit.data.repository.token.TokenDao
 import com.visualeap.aliforreddit.data.repository.comment.CommentDao
-import com.visualeap.aliforreddit.data.repository.token.TokenLocalSource
 import dagger.Provides
 import javax.inject.Singleton
 
@@ -28,10 +26,6 @@ class DatabaseModule {
     fun provideTokenDao(database: RedditDatabase): TokenDao {
         return database.tokenDao()
     }
-
-    @Singleton
-    @Provides
-    fun provideTokenLocalSource(tokenLs: TokenLs): TokenLocalSource = tokenLs
 
     @Singleton
     @Provides

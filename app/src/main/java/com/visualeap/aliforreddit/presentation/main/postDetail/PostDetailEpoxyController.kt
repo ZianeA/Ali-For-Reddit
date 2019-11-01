@@ -11,11 +11,10 @@ class PostDetailEpoxyController : AsyncEpoxyController() {
         }
 
     override fun buildModels() {
-        test(comments)
+        buildCommentModelsTree(comments)
     }
 
-    //TODO rename method
-    private fun test(commentList: List<Comment>){
+    private fun buildCommentModelsTree(commentList: List<Comment>){
         commentList.forEach {
             CommentEpoxyModel_()
                 .id(it.id)
@@ -23,7 +22,7 @@ class PostDetailEpoxyController : AsyncEpoxyController() {
                 .addTo(this)
 
             if(it.replies != null){
-                test(it.replies)
+                buildCommentModelsTree(it.replies)
             }
         }
     }
