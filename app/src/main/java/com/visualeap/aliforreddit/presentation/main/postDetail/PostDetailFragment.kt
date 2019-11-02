@@ -23,7 +23,7 @@ class PostDetailFragment : Fragment(), PostDetailView {
     @Inject
     lateinit var presenter: PostDetailPresenter
 
-    private val epoxyController = PostDetailEpoxyController()
+    private lateinit var epoxyController: PostDetailEpoxyController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +31,7 @@ class PostDetailFragment : Fragment(), PostDetailView {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_post_detail, container, false)
+        epoxyController = PostDetailEpoxyController(selectedPost)
         rootView.postDetailRecyclerView.setController(epoxyController)
         return rootView
     }
@@ -42,8 +43,6 @@ class PostDetailFragment : Fragment(), PostDetailView {
 
     override fun onStart() {
         super.onStart()
-        val selectedPost = (arguments?.getParcelable<PostView>(ARG_SELECTED_POST))
-            ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
         presenter.start(selectedPost)
     }
 
@@ -59,6 +58,10 @@ class PostDetailFragment : Fragment(), PostDetailView {
     override fun showComments(comments: List<Comment>) {
         epoxyController.comments = comments
     }
+
+    private val selectedPost
+        get() = arguments?.getParcelable<PostView>(ARG_SELECTED_POST)
+            ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
 
     companion object {
         private const val ARG_SELECTED_POST = "selected_post"

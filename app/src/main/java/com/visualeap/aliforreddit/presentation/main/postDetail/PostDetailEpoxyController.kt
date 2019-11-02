@@ -1,9 +1,12 @@
 package com.visualeap.aliforreddit.presentation.main.postDetail
 
+import android.view.View
 import com.airbnb.epoxy.AsyncEpoxyController
 import com.visualeap.aliforreddit.domain.model.Comment
+import com.visualeap.aliforreddit.presentation.main.frontPage.PostEpoxyModel_
+import com.visualeap.aliforreddit.presentation.model.PostView
 
-class PostDetailEpoxyController : AsyncEpoxyController() {
+class PostDetailEpoxyController(private val post: PostView) : AsyncEpoxyController() {
     var comments: List<Comment> = emptyList()
         set(value) {
             field = value
@@ -11,6 +14,12 @@ class PostDetailEpoxyController : AsyncEpoxyController() {
         }
 
     override fun buildModels() {
+        PostEpoxyModel_()
+            .id(post.id)
+            .post(post)
+            .listener(View.OnClickListener {  }) //TODO refactor
+            .addTo(this)
+
         buildCommentModelsTree(comments)
     }
 
