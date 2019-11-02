@@ -3,7 +3,7 @@ package com.visualeap.aliforreddit.data.repository.post
 import androidx.paging.PagedList
 import androidx.paging.RxPagedListBuilder
 import com.visualeap.aliforreddit.data.network.RedditService
-import com.visualeap.aliforreddit.data.repository.Mapper
+import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.repository.PostRepository
 import com.visualeap.aliforreddit.domain.util.NetworkState

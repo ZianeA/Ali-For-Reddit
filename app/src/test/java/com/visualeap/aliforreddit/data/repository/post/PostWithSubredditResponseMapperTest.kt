@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.data.repository.post
 
-import com.visualeap.aliforreddit.data.repository.Mapper
+import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
 import com.visualeap.aliforreddit.domain.model.Subreddit
 import io.mockk.clearAllMocks

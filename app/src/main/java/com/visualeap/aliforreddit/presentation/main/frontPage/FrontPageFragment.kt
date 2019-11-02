@@ -13,8 +13,11 @@ import com.airbnb.epoxy.EpoxyAsyncUtil
 import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Post
+import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
 import com.visualeap.aliforreddit.presentation.main.postDetail.PostDetailFragment
+import com.visualeap.aliforreddit.presentation.mapper.PostViewMapper
+import com.visualeap.aliforreddit.presentation.model.PostView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
@@ -22,17 +25,16 @@ import kotlinx.android.synthetic.main.fragment_home.view.frontPageRecyclerView
 import javax.inject.Inject
 
 class FrontPageFragment : Fragment(), FrontPageView {
-
     @Inject
     lateinit var presenter: FrontPagePresenter
 
     @Inject
     lateinit var fragNavController: FragNavController
 
-    //TODO Refactor, move to presenter
-    private val epoxyController = FrontPageEpoxyController {
-        fragNavController.pushFragment(PostDetailFragment.newInstance(it))
-    }
+    @Inject
+    lateinit var postViewMapper: Mapper<PostView, Post>
+
+    private lateinit var epoxyController: FrontPageEpoxyController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,6 +44,10 @@ class FrontPageFragment : Fragment(), FrontPageView {
         val rootView = inflater.inflate(R.layout.fragment_home, container, false)
 
         val recyclerView = rootView.frontPageRecyclerView
+        epoxyController = FrontPageEpoxyController(postViewMapper) {
+            //TODO Refactor, move to presenter
+            fragNavController.pushFragment(PostDetailFragment.newInstance(it))
+        }
         recyclerView.setController(epoxyController)
         recyclerView.setItemSpacingDp(8) //TODO Make this a constant
         return rootView

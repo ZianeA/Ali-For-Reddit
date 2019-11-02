@@ -1,5 +1,6 @@
 package util.domain
 
+import android.graphics.Color
 import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity
 import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity.*
 import com.visualeap.aliforreddit.data.repository.token.TokenEntity
@@ -22,10 +23,15 @@ import com.visualeap.aliforreddit.domain.model.*
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
+import com.visualeap.aliforreddit.presentation.model.PostView
+import com.visualeap.aliforreddit.presentation.model.SubredditView
+import com.visualeap.aliforreddit.presentation.util.formatCount
+import com.visualeap.aliforreddit.presentation.util.formatTimestamp
 import okhttp3.Credentials
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
+import java.sql.Timestamp
 import kotlin.random.Random
 
 const val ACCESS_TOKEN = "ACCESS TOKEN"
@@ -164,14 +170,21 @@ fun createSubredditResponse(
         )
     )
 )
+
+fun createSubredditView(
+    name: String = "r/$SUBREDDIT_NAME",
+    id: String = SUBREDDIT_ID,
+    iconUrl: String? = SUBREDDIT_ICON_URL,
+    color: String = SUBREDDIT_PRIMARY_COLOR
+) = SubredditView(name, id, iconUrl, color)
 //endregion
 
 //region Post
 private const val POST_ID = "FakePostId"
 private const val POST_TITLE = "This is a fake post title"
 private const val POST_TEXT = "This is a fake post text."
-private const val POST_SCORE = 201
-private const val POST_COMMENT_COUNT = 202
+private const val POST_SCORE = 3000
+private const val POST_COMMENT_COUNT = 2500
 private const val POST_CREATED: Long = 1569878021
 
 fun createPost(
@@ -235,6 +248,17 @@ fun createPostWithSubredditResponse(
     postResponse: PostResponse = createPostResponse(),
     subredditResponse: SubredditResponse = createSubredditResponse()
 ) = PostWithSubredditResponse(postResponse, subredditResponse)
+
+fun createPostView(
+    id: String = POST_ID,
+    authorName: String = "u/$REDDITOR_USERNAME",
+    title: String = POST_TITLE,
+    text: String = POST_TEXT,
+    score: String = formatCount(POST_SCORE),
+    commentCount: String = formatCount(POST_COMMENT_COUNT),
+    subreddit: SubredditView = createSubredditView(),
+    timestamp: String = formatTimestamp(POST_CREATED)
+) = PostView(id, authorName, title, text, score, commentCount, subreddit, timestamp)
 //endregion
 
 //region comment

@@ -3,13 +3,12 @@ package com.visualeap.aliforreddit.data.repository.post
 import androidx.paging.PagedList
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.visualeap.aliforreddit.data.network.RedditService
-import com.visualeap.aliforreddit.data.repository.Mapper
+import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.util.NetworkState
 import com.visualeap.aliforreddit.domain.util.applySchedulers
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import io.reactivex.Completable
-import io.reactivex.Single
 
 //TODO add unit tests
 class PostBoundaryCallback(

@@ -6,6 +6,7 @@ import com.visualeap.aliforreddit.domain.repository.PostRepository
 import com.visualeap.aliforreddit.domain.util.applySchedulers
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
+import com.visualeap.aliforreddit.presentation.model.PostView
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -17,7 +18,7 @@ class PostDetailPresenter @Inject constructor(
 ) {
     private val disposables = CompositeDisposable()
 
-    fun start(post: Post) {
+    fun start(post: PostView) {
         view.showPost(post)
 
         val disposable = commentRepository.getCommentsByPost(post.subreddit.name, post.id,

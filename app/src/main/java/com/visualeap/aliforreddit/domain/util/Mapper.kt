@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.data.repository
+package com.visualeap.aliforreddit.domain.util
 
 interface Mapper<T, R> {
     fun map(model: T): R

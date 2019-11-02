@@ -12,6 +12,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 import util.domain.createComment
 import util.domain.createPost
+import util.domain.createPostView
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
@@ -31,7 +32,7 @@ internal class PostDetailPresenterTest {
         @Test
         fun `display post`() {
             //Arrange
-            val post = createPost()
+            val post = createPostView()
             every { view.showPost(any()) } just runs
 
             //Act
@@ -44,7 +45,7 @@ internal class PostDetailPresenterTest {
         @Test
         fun `pass selected post's comments to view`() {
             //Arrange
-            val post = createPost()
+            val post = createPostView()
             val comments = listOf(createComment())
             every {
                 commentRepository.getCommentsByPost(post.id, post.subreddit.name, any(), any())

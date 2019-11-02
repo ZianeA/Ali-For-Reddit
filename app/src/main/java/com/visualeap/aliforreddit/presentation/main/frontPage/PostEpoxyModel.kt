@@ -16,38 +16,34 @@ import com.bumptech.glide.Glide
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Subreddit
+import com.visualeap.aliforreddit.presentation.model.PostView
 import com.visualeap.aliforreddit.presentation.util.KotlinEpoxyHolder
+import com.visualeap.aliforreddit.presentation.util.formatTimestamp
 import java.util.concurrent.TimeUnit
 
 @EpoxyModelClass(layout = R.layout.item_post)
 abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
-    companion object {
-        private const val MONTH_IN_MILLIS: Long = WEEK_IN_MILLIS * 4
-    }
-
     @EpoxyAttribute
-    lateinit var post: Post
+    lateinit var post: PostView
 
     @EpoxyAttribute
     lateinit var listener: View.OnClickListener
 
     override fun bind(holder: PostHolder) {
-//        holder.imageView.setImageURI(imageUrl)
         holder.apply {
             val subreddit = post.subreddit
             postTitle.text = post.title
             postText.text = post.text
-            postedByAndAt.text = "Posted by u/${post.authorName} • ${formatTime(post.created)}"
-            postScore.text = post.score.toString()
-            postCommentCount.text = post.commentCount.toString()
-            subredditName.text = "r/${subreddit.name}"
+            postedByAndAt.text = view.context.getString(R.string.post_posted_by_and_at, post.authorName, post.timestamp)
+            postScore.text = post.score
+            postCommentCount.text = post.commentCount
+            subredditName.text = subreddit.name
             view.setOnClickListener(listener)
 
             //Subreddits' icons have no alpha/transparency.
             subredditImage.background.setColorFilter(
-                Color.parseColor(
-                    subreddit.primaryColor ?: subreddit.keyColor ?: "#33a8ff"
-                ), PorterDuff.Mode.MULTIPLY
+                Color.parseColor(subreddit.color),
+                PorterDuff.Mode.MULTIPLY
             )
 
             if (subreddit.iconUrl.isNullOrEmpty()) {
@@ -64,25 +60,6 @@ abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
                     .into(subredditImage);
             }
         }
-    }
-
-    //TODO extract this method and unit test it. Maybe make an extension method with a name toTimeStamp
-    private fun formatTime(created: Long): String {
-        val createdInMillis = TimeUnit.SECONDS.toMillis(created)
-        val now = System.currentTimeMillis()
-        val timeSpan = now - createdInMillis
-        return if (timeSpan < MINUTE_IN_MILLIS)
-            "just now"
-        else if (timeSpan < HOUR_IN_MILLIS)
-            "${timeSpan / MINUTE_IN_MILLIS}m"
-        else if (timeSpan < DAY_IN_MILLIS)
-            "${timeSpan / HOUR_IN_MILLIS}h"
-        else if (timeSpan < MONTH_IN_MILLIS)
-            "${timeSpan / DAY_IN_MILLIS}d"
-        else if (timeSpan < YEAR_IN_MILLIS)
-            "${timeSpan / MONTH_IN_MILLIS}mo"
-        else "${timeSpan / YEAR_IN_MILLIS}y"
-        /*getRelativeTimeSpanString(createdInMillis, now, 0, FORMAT_ABBREV_ALL).toString()*/
     }
 }
 

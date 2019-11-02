@@ -3,6 +3,7 @@ package com.visualeap.aliforreddit.domain.model
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
+//TODO remove parcelable
 @Parcelize
 data class Post(
     val id: String,

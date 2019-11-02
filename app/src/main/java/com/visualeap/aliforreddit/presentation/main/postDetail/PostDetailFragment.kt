@@ -14,6 +14,7 @@ import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Subreddit
+import com.visualeap.aliforreddit.presentation.model.PostView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_post_detail.view.*
 import javax.inject.Inject
@@ -41,7 +42,7 @@ class PostDetailFragment : Fragment(), PostDetailView {
 
     override fun onStart() {
         super.onStart()
-        val selectedPost = (arguments?.getParcelable<Post>(ARG_SELECTED_POST))
+        val selectedPost = (arguments?.getParcelable<PostView>(ARG_SELECTED_POST))
             ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
         presenter.start(selectedPost)
     }
@@ -51,7 +52,7 @@ class PostDetailFragment : Fragment(), PostDetailView {
         presenter.stop()
     }
 
-    override fun showPost(post: Post) {
+    override fun showPost(post: PostView) {
 
     }
 
@@ -62,7 +63,7 @@ class PostDetailFragment : Fragment(), PostDetailView {
     companion object {
         private const val ARG_SELECTED_POST = "selected_post"
 
-        fun newInstance(selectedPost: Post) = PostDetailFragment().apply {
+        fun newInstance(selectedPost: PostView) = PostDetailFragment().apply {
             arguments = bundleOf(ARG_SELECTED_POST to selectedPost)
         }
     }

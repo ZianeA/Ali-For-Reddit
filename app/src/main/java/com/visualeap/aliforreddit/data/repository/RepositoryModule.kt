@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.data.repository
 
-import com.visualeap.aliforreddit.data.repository.token.TokenResponse
 import com.visualeap.aliforreddit.data.repository.account.AccountDataRepository
 import com.visualeap.aliforreddit.data.repository.comment.*
 import com.visualeap.aliforreddit.data.repository.post.*
@@ -14,10 +13,10 @@ import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Redditor
 import com.visualeap.aliforreddit.domain.model.Subreddit
-import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.*
+import com.visualeap.aliforreddit.domain.util.Mapper
 import dagger.Binds
 import dagger.Module
 

@@ -3,11 +3,10 @@ package com.visualeap.aliforreddit.data.repository
 import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity.*
 import com.visualeap.aliforreddit.data.repository.token.TokenDao
 import com.visualeap.aliforreddit.data.network.auth.AuthService
-import com.visualeap.aliforreddit.data.repository.token.TokenResponse
 import com.visualeap.aliforreddit.data.repository.token.*
-import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
+import com.visualeap.aliforreddit.domain.util.Mapper
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable

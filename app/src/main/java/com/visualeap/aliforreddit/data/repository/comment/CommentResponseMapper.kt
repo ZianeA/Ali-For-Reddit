@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.data.repository.comment
 
-import com.visualeap.aliforreddit.data.repository.Mapper
+import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.domain.model.Comment
 import dagger.Reusable
 import javax.inject.Inject

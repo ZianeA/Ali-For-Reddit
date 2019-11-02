@@ -1,19 +1,11 @@
 package com.visualeap.aliforreddit.data.repository.comment
 
-import androidx.paging.PagedList
-import androidx.paging.RxPagedListBuilder
 import com.visualeap.aliforreddit.data.network.RedditService
-import com.visualeap.aliforreddit.data.repository.Mapper
-import com.visualeap.aliforreddit.data.repository.comment.CommentResponse
-import com.visualeap.aliforreddit.data.repository.redditor.RedditorResponse
+import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.domain.repository.CommentRepository
 import com.visualeap.aliforreddit.domain.util.NetworkState
-import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.SingleObserver
-import io.reactivex.SingleSource
-import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,7 +24,10 @@ class CommentDataRepository @Inject constructor(
     ): Single<List<Comment>> {
         //Always get fresh comments
         //TODO this fails if there's no internet connection even if there are cached comments.
-        return redditService.getCommentsByPost(subredditName, postId.removePrefix(POST_PREFIX))
+        return redditService.getCommentsByPost(
+            subredditName.removePrefix(SUBREDDIT_PREFIX),
+            postId.removePrefix(POST_PREFIX)
+        )
             .map(commentResponseMapper::map)
             .map(commentEntityMapper::mapReverse)
             .flatMapCompletable { commentDao.addAll(it) }
@@ -42,5 +37,6 @@ class CommentDataRepository @Inject constructor(
 
     companion object {
         private const val POST_PREFIX = "t3_"
+        private const val SUBREDDIT_PREFIX = "r/"
     }
 }

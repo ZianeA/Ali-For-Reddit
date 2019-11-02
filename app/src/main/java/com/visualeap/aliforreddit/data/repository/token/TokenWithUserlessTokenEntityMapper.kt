@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.data.repository.token
 
-import com.visualeap.aliforreddit.data.repository.Mapper
+import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import dagger.Reusable
 import javax.inject.Inject
