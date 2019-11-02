@@ -29,46 +29,63 @@ abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
     @EpoxyAttribute
     lateinit var listener: View.OnClickListener
 
+    @EpoxyAttribute
+    var maxLines: Int = 0
+
     override fun bind(holder: PostHolder) {
-        holder.apply {
-            val subreddit = post.subreddit
-            postTitle.text = post.title
-            postText.text = post.text
-            postedByAndAt.text = view.context.getString(R.string.post_posted_by_and_at, post.authorName, post.timestamp)
-            postScore.text = post.score
-            postCommentCount.text = post.commentCount
-            subredditName.text = subreddit.name
-            view.setOnClickListener(listener)
+        val subreddit = post.subreddit
 
-            //Subreddits' icons have no alpha/transparency.
-            subredditImage.background.setColorFilter(
-                Color.parseColor(subreddit.color),
-                PorterDuff.Mode.MULTIPLY
-            )
+        holder.postTitle.text = post.title
+        holder.postText.maxLines = maxLines
+        holder.postText.text = post.text
 
-            if (subreddit.iconUrl.isNullOrEmpty()) {
-                //If a subreddit has no icon we use a default subreddit icon.
-                subredditImage.scaleType = ImageView.ScaleType.CENTER
-                val defaultSubredditIcon =
-                    ContextCompat.getDrawable(view.context, R.drawable.ic_subreddit_default)
-                subredditImage.setImageDrawable(defaultSubredditIcon)
-            } else {
-                subredditImage.scaleType = ImageView.ScaleType.FIT_CENTER
-
-                Glide.with(view)
-                    .load(subreddit.iconUrl)
-                    .into(subredditImage);
-            }
+        if (post.text.isEmpty()) {
+            holder.postText.visibility = View.GONE
         }
+
+        holder.postedByAndAt.text = holder.view.context.getString(
+            R.string.post_posted_by_and_at,
+            post.authorName,
+            post.timestamp
+        )
+        holder.postScore.text = post.score
+        holder.postCommentCount.text = post.commentCount
+        holder.subredditName.text = subreddit.name
+        holder.view.setOnClickListener(listener)
+
+        //Subreddits' icons have no alpha/transparency.
+        holder.subredditImage.background.setColorFilter(
+            Color.parseColor(subreddit.color),
+            PorterDuff.Mode.MULTIPLY
+        )
+
+        if (subreddit.iconUrl.isNullOrEmpty()) {
+            //If a subreddit has no icon we use a default subreddit icon.
+            holder.subredditImage.scaleType = ImageView.ScaleType.CENTER
+            holder.subredditImage.setImageDrawable(holder.defaultSubredditIcon)
+        } else {
+            Glide.with(holder.view)
+                .load(subreddit.iconUrl)
+                .into(holder.subredditImage);
+        }
+    }
+
+    override fun unbind(holder: PostHolder) {
+        super.unbind(holder)
+        holder.postText.visibility = View.VISIBLE
+        holder.subredditImage.scaleType = ImageView.ScaleType.FIT_CENTER
     }
 }
 
 class PostHolder : KotlinEpoxyHolder() {
     lateinit var view: View
+    lateinit var defaultSubredditIcon: Drawable
 
     override fun bindView(itemView: View) {
         super.bindView(itemView)
         view = itemView
+        defaultSubredditIcon =
+            ContextCompat.getDrawable(view.context, R.drawable.ic_subreddit_default)!!
     }
 
     val postTitle by bind<TextView>(R.id.postTitle)

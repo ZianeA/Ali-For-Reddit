@@ -28,5 +28,10 @@ class FrontPageEpoxyController(
             .id(postView.id)
             .post(postView)
             .listener(View.OnClickListener { onPostClickListener.invoke(postView) })
+            .maxLines(POST_TEXT_MAX_LINES)
+    }
+
+    companion object{
+        private const val POST_TEXT_MAX_LINES = 3
     }
 }

@@ -18,6 +18,7 @@ class PostDetailEpoxyController(private val post: PostView) : AsyncEpoxyControll
             .id(post.id)
             .post(post)
             .listener(View.OnClickListener {  }) //TODO refactor
+            .maxLines(Int.MAX_VALUE)
             .addTo(this)
 
         buildCommentModelsTree(comments)

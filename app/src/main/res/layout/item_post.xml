@@ -21,8 +21,8 @@
             app:isCircular="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/ic_subreddit_default"
-            tools:backgroundTint="@color/colorAccent" />
+            tools:backgroundTint="@color/colorAccent"
+            tools:srcCompat="@drawable/ic_subreddit_default" />
 
         <TextView
             android:id="@+id/subredditName"
@@ -61,11 +61,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:maxLines="3"
+            android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/postTitle"
             app:layout_constraintTop_toBottomOf="@+id/postTitle"
-            tools:text="It can't be just me … i hope.  I'm not doing them on purpose, it often just happens while describing the facial expressions of my characters. I'm really glad nobody is filming me while i write. At least i hope nobody does." />
+            tools:text="Over the last few years and countless apps I've developed on Android, I began to notice an unsettling pattern with Admob, Google and their business practices. I decided to do an experiment:" />
 
         <ImageView
             android:id="@+id/upvoteImage"
@@ -74,7 +76,7 @@
             android:tint="@android:color/darker_gray"
             app:layout_constraintBottom_toBottomOf="@+id/postScore"
             app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintStart_toStartOf="@+id/postText"
+            app:layout_constraintStart_toStartOf="@+id/postTitle"
             app:layout_constraintTop_toTopOf="@+id/postScore"
             app:srcCompat="@drawable/ic_arrow_up" />
 
