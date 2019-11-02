@@ -2,6 +2,7 @@ package com.visualeap.aliforreddit.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
@@ -21,7 +22,7 @@ import java.lang.IllegalStateException
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
-    FragNavController.RootFragmentListener {
+    FragNavController.RootFragmentListener, FragNavController.TransactionListener {
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Fragment>
 
@@ -89,6 +90,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
         drawerNavigationView.setNavigationItemSelectedListener(onDrawerItemSelectedListener)
 
         fragNavController.rootFragmentListener = this
+        fragNavController.transactionListener = this
         fragNavController.initialize(FragNavController.TAB1, savedInstanceState)
 
         //TODO this is temporally
@@ -107,9 +109,18 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
+        } else if (fragNavController.popFragment().not()) {
             super.onBackPressed()
         }
+    }
+
+    //handle up button
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item?.itemId == android.R.id.home) {
+            fragNavController.popFragment()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -125,6 +136,19 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
             FragNavController.TAB1 -> return FrontPageContainerFragment()
         }
         throw IllegalStateException("Invalid tab index")
+    }
+
+    override fun onFragmentTransaction(
+        fragment: Fragment?,
+        transactionType: FragNavController.TransactionType
+    ) {
+        // If we have a backstack, show the back button
+        supportActionBar?.setDisplayHomeAsUpEnabled(fragNavController.isRootFragment.not())
+    }
+
+    override fun onTabTransaction(fragment: Fragment?, index: Int) {
+        // If we have a backstack, show the back button
+        supportActionBar?.setDisplayHomeAsUpEnabled(fragNavController.isRootFragment.not())
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = androidInjector

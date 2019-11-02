@@ -6,12 +6,14 @@ import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.presentation.main.frontPage.PostEpoxyModel_
 import com.visualeap.aliforreddit.presentation.model.PostView
 
-class PostDetailEpoxyController(private val post: PostView) : AsyncEpoxyController() {
+class PostDetailEpoxyController : AsyncEpoxyController() {
     var comments: List<Comment> = emptyList()
         set(value) {
             field = value
             requestModelBuild()
         }
+
+    lateinit var post: PostView
 
     override fun buildModels() {
         PostEpoxyModel_()

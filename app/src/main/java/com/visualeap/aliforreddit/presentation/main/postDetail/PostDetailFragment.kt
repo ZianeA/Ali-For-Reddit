@@ -7,8 +7,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.paging.PagedList
+import com.ncapdevi.fragnav.FragNavController
 
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Comment
@@ -23,7 +26,7 @@ class PostDetailFragment : Fragment(), PostDetailView {
     @Inject
     lateinit var presenter: PostDetailPresenter
 
-    private lateinit var epoxyController: PostDetailEpoxyController
+    private val epoxyController = PostDetailEpoxyController()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,7 +34,13 @@ class PostDetailFragment : Fragment(), PostDetailView {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_post_detail, container, false)
-        epoxyController = PostDetailEpoxyController(selectedPost)
+
+        (activity as AppCompatActivity).apply {
+//            rootView.toolbar.title = " "
+            setSupportActionBar(rootView.toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+
         rootView.postDetailRecyclerView.setController(epoxyController)
         return rootView
     }
@@ -43,6 +52,8 @@ class PostDetailFragment : Fragment(), PostDetailView {
 
     override fun onStart() {
         super.onStart()
+        val selectedPost = arguments?.getParcelable<PostView>(ARG_SELECTED_POST)
+            ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
         presenter.start(selectedPost)
     }
 
@@ -52,16 +63,13 @@ class PostDetailFragment : Fragment(), PostDetailView {
     }
 
     override fun showPost(post: PostView) {
-
+        epoxyController.post = post
+        epoxyController.requestModelBuild()
     }
 
     override fun showComments(comments: List<Comment>) {
         epoxyController.comments = comments
     }
-
-    private val selectedPost
-        get() = arguments?.getParcelable<PostView>(ARG_SELECTED_POST)
-            ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
 
     companion object {
         private const val ARG_SELECTED_POST = "selected_post"
