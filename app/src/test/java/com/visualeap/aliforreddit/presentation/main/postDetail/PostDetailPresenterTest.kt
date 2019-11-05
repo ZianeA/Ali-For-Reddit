@@ -18,7 +18,7 @@ import util.domain.createPostView
 @ExtendWith(MockKExtension::class)
 internal class PostDetailPresenterTest {
     private val view: PostDetailView = mockk()
-    private val commentRepository: CommentRepository = mockk(relaxed = true)
+    private val commentRepository: CommentRepository = mockk()
     private val presenter =
         PostDetailPresenter(view, commentRepository, SyncSchedulerProvider())
 
@@ -34,6 +34,9 @@ internal class PostDetailPresenterTest {
             //Arrange
             val post = createPostView()
             every { view.showPost(any()) } just runs
+            every { commentRepository.getCommentsByPost(any(), any(), any(), any()) } returns Single.just(
+                emptyList())
+            every { view.showComments(any()) } just runs
 
             //Act
             presenter.start(post)
@@ -43,12 +46,12 @@ internal class PostDetailPresenterTest {
         }
 
         @Test
-        fun `pass selected post's comments to view`() {
+        fun `pass selected post comments to view`() {
             //Arrange
             val post = createPostView()
             val comments = listOf(createComment())
             every {
-                commentRepository.getCommentsByPost(post.id, post.subreddit.name, any(), any())
+                commentRepository.getCommentsByPost(post.subreddit.name, post.id, any(), any())
             } returns Single.just(comments)
             every { view.showPost(any()) } just runs
             every { view.showComments(any()) } just runs

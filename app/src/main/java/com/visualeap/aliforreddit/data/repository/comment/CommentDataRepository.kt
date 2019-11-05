@@ -4,7 +4,7 @@ import com.visualeap.aliforreddit.data.network.RedditService
 import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.domain.repository.CommentRepository
-import com.visualeap.aliforreddit.domain.util.NetworkState
+import com.visualeap.aliforreddit.domain.repository.NetworkState
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton

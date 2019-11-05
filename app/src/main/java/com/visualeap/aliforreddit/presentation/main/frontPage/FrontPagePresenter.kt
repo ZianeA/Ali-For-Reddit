@@ -1,11 +1,12 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage
 
+import androidx.paging.PagedList
+import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
 import com.visualeap.aliforreddit.domain.repository.PostRepository
-import com.visualeap.aliforreddit.domain.util.NetworkState
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import com.visualeap.aliforreddit.domain.util.applySchedulers
-import io.reactivex.Observer
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -18,13 +19,24 @@ class FrontPagePresenter @Inject constructor(
     private val disposables = CompositeDisposable()
 
     fun start() {
-        val disposable = repository.getHomePosts({ print(it.status)/*onNext*/ }, { print(it.message)/*onError*/ })
+        val listingDisposable = repository.getHomePosts(false)
             .applySchedulers(schedulerProvider)
-            .subscribe(
-                { view.displayPosts(it) },
-                { println("OnError was called: ${it.message}")/*TODO implement on error*/ })
+            .subscribe({ postListing ->
+                val pagedListDisposable = postListing.pagedList
+                    .applySchedulers(schedulerProvider)
+                    .subscribe(
+                        { view.displayPosts(it) },
+                        { println("OnError was called: ${it.message}")/*TODO implement on error*/ })
 
-        disposables.add(disposable)
+                val networkDisposable = postListing.networkState
+                    .subscribe { /*TODO handle network state*/ }
+
+                disposables.addAll(pagedListDisposable, networkDisposable)
+            },
+                { /*onError*/ }
+            )
+
+        disposables.add(listingDisposable)
     }
 
     fun stop() {

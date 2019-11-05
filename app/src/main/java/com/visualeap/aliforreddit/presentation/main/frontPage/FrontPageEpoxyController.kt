@@ -23,7 +23,9 @@ class FrontPageEpoxyController(
         diffingHandler = EpoxyAsyncUtil.getAsyncBackgroundHandler()
     ) {
     override fun buildItemModel(currentPosition: Int, item: Post?): EpoxyModel<*> {
-        val postView = postViewMapper.mapReverse(item!!) //Placeholders are disabled
+        //Placeholders are disabled so item is not null
+        val postView = postViewMapper.mapReverse(item!!)
+
         return PostEpoxyModel_()
             .id(postView.id)
             .post(postView)

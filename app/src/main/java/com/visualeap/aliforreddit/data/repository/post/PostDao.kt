@@ -1,12 +1,10 @@
 package com.visualeap.aliforreddit.data.repository.post
 
 import androidx.paging.DataSource
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
+import io.reactivex.Completable
 
 @Dao
 interface PostDao {
@@ -25,4 +23,7 @@ interface PostDao {
     // This is why I opted for the current solution.
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun add(subreddit: SubredditEntity, post: PostEntity)
+
+    @Query("DELETE FROM PostEntity")
+    fun deleteAll(): Completable
 }

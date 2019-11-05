@@ -1,5 +1,3 @@
-package com.visualeap.aliforreddit.domain.util
-
 /*
  * Copyright (C) 2017 The Android Open Source Project
  *
@@ -16,20 +14,19 @@ package com.visualeap.aliforreddit.domain.util
  * limitations under the License.
  */
 
-enum class Status {
-    RUNNING,
-    SUCCESS,
-    FAILED
-}
+package com.visualeap.aliforreddit.domain.repository
 
-@Suppress("DataClassPrivateConstructor")
-data class NetworkState private constructor(
-    val status: Status,
-    val throwable: Throwable? = null
-) {
-    companion object {
-        val LOADED = NetworkState(Status.SUCCESS)
-        val LOADING = NetworkState(Status.RUNNING)
-        fun error(throwable: Throwable?) = NetworkState(Status.FAILED, throwable)
-    }
-}
+import androidx.paging.PagedList
+import com.jakewharton.rxrelay2.BehaviorRelay
+import io.reactivex.Observable
+
+/**
+ * Data class that is necessary for a UI to show a listing and interact w/ the rest of the system
+ */
+data class Listing<T>(
+    // the LiveData of paged lists for the UI to observe
+    val pagedList: Observable<PagedList<T>>,
+    // represents the network request status to show to the user
+    val networkState: BehaviorRelay<NetworkState>,
+    // retries any failed requests.
+    val retry: () -> Unit)

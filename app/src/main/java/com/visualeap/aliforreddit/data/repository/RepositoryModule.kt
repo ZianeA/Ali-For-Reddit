@@ -66,4 +66,7 @@ interface RepositoryModule {
 
     @Binds
     fun provideUserlessTokenMapper(mapper: TokenWithUserlessTokenEntityMapper): Mapper<TokenWithUserlessTokenEntity, UserlessToken>
+
+    @Binds
+    fun provideNextPageKeyStore(store: NextPageKeyStore): KeyValueStore<String?>
 }

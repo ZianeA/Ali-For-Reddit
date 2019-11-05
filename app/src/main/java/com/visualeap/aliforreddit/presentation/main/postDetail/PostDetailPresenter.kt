@@ -22,8 +22,7 @@ class PostDetailPresenter @Inject constructor(
         view.showPost(post)
 
         val disposable = commentRepository.getCommentsByPost(post.subreddit.name, post.id,
-            { print(it.status) },
-            { it.message })
+            { print(it.status) }, { it.message })
             .applySchedulers(schedulerProvider)
             .subscribe({ view.showComments(it) }, { /*onError*/ })
 
