@@ -32,14 +32,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
     lateinit var postViewMapper: Mapper<PostView, Post>
 
     private lateinit var epoxyController: FrontPageEpoxyController
-//    private var epoxyLayoutManager: RecyclerView.LayoutManager? = null
-//    private var layoutManagerState: Parcelable? = null
-    private var recyclerView: EpoxyRecyclerView? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-//        layoutManagerState = savedInstanceState?.getParcelable(LAYOUT_MANGER_STATE_KEY)
-    }
+    private lateinit var recyclerView: EpoxyRecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,12 +46,9 @@ class FrontPageFragment : Fragment(), FrontPageView {
             fragNavController.pushFragment(PostDetailFragment.newInstance(it))
         }
 
-        rootView.frontPageRecyclerView.apply {
-//            setController(epoxyController)
-            recyclerView = this
-            setItemSpacingDp(8) //TODO Make this a constant
-//            epoxyLayoutManager = layoutManager
-        }
+        recyclerView = rootView.frontPageRecyclerView
+        recyclerView.setItemSpacingDp(8) //TODO Make this a constant
+
         return rootView
     }
 
@@ -77,20 +67,14 @@ class FrontPageFragment : Fragment(), FrontPageView {
         super.onStop()
         if (arguments?.getInt(ARG_SECTION_NUMBER) == 1) {
             presenter.stop()
-//            layoutManagerState = epoxyLayoutManager?.onSaveInstanceState()
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-//        layoutManagerState = epoxyLayoutManager?.onSaveInstanceState()
-//        outState.putParcelable(LAYOUT_MANGER_STATE_KEY, layoutManagerState)
-    }
-
     override fun displayPosts(posts: PagedList<Post>) {
-        recyclerView?.setController(epoxyController)
+        if(recyclerView.adapter == null) {
+            recyclerView.setController(epoxyController)
+        }
         epoxyController.submitList(posts)
-//        epoxyLayoutManager?.onRestoreInstanceState(layoutManagerState)
     }
 
     companion object {

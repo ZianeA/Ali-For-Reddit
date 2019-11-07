@@ -70,7 +70,7 @@ class PostDataRepository @Inject constructor(
     }
 
     companion object {
-        //TODO change to 20
-        private const val DATABASE_PAGE_SIZE = 5
+        //TODO change to 25
+        private const val DATABASE_PAGE_SIZE = 30
     }
 }

@@ -23,7 +23,7 @@ class PostBoundaryCallback(
 
     companion object {
         //TODO change to 25
-        private const val NETWORK_PAGE_SIZE = 5
+        private const val NETWORK_PAGE_SIZE = 25
         const val NEXT_PAGE_STORE_KEY = "next_page_key"
     }
 
