@@ -23,6 +23,7 @@ import com.visualeap.aliforreddit.domain.model.*
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
+import com.visualeap.aliforreddit.presentation.model.CommentView
 import com.visualeap.aliforreddit.presentation.model.PostView
 import com.visualeap.aliforreddit.presentation.model.SubredditView
 import com.visualeap.aliforreddit.presentation.util.formatCount
@@ -322,6 +323,37 @@ fun createCommentEntity(
     postId: String = POST_ID,
     parentId: String? = null
 ) = CommentEntity(id, authorName, text, score, creationDate, depth, postId, parentId)
+
+fun createCommentView(
+    id: String = COMMENT_ID,
+    authorName: String = REDDITOR_USERNAME,
+    text: String = COMMENT_TEXT,
+    score: String = formatCount(COMMENT_SCORE),
+    timestamp: String = formatTimestamp(COMMENT_CREATION_DATE),
+    depth: Int = COMMENT_DEPTH,
+    postId: String = POST_ID,
+    parentId: String? = null,
+    replies: List<CommentView>? = listOf(
+        createCommentView(
+            id = NESTED_COMMENT_ID,
+            parentId = COMMENT_ID,
+            depth = NESTED_COMMENT_DEPTH,
+            replies = null
+        )
+    ),
+    isCollapsed: Boolean = false
+) = CommentView(
+    id,
+    authorName,
+    text,
+    score,
+    timestamp,
+    depth,
+    postId,
+    parentId,
+    replies,
+    isCollapsed
+)
 //endregion
 
 fun createBasicAuth(clientId: String = "CLIENT ID"): String = Credentials.basic(clientId, "")

@@ -17,6 +17,7 @@ import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Subreddit
+import com.visualeap.aliforreddit.presentation.model.CommentView
 import com.visualeap.aliforreddit.presentation.model.PostView
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_post_detail.view.*
@@ -26,7 +27,7 @@ class PostDetailFragment : Fragment(), PostDetailView {
     @Inject
     lateinit var presenter: PostDetailPresenter
 
-    private val epoxyController = PostDetailEpoxyController()
+    private lateinit var epoxyController: PostDetailEpoxyController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,11 +37,11 @@ class PostDetailFragment : Fragment(), PostDetailView {
         val rootView = inflater.inflate(R.layout.fragment_post_detail, container, false)
 
         (activity as AppCompatActivity).apply {
-//            rootView.toolbar.title = " "
             setSupportActionBar(rootView.toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
+        epoxyController = PostDetailEpoxyController(presenter::onCommentLongClicked)
         rootView.postDetailRecyclerView.setController(epoxyController)
         return rootView
     }
@@ -67,7 +68,7 @@ class PostDetailFragment : Fragment(), PostDetailView {
         epoxyController.requestModelBuild()
     }
 
-    override fun showComments(comments: List<Comment>) {
+    override fun showComments(comments: List<CommentView>) {
         epoxyController.comments = comments
     }
 

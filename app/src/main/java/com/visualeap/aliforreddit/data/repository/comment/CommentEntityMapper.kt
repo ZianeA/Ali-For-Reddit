@@ -24,27 +24,27 @@ class CommentEntityMapper @Inject constructor() :
             }
         }
 
-        return createNestedReplies(rootComments, commentsByParentId)
+        return createCommentTree(rootComments, commentsByParentId)
     }
 
     override fun mapReverse(model: List<Comment>): List<CommentEntity> {
         val commentEntities = mutableListOf<CommentEntity>()
-        // We are mutating the commentEntities inside the flattenNestedReplies to avoid creating redundant lists.
+        // We are mutating the commentEntities inside the flattenCommentTree to avoid creating redundant lists.
         // This not functional programming. There are probably better ways to do this. This is what I came up with.
-        flattenNestedReplies(model, commentEntities)
+        flattenCommentTree(model, commentEntities)
         return commentEntities
     }
 
-    private fun flattenNestedReplies(comments: List<Comment>, commentEntities: MutableList<CommentEntity>) {
+    private fun flattenCommentTree(comments: List<Comment>, commentEntities: MutableList<CommentEntity>) {
         comments.forEach {
             commentEntities.add(it.toEntity())
             if (it.replies != null) {
-                flattenNestedReplies(it.replies, commentEntities)
+                flattenCommentTree(it.replies, commentEntities)
             }
         }
     }
 
-    private fun createNestedReplies(
+    private fun createCommentTree(
         commentEntities: List<CommentEntity>,
         commentsByParentId: Map<String, MutableList<CommentEntity>>
     ): List<Comment> {
@@ -53,7 +53,7 @@ class CommentEntityMapper @Inject constructor() :
             val replies = commentsByParentId[commentEntity.id]
 
             if (replies != null) {
-                val nestedReplies = createNestedReplies(replies, commentsByParentId)
+                val nestedReplies = createCommentTree(replies, commentsByParentId)
                 comments.add(commentEntity.toDomain(nestedReplies))
             } else {
                 comments.add(commentEntity.toDomain(null))

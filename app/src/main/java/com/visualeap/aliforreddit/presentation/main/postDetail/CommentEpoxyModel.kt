@@ -13,6 +13,7 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Comment
+import com.visualeap.aliforreddit.presentation.model.CommentView
 import com.visualeap.aliforreddit.presentation.util.KotlinEpoxyHolder
 import com.visualeap.aliforreddit.presentation.util.formatCount
 import com.visualeap.aliforreddit.presentation.util.formatTimestamp
@@ -20,12 +21,15 @@ import com.visualeap.aliforreddit.presentation.util.formatTimestamp
 @EpoxyModelClass(layout = R.layout.item_comment)
 abstract class CommentEpoxyModel : EpoxyModelWithHolder<CommentHolder>() {
     @EpoxyAttribute
-    lateinit var comment: Comment
+    lateinit var comment: CommentView
+
+    @EpoxyAttribute
+    lateinit var longClickListener: View.OnLongClickListener
 
     override fun bind(holder: CommentHolder) {
         super.bind(holder)
         holder.commentAuthorAndTime.text =
-            "${comment.authorName} • ${formatTimestamp(comment.creationDate)}"
+            "${comment.authorName} • ${comment.timestamp}"
 
         val indent = comment.depth + 1
         holder.commentLayoutParams.marginStart = holder.defaultMarginStart * indent
@@ -45,12 +49,14 @@ abstract class CommentEpoxyModel : EpoxyModelWithHolder<CommentHolder>() {
         }
 
         holder.commentBody.text = comment.text
-        holder.commentScore.text = formatCount(comment.score)
+        holder.commentScore.text = comment.score
+        holder.view.setOnLongClickListener(longClickListener)
     }
 
     override fun unbind(holder: CommentHolder) {
         super.unbind(holder)
         holder.commentLines.forEach { (_, view) -> view.visibility = View.INVISIBLE }
+        holder.view.setOnLongClickListener(null)
     }
 }
 
