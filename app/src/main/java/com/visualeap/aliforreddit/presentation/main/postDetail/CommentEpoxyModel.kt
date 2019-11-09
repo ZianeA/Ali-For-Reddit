@@ -1,82 +1,65 @@
 package com.visualeap.aliforreddit.presentation.main.postDetail
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.marginStart
-import androidx.recyclerview.widget.RecyclerView
+import androidx.constraintlayout.widget.ConstraintSet
 import com.airbnb.epoxy.EpoxyAttribute
-import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.presentation.model.CommentView
 import com.visualeap.aliforreddit.presentation.util.KotlinEpoxyHolder
-import com.visualeap.aliforreddit.presentation.util.formatCount
-import com.visualeap.aliforreddit.presentation.util.formatTimestamp
 
-@EpoxyModelClass(layout = R.layout.item_comment)
-abstract class CommentEpoxyModel : EpoxyModelWithHolder<CommentHolder>() {
+abstract class CommentEpoxyModel<T : CommentHolder> : EpoxyModelWithHolder<T>() {
     @EpoxyAttribute
     lateinit var comment: CommentView
 
     @EpoxyAttribute
     lateinit var longClickListener: View.OnLongClickListener
 
-    override fun bind(holder: CommentHolder) {
+    override fun bind(holder: T) {
         super.bind(holder)
-        holder.commentAuthorAndTime.text =
-            "${comment.authorName} • ${comment.timestamp}"
+        holder.apply {
+            val indent = comment.depth + 1
+            commentLayoutParams.marginStart = defaultMarginStart * indent
 
-        val indent = comment.depth + 1
-        holder.commentLayoutParams.marginStart = holder.defaultMarginStart * indent
-
-        //Lazily create comment tree lines.
-        for (i in 1 until indent) {
-            if (holder.commentLines.containsKey(i)) {
-                holder.commentLines[i]!!.visibility = View.VISIBLE
-            } else {
-                val line =
-                    holder.inflater.inflate(R.layout.comment_line, holder.constraintLayout, false)
-                val lineLayoutParams = line.layoutParams as ConstraintLayout.LayoutParams
-                lineLayoutParams.marginStart = holder.defaultMarginStart * i
-                holder.commentLines[i] = line
-                holder.constraintLayout.addView(line)
+            //Lazily create comment tree lines.
+            for (i in 1 until indent) {
+                if (commentLines.containsKey(i)) {
+                    commentLines[i]!!.visibility = View.VISIBLE
+                } else {
+                    val line =
+                        inflater.inflate(R.layout.comment_line, constraintLayout, false)
+                    val lineLayoutParams = line.layoutParams as ConstraintLayout.LayoutParams
+                    lineLayoutParams.marginStart = holder.defaultMarginStart * i
+                    line.id = View.generateViewId()
+                    constraintLayout.addView(line)
+                    commentLines[i] = line
+                }
             }
-        }
 
-        holder.commentBody.text = comment.text
-        holder.commentScore.text = comment.score
-        holder.view.setOnLongClickListener(longClickListener)
+            view.setOnLongClickListener(longClickListener)
+        }
     }
 
-    override fun unbind(holder: CommentHolder) {
+    override fun unbind(holder: T) {
         super.unbind(holder)
-        holder.commentLines.forEach { (_, view) -> view.visibility = View.INVISIBLE }
+        holder.commentLines.forEach { (_, view) -> view.visibility = View.GONE }
         holder.view.setOnLongClickListener(null)
     }
 }
 
-class CommentHolder : KotlinEpoxyHolder() {
+abstract class CommentHolder : KotlinEpoxyHolder() {
     lateinit var view: View
-    lateinit var commentLayoutParams: ConstraintLayout.LayoutParams
-    var defaultMarginStart: Int = 0
-    val commentLines = mutableMapOf<Int, View>()
+    abstract var commentLayoutParams: ConstraintLayout.LayoutParams
+    abstract var defaultMarginStart: Int
+    abstract var constraintLayout: ConstraintLayout
     lateinit var inflater: LayoutInflater
+    val commentLines = mutableMapOf<Int, View>()
 
     override fun bindView(itemView: View) {
         super.bindView(itemView)
         view = itemView
-        commentLayoutParams = commentAuthorAndTime.layoutParams as ConstraintLayout.LayoutParams
-        defaultMarginStart = commentAuthorAndTime.marginStart
         inflater = LayoutInflater.from(view.context);
     }
-
-    val commentAuthorAndTime by bind<TextView>(R.id.commentAuthorAndTime)
-    val commentBody by bind<TextView>(R.id.commentBody)
-    val constraintLayout by bind<ConstraintLayout>(R.id.constraintLayout)
-    val commentScore by bind<TextView>(R.id.commentScore)
 }

@@ -34,12 +34,13 @@ class PostDetailEpoxyController(private val onCommentLongClickListener: ((longCl
                 CollapsedCommentEpoxyModel_()
                     .id(it.id)
                     .comment(it)
+                    .longClickListener { _ -> onCommentLongClickListener.invoke(it, comments) }
                     .addTo(this)
 
                 return@forEach //Here return acts as continue
             }
 
-            CommentEpoxyModel_()
+            ExpandedCommentEpoxyModel_()
                 .id(it.id)
                 .comment(it)
                 .longClickListener { _ -> onCommentLongClickListener.invoke(it, comments) }
