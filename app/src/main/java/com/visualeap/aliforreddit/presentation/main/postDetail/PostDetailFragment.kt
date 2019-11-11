@@ -2,6 +2,7 @@ package com.visualeap.aliforreddit.presentation.main.postDetail
 
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -37,12 +38,16 @@ class PostDetailFragment : Fragment(), PostDetailView {
         val rootView = inflater.inflate(R.layout.fragment_post_detail, container, false)
 
         (activity as AppCompatActivity).apply {
+            rootView.toolbar.setBackgroundColor(Color.parseColor(selectedPost.subreddit.color))
             setSupportActionBar(rootView.toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
         epoxyController = PostDetailEpoxyController(presenter::onCommentLongClicked)
-        rootView.postDetailRecyclerView.setController(epoxyController)
+        rootView.postDetailRecyclerView.apply {
+            setController(epoxyController)
+            addItemDecoration(CommentItemDecoration(resources.getDimension(R.dimen.comment_spacing).toInt()))
+        }
         return rootView
     }
 
@@ -53,9 +58,8 @@ class PostDetailFragment : Fragment(), PostDetailView {
 
     override fun onStart() {
         super.onStart()
-        val selectedPost = arguments?.getParcelable<PostView>(ARG_SELECTED_POST)
-            ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
-        presenter.start(selectedPost)
+        val selectedPost =
+            presenter.start(selectedPost)
     }
 
     override fun onStop() {
@@ -71,6 +75,10 @@ class PostDetailFragment : Fragment(), PostDetailView {
     override fun showComments(comments: List<CommentView>) {
         epoxyController.comments = comments
     }
+
+    private val selectedPost: PostView
+        get() = arguments?.getParcelable<PostView>(ARG_SELECTED_POST)
+            ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
 
     companion object {
         private const val ARG_SELECTED_POST = "selected_post"
