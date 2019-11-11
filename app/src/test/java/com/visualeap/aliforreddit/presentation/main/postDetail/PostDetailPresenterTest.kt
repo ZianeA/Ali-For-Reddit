@@ -79,7 +79,7 @@ internal class PostDetailPresenterTest {
     @Nested
     inner class OnCommentLongClicked {
         @Test
-        fun `send collapsed comments to view`() {
+        fun `collapse comments when expanded`() {
             //Arrange
             val commentView = createCommentView()
             every { view.showComments(any()) } just runs
@@ -593,6 +593,109 @@ internal class PostDetailPresenterTest {
                 )
             )
             verify { view.showComments(expectedComment) }
+        }
+
+        @Test
+        fun `expand comments when collapsed`() {
+            //Arrange
+            val commentView = createCommentView(isCollapsed = true)
+            every { view.showComments(any()) } just runs
+
+            //Act
+            presenter.onCommentLongClicked(commentView, listOf(commentView))
+
+            //Assert
+            verify { view.showComments(listOf(commentView.copy(isCollapsed = false))) }
+        }
+
+        @Test
+        fun `handle expanding deeply nested comments`() {
+            //Arrange
+            val clickedComment = createCommentView(
+                id = "16",
+                parentId = "15",
+                replies = null,
+                isCollapsed = true
+            )
+            val allComments = listOf(
+                createCommentView(
+                    id = "1", parentId = null, replies = listOf(
+                        createCommentView(
+                            id = "2", parentId = "1", replies = listOf(
+                                createCommentView(
+                                    id = "5", parentId = "2", replies = listOf(
+                                        createCommentView(
+                                            id = "7", parentId = "5", replies = listOf(
+                                                createCommentView(
+                                                    id = "8",
+                                                    parentId = "7",
+                                                    replies = null
+                                                )
+                                            )
+                                        )
+                                    )
+                                ),
+                                createCommentView(
+                                    id = "6", parentId = "2", replies = listOf(
+                                        createCommentView(
+                                            id = "12", parentId = "6", replies = listOf(
+                                                createCommentView(
+                                                    id = "15", parentId = "12", replies = listOf(
+                                                        clickedComment
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+            every { view.showComments(any()) } just runs
+
+            //Act
+            presenter.onCommentLongClicked(clickedComment, allComments)
+
+            //Assert
+            val expectedComments = listOf(
+                createCommentView(
+                    id = "1", parentId = null, replies = listOf(
+                        createCommentView(
+                            id = "2", parentId = "1", replies = listOf(
+                                createCommentView(
+                                    id = "5", parentId = "2", replies = listOf(
+                                        createCommentView(
+                                            id = "7", parentId = "5", replies = listOf(
+                                                createCommentView(
+                                                    id = "8",
+                                                    parentId = "7",
+                                                    replies = null
+                                                )
+                                            )
+                                        )
+                                    )
+                                ),
+                                createCommentView(
+                                    id = "6", parentId = "2", replies = listOf(
+                                        createCommentView(
+                                            id = "12", parentId = "6", replies = listOf(
+                                                createCommentView(
+                                                    id = "15", parentId = "12", replies = listOf(
+                                                        clickedComment.copy(isCollapsed = false)
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+            verify { view.showComments(expectedComments) }
         }
     }
 }
