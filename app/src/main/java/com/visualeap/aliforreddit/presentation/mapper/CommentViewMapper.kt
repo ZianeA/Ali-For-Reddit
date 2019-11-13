@@ -19,21 +19,28 @@ class CommentViewMapper @Inject constructor() :
         return reverseMapCommentTree(model)
     }
 
-    private fun reverseMapCommentTree(comments: List<Comment>): List<CommentView> {
+    private fun reverseMapCommentTree(
+        comments: List<Comment>,
+        isParentLastReply: Boolean? = null
+    ): List<CommentView> {
         val commentViews = mutableListOf<CommentView>()
-        comments.forEach {
+        comments.forEachIndexed { i, it ->
+            var isLastReply = true
+            if (isParentLastReply != null && (!isParentLastReply || i != comments.lastIndex)) {
+                isLastReply = false
+            }
             if (it.replies != null) {
-                val nestedReplies = reverseMapCommentTree(it.replies)
-                commentViews.add(it.toView(nestedReplies))
+                val nestedReplies = reverseMapCommentTree(it.replies, isLastReply)
+                commentViews.add(it.toView(nestedReplies, false))
             } else {
-                commentViews.add(it.toView(null))
+                commentViews.add(it.toView(null, isLastReply))
             }
         }
 
         return commentViews
     }
 
-    private fun Comment.toView(replies: List<CommentView>?): CommentView {
+    private fun Comment.toView(replies: List<CommentView>?, isLastReply: Boolean): CommentView {
         return CommentView(
             id,
             authorName,
@@ -44,7 +51,8 @@ class CommentViewMapper @Inject constructor() :
             postId,
             parentId,
             replies,
-            false
+            false,
+            isLastReply
         )
     }
 }

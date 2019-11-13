@@ -10,5 +10,6 @@ data class CommentView(
     val postId: String,
     val parentId: String?,
     val replies: List<CommentView>?,
-    val isCollapsed: Boolean
+    val isCollapsed: Boolean,
+    val isLastReply: Boolean
 )

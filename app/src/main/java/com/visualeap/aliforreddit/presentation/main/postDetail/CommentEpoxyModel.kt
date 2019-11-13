@@ -31,13 +31,21 @@ abstract class CommentEpoxyModel<T : CommentHolder> : EpoxyModelWithHolder<T>() 
                     val line =
                         inflater.inflate(R.layout.comment_line, constraintLayout, false)
                     val lineLayoutParams = line.layoutParams as ConstraintLayout.LayoutParams
-                    lineLayoutParams.marginStart = holder.defaultMarginStart * i
+                    lineLayoutParams.marginStart = defaultMarginStart * i
                     line.id = View.generateViewId()
                     constraintLayout.addView(line)
                     commentLines[i] = line
                 }
             }
 
+            // Add bottom margin at the end of comment tree line
+            // Unfortunately there's no function for setting bottom margin directly, similar to marginStart
+            val bottomMargin = if (comment.isLastReply) defaultMarginStart else 0
+            commentLines.forEach { (_, line) ->
+                (line.layoutParams as ConstraintLayout.LayoutParams).apply {
+                    setMargins(leftMargin, topMargin, rightMargin, bottomMargin)
+                }
+            }
             view.setOnLongClickListener(longClickListener)
         }
     }

@@ -338,10 +338,12 @@ fun createCommentView(
             id = NESTED_COMMENT_ID,
             parentId = COMMENT_ID,
             depth = NESTED_COMMENT_DEPTH,
+            isLastReply = true,
             replies = null
         )
     ),
-    isCollapsed: Boolean = false
+    isCollapsed: Boolean = false,
+    isLastReply: Boolean = false
 ) = CommentView(
     id,
     authorName,
@@ -352,7 +354,8 @@ fun createCommentView(
     postId,
     parentId,
     replies,
-    isCollapsed
+    isCollapsed,
+    isLastReply
 )
 //endregion
 
