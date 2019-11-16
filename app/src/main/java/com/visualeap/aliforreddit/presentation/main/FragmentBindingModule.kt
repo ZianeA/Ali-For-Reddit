@@ -1,6 +1,7 @@
 package com.visualeap.aliforreddit.presentation.main
 
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
+import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageContainerFragment
 import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageFragment
 import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageModule
 import com.visualeap.aliforreddit.presentation.main.postDetail.PostDetailFragment
@@ -17,4 +18,8 @@ abstract class FragmentBindingModule {
     @FragmentScope
     @ContributesAndroidInjector(modules = [PostDetailModule::class])
     abstract fun postDetailFragment(): PostDetailFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    abstract fun frontPageContainerFragment(): FrontPageContainerFragment
 }

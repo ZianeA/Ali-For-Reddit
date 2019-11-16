@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -22,7 +23,8 @@ import java.lang.IllegalStateException
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
-    FragNavController.RootFragmentListener, FragNavController.TransactionListener {
+    FragNavController.RootFragmentListener, FragNavController.TransactionListener,
+    DrawerController {
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Fragment>
 
@@ -102,10 +104,6 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
         }*/
     }
 
-    companion object {
-        private const val REQUEST_CODE_LOGIN = 101
-    }
-
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -138,6 +136,22 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
         throw IllegalStateException("Invalid tab index")
     }
 
+    override fun close() {
+        drawerLayout.closeDrawer(GravityCompat.START)
+    }
+
+    override fun lockClosed() {
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+    }
+
+    override fun open() {
+        drawerLayout.openDrawer(GravityCompat.START)
+    }
+
+    override fun toggle() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) close() else open()
+    }
+
     override fun onFragmentTransaction(
         fragment: Fragment?,
         transactionType: FragNavController.TransactionType
@@ -152,4 +166,8 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = androidInjector
+
+    companion object {
+        private const val REQUEST_CODE_LOGIN = 101
+    }
 }

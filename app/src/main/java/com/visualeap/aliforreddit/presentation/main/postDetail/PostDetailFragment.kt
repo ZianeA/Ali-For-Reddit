@@ -18,6 +18,7 @@ import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Subreddit
+import com.visualeap.aliforreddit.presentation.main.DrawerController
 import com.visualeap.aliforreddit.presentation.model.CommentView
 import com.visualeap.aliforreddit.presentation.model.PostView
 import dagger.android.support.AndroidSupportInjection
@@ -28,7 +29,15 @@ class PostDetailFragment : Fragment(), PostDetailView {
     @Inject
     lateinit var presenter: PostDetailPresenter
 
+    @Inject
+    lateinit var drawerController: DrawerController
+
     private lateinit var epoxyController: PostDetailEpoxyController
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        drawerController.lockClosed()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,8 +67,7 @@ class PostDetailFragment : Fragment(), PostDetailView {
 
     override fun onStart() {
         super.onStart()
-        val selectedPost =
-            presenter.start(selectedPost)
+        presenter.start(selectedPost)
     }
 
     override fun onStop() {

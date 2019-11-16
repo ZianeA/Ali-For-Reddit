@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage
 
+import android.content.Context
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.snackbar.Snackbar
 
@@ -9,9 +10,17 @@ import androidx.fragment.app.FragmentPagerAdapter
 import android.os.Bundle
 import android.view.*
 import com.visualeap.aliforreddit.R
+import com.visualeap.aliforreddit.presentation.main.DrawerController
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_container_home.*
+import kotlinx.android.synthetic.main.fragment_container_home.view.*
+import kotlinx.android.synthetic.main.search_bar.view.*
+import javax.inject.Inject
 
 class FrontPageContainerFragment : Fragment() {
+
+    @Inject
+    lateinit var drawerController: DrawerController
 
     /**
      * The [androidx.viewpager.widget.PagerAdapter] that will provide
@@ -23,49 +32,32 @@ class FrontPageContainerFragment : Fragment() {
      */
     private var sectionsPagerAdapter: SectionsPagerAdapter? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val rootView = inflater.inflate(R.layout.fragment_container_home, container, false)
-        setHasOptionsMenu(true)
-
-        return rootView
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         sectionsPagerAdapter = SectionsPagerAdapter(childFragmentManager)
 
         // Set up the ViewPager with the sections adapter.
-        container.adapter = sectionsPagerAdapter
-
-        container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
-        tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
-
-/*        fab.setOnClickListener {
-            Snackbar.make(it, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }*/
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.menu_main, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
-
-        if (id == R.id.action_settings) {
-            return true
+        rootView.container.apply {
+            adapter = sectionsPagerAdapter
+            addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(rootView.tabs))
+            rootView.tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(this))
         }
 
-        return super.onOptionsItemSelected(item)
+        rootView.profileImage.setOnClickListener { _ -> drawerController.toggle() }
+
+        return rootView
     }
 
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
 
     /**
      * A [FragmentPagerAdapter] that returns a fragment corresponding to

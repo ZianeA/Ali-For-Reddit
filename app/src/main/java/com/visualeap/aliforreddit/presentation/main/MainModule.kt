@@ -24,6 +24,10 @@ class MainModule {
     @Provides
     fun provideFragNavController(mainActivity: MainActivity) = mainActivity.fragNavController
 
+    @ActivityScope
+    @Provides
+    fun provideDrawerController(mainActivity: MainActivity): DrawerController = mainActivity
+
     @Provides
     fun providePostViewMapper(mapper: PostViewMapper): Mapper<PostView, Post> = mapper
 
