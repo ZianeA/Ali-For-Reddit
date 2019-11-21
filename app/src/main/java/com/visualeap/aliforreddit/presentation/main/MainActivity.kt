@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.presentation.main
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -11,9 +10,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.presentation.di.ActivityScope
-import com.visualeap.aliforreddit.presentation.login.LoginActivity
-import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageContainerFragment
+import com.visualeap.aliforreddit.presentation.main.frontPage.container.FrontPageContainerFragment
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector

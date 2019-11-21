@@ -15,6 +15,7 @@ import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.util.Mapper
+import com.visualeap.aliforreddit.presentation.main.frontPage.container.FrontPageContainerFragment
 import com.visualeap.aliforreddit.presentation.main.postDetail.PostDetailFragment
 import com.visualeap.aliforreddit.presentation.model.PostView
 import dagger.android.support.AndroidSupportInjection
@@ -54,7 +55,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
 
     override fun onStart() {
         super.onStart()
-        if (arguments?.getInt(ARG_SECTION_NUMBER) == 1)
+        if (sectionNumber == FrontPageContainerFragment.POPULAR_SECTION_NUMBER)
             presenter.start()
     }
 
@@ -65,17 +66,21 @@ class FrontPageFragment : Fragment(), FrontPageView {
 
     override fun onStop() {
         super.onStop()
-        if (arguments?.getInt(ARG_SECTION_NUMBER) == 1) {
+        if (sectionNumber == FrontPageContainerFragment.POPULAR_SECTION_NUMBER) {
             presenter.stop()
         }
     }
 
     override fun displayPosts(posts: PagedList<Post>) {
-        if(recyclerView.adapter == null) {
+        if (recyclerView.adapter == null) {
             recyclerView.setController(epoxyController)
         }
         epoxyController.submitList(posts)
     }
+
+    private val sectionNumber: Int
+        get() = arguments?.getInt(ARG_SECTION_NUMBER)
+            ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
 
     companion object {
         /**

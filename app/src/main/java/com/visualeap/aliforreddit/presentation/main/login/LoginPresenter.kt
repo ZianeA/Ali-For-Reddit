@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.presentation.login
+package com.visualeap.aliforreddit.presentation.main.login
 
 import android.util.Log
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
@@ -23,8 +23,11 @@ class LoginPresenter @Inject constructor(
     private val tag = LoginPresenter::class.java.simpleName
     private val compositeDisposable = CompositeDisposable()
 
-    fun start() {
+    fun start() {}
+
+    fun onLogInClicked() {
         val authUrl = buildAuthUrl.execute(generateAuthCode.execute(Unit))
+        view.hideLoginPrompt()
         view.showLoginPage(authUrl)
     }
 

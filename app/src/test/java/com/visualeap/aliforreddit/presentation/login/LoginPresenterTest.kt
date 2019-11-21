@@ -2,6 +2,8 @@ package com.visualeap.aliforreddit.presentation.login
 
 import com.visualeap.aliforreddit.SyncSchedulerProvider
 import com.visualeap.aliforreddit.domain.usecase.*
+import com.visualeap.aliforreddit.presentation.main.login.LoginPresenter
+import com.visualeap.aliforreddit.presentation.main.login.LoginView
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
@@ -42,8 +44,7 @@ class LoginPresenterTest {
     }
 
     @Nested
-    inner class Start {
-
+    inner class OnLogInClicked {
         @Test
         fun `pass auth url to view`() {
             //Arrange
@@ -51,16 +52,28 @@ class LoginPresenterTest {
             every { buildAuthUrl.execute(STATE) } returns AUTH_URL
 
             //Act
-            presenter.start()
+            presenter.onLogInClicked()
 
             //Assert
             verify { view.showLoginPage(AUTH_URL) }
+        }
+
+        @Test
+        fun `hide login prompt`() {
+            //Arrange
+            every { generateAuthCode.execute(Unit) } returns STATE
+            every { buildAuthUrl.execute(STATE) } returns AUTH_URL
+
+            //Act
+            presenter.onLogInClicked()
+
+            //Assert
+            verify { view.hideLoginPrompt() }
         }
     }
 
     @Nested
     inner class OnPageStarted {
-
         @Test
         fun `hide login ui when url is valid`() {
             //Act
@@ -76,7 +89,7 @@ class LoginPresenterTest {
             presenter.onPageStarted("https://invalid.com")
 
             //Assert
-            verify { view wasNot Called}
+            verify { view wasNot Called }
         }
 
         @Test
@@ -85,7 +98,7 @@ class LoginPresenterTest {
             presenter.onPageStarted(REDIRECT_URL)
 
             //Assert
-            verify { view wasNot Called}
+            verify { view wasNot Called }
         }
 
         @Test
@@ -94,7 +107,7 @@ class LoginPresenterTest {
             presenter.onPageStarted("this is a malformed URL $REDIRECT_URL")
 
             //Assert
-            verify { view wasNot Called}
+            verify { view wasNot Called }
         }
     }
 }
