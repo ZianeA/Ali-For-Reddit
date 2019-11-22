@@ -11,6 +11,7 @@ import com.google.android.material.navigation.NavigationView
 import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.presentation.main.frontPage.container.FrontPageContainerFragment
+import com.visualeap.aliforreddit.presentation.main.login.BackButtonHandler
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -102,10 +103,15 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
     }
 
     override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else if (fragNavController.popFragment().not()) {
-            super.onBackPressed()
+        val backButtonHandler = fragNavController.currentFrag as? BackButtonHandler
+        if (backButtonHandler != null && backButtonHandler.onBackPressed()) {
+            return
+        }
+
+        when {
+            drawerLayout.isDrawerOpen(GravityCompat.START) -> drawerLayout.closeDrawer(GravityCompat.START)
+            fragNavController.isRootFragment.not() -> fragNavController.popFragment()
+            else -> super.onBackPressed()
         }
     }
 

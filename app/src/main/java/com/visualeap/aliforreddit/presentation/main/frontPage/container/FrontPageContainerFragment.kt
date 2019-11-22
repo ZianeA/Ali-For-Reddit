@@ -12,13 +12,14 @@ import androidx.viewpager.widget.ViewPager
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.presentation.main.DrawerController
 import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageFragment
+import com.visualeap.aliforreddit.presentation.main.login.BackButtonHandler
 import com.visualeap.aliforreddit.presentation.main.login.LoginFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_container_home.view.*
 import kotlinx.android.synthetic.main.search_bar.view.*
 import javax.inject.Inject
 
-class FrontPageContainerFragment : Fragment(), FrontPageContainerView {
+class FrontPageContainerFragment : Fragment(), FrontPageContainerView, BackButtonHandler {
     @Inject
     lateinit var drawerController: DrawerController
 
@@ -26,6 +27,7 @@ class FrontPageContainerFragment : Fragment(), FrontPageContainerView {
     lateinit var presenter: FrontPageContainerPresenter
 
     private lateinit var mViewPager: ViewPager
+    private var loginFragment: LoginFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,9 +62,10 @@ class FrontPageContainerFragment : Fragment(), FrontPageContainerView {
     }
 
     override fun showLoginScreen() {
+        loginFragment = LoginFragment()
         mViewPager.adapter = SectionsPagerAdapter(
             childFragmentManager,
-            LoginFragment(),
+            loginFragment!!,
             FrontPageFragment.newInstance(POPULAR_SECTION_NUMBER)
         )
     }
@@ -74,6 +77,9 @@ class FrontPageContainerFragment : Fragment(), FrontPageContainerView {
             FrontPageFragment.newInstance(POPULAR_SECTION_NUMBER)
         )
     }
+
+    override fun onBackPressed() =
+        if (loginFragment != null) (loginFragment as BackButtonHandler).onBackPressed() else false
 
     companion object {
         const val HOME_SECTION_NUMBER = 1

@@ -21,11 +21,7 @@ import kotlinx.android.synthetic.main.fragment_login.view.*
 import javax.inject.Inject
 import kotlin.math.hypot
 
-//TODO remove this screen (fragment, activity, presenter), and just add the WebView to MainActivity
-/**
- * A placeholder fragment containing a simple view.
- */
-class LoginFragment : Fragment(), LoginView {
+class LoginFragment : Fragment(), LoginView, BackButtonHandler {
     @Inject
     lateinit var presenter: LoginPresenter
 
@@ -103,5 +99,20 @@ class LoginFragment : Fragment(), LoginView {
         webView.visibility = View.VISIBLE
         // start the animation
         anim.start()
+    }
+
+    override fun onBackPressed(): Boolean {
+        return if (webView.visibility == View.VISIBLE) {
+            hideLoginPage()
+            showLoginPrompt()
+            true
+        } else {
+            false
+        }
+    }
+
+    private fun showLoginPrompt() {
+        loginButton.visibility = View.VISIBLE
+        loginMessage.visibility = View.VISIBLE
     }
 }
