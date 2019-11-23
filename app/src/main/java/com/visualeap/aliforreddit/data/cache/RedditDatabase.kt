@@ -16,11 +16,17 @@ import com.visualeap.aliforreddit.data.repository.token.UserTokenEntity
 import com.visualeap.aliforreddit.data.repository.token.UserlessTokenEntity
 import com.visualeap.aliforreddit.data.repository.comment.CommentDao
 import com.visualeap.aliforreddit.data.repository.comment.CommentEntity
+import com.visualeap.aliforreddit.data.repository.feed.DefaultFeed
+import com.visualeap.aliforreddit.data.repository.feed.FeedDao
+import com.visualeap.aliforreddit.data.repository.feed.FeedEntity
+import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedDao
+import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 
 @Database(
     entities = [TokenEntity::class, UserTokenEntity::class, UserlessTokenEntity::class,
-        CurrentTokenEntity::class, AccountEntity::class, RedditorEntity::class, PostEntity::class, SubredditEntity::class, CommentEntity::class],
+        CurrentTokenEntity::class, AccountEntity::class, RedditorEntity::class, PostEntity::class,
+        SubredditEntity::class, CommentEntity::class, FeedEntity::class, PostFeedEntity::class],
     version = 1
 )
 @TypeConverters(CurrentTokenEntity.TokenTypeConverter::class)
@@ -30,9 +36,24 @@ abstract class RedditDatabase : RoomDatabase() {
         const val SINGLE_RECORD_ID = 1
     }
 
+    //TODO remove
+    /*fun initialize() {
+        //Initialize Feed lookup table
+        feedDao()
+            .addAll(
+                listOf(
+                    FeedEntity(DefaultFeed.Home.name),
+                    FeedEntity(DefaultFeed.Popular.name),
+                    FeedEntity(DefaultFeed.All.name)
+                )
+            )
+    }*/
+
     abstract fun tokenDao(): TokenDao
     abstract fun accountDao(): AccountDao
     abstract fun redditorDao(): RedditorDao
     abstract fun postDao(): PostDao
     abstract fun commentDao(): CommentDao
+    abstract fun feedDao(): FeedDao
+    abstract fun postFeedDao(): PostFeedDao
 }

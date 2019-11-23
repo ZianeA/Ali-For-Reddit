@@ -5,7 +5,5 @@ import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 
 data class Account(
-    val id: Int,
-    val redditor: Redditor,
-    val token: UserToken
+    val username: String
 )

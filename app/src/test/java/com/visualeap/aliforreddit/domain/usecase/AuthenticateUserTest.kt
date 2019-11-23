@@ -83,9 +83,8 @@ class AuthenticateUserTest {
     @Test
     fun `create a new account`() {
         //Arrange
-        val token = createUserToken(id = 101)
-        val redditor = createRedditor("Special User")
-        val account = createAccount(id = 0, redditor = redditor, token = token)
+        val token = createUserToken()
+        val redditor = createRedditor()
 
         every { tokenRepository.getUserToken(any()) } returns Single.just(token)
         every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
@@ -96,7 +95,7 @@ class AuthenticateUserTest {
         authenticateUser.execute(createParams())
             .test()
 
-        verify { accountRepository.addAccount(account) }
+        verify { accountRepository.addAccount(createAccount()) }
     }
 
     @Test

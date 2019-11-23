@@ -9,4 +9,5 @@ interface PostRepository {
     fun getPostsBySubreddit(subreddit: String): Observable<PagedList<Post>>
     fun getHomePosts(refresh: Boolean): Single<Listing<Post>>
     fun getPostById(id: String): Single<Post>
+    fun getPopularPosts(refresh: Boolean): Single<Listing<Post>>
 }

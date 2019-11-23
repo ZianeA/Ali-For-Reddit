@@ -16,9 +16,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_bar">
 
-        <!--android:layout_gravity="bottom"
-        app:layout_anchor="@id/search_bar"
-        app:layout_anchorGravity="bottom"-->
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
@@ -48,10 +45,12 @@
             </com.google.android.material.tabs.TabLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
+        <!--TODO adjust layout_marginBottom to match BottomNavigationView's height-->
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="48dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -40,7 +40,7 @@ class LoginPresenter @Inject constructor(
 
             val disposable = authenticateUser.execute(params)
                 .applySchedulers(schedulerProvider)
-                .subscribe({ /*TODO on sucess*/ },
+                .subscribe({ view.reloadScreen() },
                     { /*TODO error*/ Log.i(tag, it.message) })
 
             compositeDisposable.add(disposable)

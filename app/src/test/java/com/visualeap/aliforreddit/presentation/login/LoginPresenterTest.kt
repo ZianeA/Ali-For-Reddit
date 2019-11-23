@@ -109,5 +109,14 @@ class LoginPresenterTest {
             //Assert
             verify { view wasNot Called }
         }
+
+        @Test
+        fun `reload UI when login is successful`() {
+            //Act
+            presenter.onPageStarted(FINAL_REDIRECT_URL)
+
+            //
+            verify { view.reloadScreen() }
+        }
     }
 }

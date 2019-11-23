@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
+import com.visualeap.aliforreddit.data.repository.feed.DefaultFeed
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.presentation.main.frontPage.container.FrontPageContainerFragment
@@ -55,8 +56,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
 
     override fun onStart() {
         super.onStart()
-        if (sectionNumber == FrontPageContainerFragment.POPULAR_SECTION_NUMBER)
-            presenter.start()
+        presenter.start(feed)
     }
 
     override fun onAttach(context: Context?) {
@@ -66,9 +66,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
 
     override fun onStop() {
         super.onStop()
-        if (sectionNumber == FrontPageContainerFragment.POPULAR_SECTION_NUMBER) {
-            presenter.stop()
-        }
+        presenter.stop()
     }
 
     override fun displayPosts(posts: PagedList<Post>) {
@@ -78,25 +76,15 @@ class FrontPageFragment : Fragment(), FrontPageView {
         epoxyController.submitList(posts)
     }
 
-    private val sectionNumber: Int
-        get() = arguments?.getInt(ARG_SECTION_NUMBER)
+    private val feed: DefaultFeed
+        get() = arguments?.getSerializable(ARG_FEED) as? DefaultFeed
             ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
 
     companion object {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private const val ARG_SECTION_NUMBER = "section_number"
+        private const val ARG_FEED = "feed"
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        fun newInstance(sectionNumber: Int) = FrontPageFragment().apply {
-            arguments = bundleOf(ARG_SECTION_NUMBER to sectionNumber)
+        fun newInstance(feed: DefaultFeed) = FrontPageFragment().apply {
+            arguments = bundleOf(ARG_FEED to feed)
         }
-
-        private const val LAYOUT_MANGER_STATE_KEY = "layout_manger_state"
     }
 }

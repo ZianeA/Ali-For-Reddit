@@ -105,12 +105,6 @@ fun createCurrentTokenEntity(
 ) = CurrentTokenEntity(id, tokenId, tokenType)
 //endregion
 
-fun createAccount(
-    id: Int = ID,
-    redditor: Redditor = createRedditor(),
-    token: UserToken = createUserToken()
-) = Account(id, redditor, token)
-
 //region Redditor
 private const val REDDITOR_USERNAME = "FakeUsername"
 private const val REDDITOR_ID = "FakeRedditorId"
@@ -123,6 +117,12 @@ fun createRedditorEntity(username: String = REDDITOR_USERNAME, id: String = REDD
 
 fun createRedditorReponse(username: String = REDDITOR_USERNAME, id: String = REDDITOR_ID) =
     RedditorResponse(RedditorResponse.Redditor(username, id))
+//endregion
+
+//region Account
+fun createAccount(
+    username: String = REDDITOR_USERNAME
+) = Account(username)
 //endregion
 
 //region Subreddit

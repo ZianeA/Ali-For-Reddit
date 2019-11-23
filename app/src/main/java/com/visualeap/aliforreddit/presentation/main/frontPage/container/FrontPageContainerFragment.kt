@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.viewpager.widget.ViewPager
 import com.visualeap.aliforreddit.R
+import com.visualeap.aliforreddit.data.repository.feed.DefaultFeed
 import com.visualeap.aliforreddit.presentation.main.DrawerController
 import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageFragment
 import com.visualeap.aliforreddit.presentation.main.login.BackButtonHandler
@@ -66,25 +67,21 @@ class FrontPageContainerFragment : Fragment(), FrontPageContainerView, BackButto
         mViewPager.adapter = SectionsPagerAdapter(
             childFragmentManager,
             loginFragment!!,
-            FrontPageFragment.newInstance(POPULAR_SECTION_NUMBER)
+            FrontPageFragment.newInstance(DefaultFeed.Popular)
         )
     }
 
     override fun showHomeScreen() {
         mViewPager.adapter = SectionsPagerAdapter(
             childFragmentManager,
-            FrontPageFragment.newInstance(HOME_SECTION_NUMBER),
-            FrontPageFragment.newInstance(POPULAR_SECTION_NUMBER)
+            FrontPageFragment.newInstance(DefaultFeed.Home),
+            FrontPageFragment.newInstance(DefaultFeed.Popular)
         )
     }
 
     override fun onBackPressed() =
+        // TODO handle back button only if the current selected tab is Home tab
         if (loginFragment != null) (loginFragment as BackButtonHandler).onBackPressed() else false
-
-    companion object {
-        const val HOME_SECTION_NUMBER = 1
-        const val POPULAR_SECTION_NUMBER = 2
-    }
 
     /**
      * The [androidx.viewpager.widget.PagerAdapter] that will provide

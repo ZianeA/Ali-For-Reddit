@@ -38,20 +38,17 @@ class AuthenticateUser @Inject constructor(
         val code = parsedFinalUrl.queryParameter("code")
             ?: return Completable.error(IllegalArgumentException("Final redirect URL did not contain the 'code' query parameter"))
 
-        //Fetch user token, and use it to fetch current redditor. Use both token and redditor to create a new Account.
+        //Fetch user token, set it as the current token, and use it to fetch current redditor.
+        // Use redditor username to create a new Account.
         return tokenRepository.getUserToken(code)
             .flatMapCompletable { token ->
                 tokenRepository.setCurrentToken(token)
-                    .andThen(redditorRepository.getCurrentRedditor())
+                    /*.andThen(redditorRepository.getCurrentRedditor())
                     .flatMapCompletable { redditor ->
                         accountRepository.addAccount(
-                            Account(
-                                0,
-                                redditor,
-                                token
-                            )
+                            Account(redditor.username)
                         )
-                    }
+                    }*/
             }
     }
 

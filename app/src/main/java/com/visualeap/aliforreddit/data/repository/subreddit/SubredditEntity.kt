@@ -5,7 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class SubredditEntity(
-    @PrimaryKey val name: String, val id: String,
+    @PrimaryKey val name: String,
+    val id: String,
     val iconUrl: String?,
     val primaryColor: String?,
     val keyColor: String?

@@ -1,12 +1,14 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage
 
 import androidx.paging.PagedList
+import com.visualeap.aliforreddit.data.repository.feed.DefaultFeed
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
 import com.visualeap.aliforreddit.domain.repository.PostRepository
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import com.visualeap.aliforreddit.domain.util.applySchedulers
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -18,8 +20,15 @@ class FrontPagePresenter @Inject constructor(
 ) {
     private val disposables = CompositeDisposable()
 
-    fun start() {
-        val listingDisposable = repository.getHomePosts(false)
+    fun start(feed: DefaultFeed) {
+        val listingDisposable = Single.just(feed)
+            .flatMap {
+                when (it) {
+                    DefaultFeed.Home -> repository.getHomePosts(false)
+                    DefaultFeed.Popular -> repository.getPopularPosts(false)
+                    else -> throw IllegalArgumentException("Wrong feed. Only home and popular are accepted")
+                }
+            }
             .applySchedulers(schedulerProvider)
             .subscribe({ postListing ->
                 val pagedListDisposable = postListing.pagedList
@@ -33,7 +42,7 @@ class FrontPagePresenter @Inject constructor(
 
                 disposables.addAll(pagedListDisposable, networkDisposable)
             },
-                { /*onError*/ }
+                { /*onError*/ println(it.message) }
             )
 
         disposables.add(listingDisposable)

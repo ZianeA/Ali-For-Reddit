@@ -15,6 +15,8 @@ import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import androidx.core.animation.addListener
 import androidx.core.content.res.ResourcesCompat
+import com.ncapdevi.fragnav.FragNavController
+import com.visualeap.aliforreddit.presentation.main.frontPage.container.FrontPageContainerFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
@@ -24,6 +26,9 @@ import kotlin.math.hypot
 class LoginFragment : Fragment(), LoginView, BackButtonHandler {
     @Inject
     lateinit var presenter: LoginPresenter
+
+    @Inject
+    lateinit var fragNavController: FragNavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -99,6 +104,12 @@ class LoginFragment : Fragment(), LoginView, BackButtonHandler {
         webView.visibility = View.VISIBLE
         // start the animation
         anim.start()
+    }
+
+    override fun reloadScreen() {
+        //TODO find a better way to reload fragment
+        fragNavController.clearStack()
+        fragNavController.replaceFragment(FrontPageContainerFragment())
     }
 
     override fun onBackPressed(): Boolean {

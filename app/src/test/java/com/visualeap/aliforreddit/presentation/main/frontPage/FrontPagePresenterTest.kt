@@ -31,7 +31,8 @@ class FrontPagePresenterTest {
         presenter = FrontPagePresenter(view, repository, SyncSchedulerProvider())
     }
 
-    @Nested
+    //TODO rewrite
+    /*@Nested
     inner class Start {
         @Test
         fun `pass a PagedList of post to view`() {
@@ -49,5 +50,5 @@ class FrontPagePresenterTest {
             //Assert
             verify { view.displayPosts(pagedList) }
         }
-    }
+    }*/
 }

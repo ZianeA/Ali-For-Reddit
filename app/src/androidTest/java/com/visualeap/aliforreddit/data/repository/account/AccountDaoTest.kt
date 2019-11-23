@@ -30,7 +30,7 @@ internal class AccountDaoTest {
         db.close()
     }
 
-    @Test
+    /*@Test
     fun insertAndGetAccountEntity() {
         //Arrange
         val account = AccountEntity(
@@ -48,5 +48,5 @@ internal class AccountDaoTest {
         accountDao.getAll()
             .test()
             .assertValue { it.size == 1 && it.first() == account.copy(id = 1) }
-    }
+    }*/
 }
