@@ -6,14 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".presentation.main.login.LoginFragment">
 
-    <WebView
+    <com.visualeap.aliforreddit.presentation.util.NestedWebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:backgroundTint="@color/redditLoginPageGray">
 
-    </WebView>
+    </com.visualeap.aliforreddit.presentation.util.NestedWebView>
 
     <TextView
         android:id="@+id/loginMessage"
