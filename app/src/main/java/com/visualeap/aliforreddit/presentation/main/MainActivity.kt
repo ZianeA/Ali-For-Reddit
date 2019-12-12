@@ -2,6 +2,8 @@ package com.visualeap.aliforreddit.presentation.main
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -45,30 +47,30 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
             false
         }
 
-    private val onDrawerItemSelectedListener =
-        NavigationView.OnNavigationItemSelectedListener {
-            // Handle navigation view item clicks here.
-            when (it.itemId) {
-                R.id.nav_profile -> {
-                    // Handle the camera action
-                }
-                R.id.nav_coins -> {
+    /* private val onDrawerItemSelectedListener =
+         NavigationView.OnNavigationItemSelectedListener {
+             // Handle navigation view item clicks here.
+             when (it.itemId) {
+                 R.id.navProfile -> {
+                     // Handle the camera action
+                 }
+                 R.id.navCoins -> {
 
-                }
-                R.id.nav_premium -> {
+                 }
+                 R.id.navPremium -> {
 
-                }
-                R.id.nav_saved -> {
+                 }
+                 R.id.navSaved -> {
 
-                }
-                R.id.nav_history -> {
+                 }
+                 R.id.navHistory -> {
 
-                }
-            }
+                 }
+             }
 
-            drawerLayout.closeDrawer(GravityCompat.START)
-            true
-        }
+             drawerLayout.closeDrawer(GravityCompat.START)
+             true
+         }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -84,7 +86,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
             bottomNavigationView.selectedItemId = R.id.navigation_home
         }
 
-        drawerNavigationView.setNavigationItemSelectedListener(onDrawerItemSelectedListener)
+//        drawerNavigationView.setNavigationItemSelectedListener(onDrawerItemSelectedListener)
 
         fragNavController.rootFragmentListener = this
         fragNavController.transactionListener = this
@@ -97,6 +99,24 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
             )
 //            drawerLayout.openDrawer(GravityCompat.START)
         }*/
+        redditDrawer.navigationItemSelectedListener = {
+            val message = when (it.id) {
+                R.id.navProfile -> "Profile"
+                R.id.navCoins -> "Coins"
+                R.id.navPremium -> "Premium"
+                R.id.navSaved -> "Saved"
+                R.id.navHistory -> "History"
+                R.id.navSettings -> "Settings"
+                R.id.navUsername -> "Username"
+                R.id.navDarkMode -> "Dark Mode"
+                else -> throw IllegalArgumentException("Unknown drawer item")
+            }
+            Toast.makeText(
+                this,
+                "You have just cliked on $message",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     override fun onBackPressed() {

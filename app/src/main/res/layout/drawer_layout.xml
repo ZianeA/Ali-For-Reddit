@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -20,7 +21,7 @@
         app:srcCompat="@drawable/avatar_default" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/usernameLayout"
+        android:id="@+id/navUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -33,10 +34,10 @@
             android:id="@+id/username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:text="u/Ducloss"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#000000"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,7 +60,7 @@
         android:layout_marginTop="32dp"
         android:tint="@color/redditButtonBlue"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameLayout"
+        app:layout_constraintTop_toBottomOf="@+id/navUsername"
         app:srcCompat="@drawable/ic_karma" />
 
     <ImageView
@@ -70,7 +71,7 @@
         android:layout_marginEnd="16dp"
         android:tint="@color/redditButtonBlue"
         app:layout_constraintEnd_toStartOf="@id/redditAgeTitle"
-        app:layout_constraintTop_toBottomOf="@+id/usernameLayout"
+        app:layout_constraintTop_toBottomOf="@+id/navUsername"
         app:srcCompat="@drawable/ic_cake" />
 
     <TextView
@@ -125,7 +126,7 @@
         android:background="@color/lightGray"
         app:layout_constraintEnd_toEndOf="@+id/profileImage"
         app:layout_constraintStart_toStartOf="@+id/profileImage"
-        app:layout_constraintTop_toBottomOf="@+id/usernameLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/navUsername" />
 
     <ImageView
         android:id="@+id/horizontalLine"
@@ -140,7 +141,7 @@
         app:layout_constraintTop_toBottomOf="@+id/karmaTitle" />
 
     <com.visualeap.aliforreddit.presentation.util.DrawerItem
-        android:id="@+id/nav_profile"
+        android:id="@+id/navProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -149,41 +150,41 @@
         app:layout_constraintTop_toBottomOf="@+id/horizontalLine" />
 
     <com.visualeap.aliforreddit.presentation.util.DrawerItem
-        android:id="@+id/nav_coins"
+        android:id="@+id/navCoins"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:item_description="0 Coins"
         app:item_icon="@drawable/ic_coin"
         app:item_title="Reddit Coins"
-        app:layout_constraintTop_toBottomOf="@+id/nav_profile" />
+        app:layout_constraintTop_toBottomOf="@+id/navProfile" />
 
     <com.visualeap.aliforreddit.presentation.util.DrawerItem
-        android:id="@+id/nav_premium"
+        android:id="@+id/navPremium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:item_description="Ads-free browsing"
         app:item_icon="@drawable/ic_premium"
         app:item_title="Reddit Premium"
-        app:layout_constraintTop_toBottomOf="@+id/nav_coins" />
+        app:layout_constraintTop_toBottomOf="@+id/navCoins" />
 
     <com.visualeap.aliforreddit.presentation.util.DrawerItem
-        android:id="@+id/nav_saved"
+        android:id="@+id/navSaved"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:item_icon="@drawable/ic_bookmark"
         app:item_title="Saved"
-        app:layout_constraintTop_toBottomOf="@+id/nav_premium" />
+        app:layout_constraintTop_toBottomOf="@+id/navPremium" />
 
     <com.visualeap.aliforreddit.presentation.util.DrawerItem
-        android:id="@+id/nav_history"
+        android:id="@+id/navHistory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:item_icon="@drawable/ic_history"
         app:item_title="History"
-        app:layout_constraintTop_toBottomOf="@+id/nav_saved" />
+        app:layout_constraintTop_toBottomOf="@+id/navSaved" />
 
     <com.visualeap.aliforreddit.presentation.util.DrawerItem
-        android:id="@+id/drawerItem"
+        android:id="@+id/navSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -194,14 +195,14 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/navDarkMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:background="?android:selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="@+id/drawerItem"
+        app:layout_constraintBottom_toBottomOf="@+id/navSettings"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/drawerItem"
+        app:layout_constraintTop_toTopOf="@+id/navSettings"
         app:srcCompat="@drawable/ic_crescent"
         tools:targetApi="lollipop" />
 

@@ -6,24 +6,24 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_profile"
+            android:id="@+id/navProfile"
             android:icon="@drawable/ic_profile"
             android:title="My profile" />
         <item
-            android:id="@+id/nav_coins"
+            android:id="@+id/navCoins"
             android:icon="@drawable/ic_coin"
             android:title="Reddit Coins" />
         <item
-            android:id="@+id/nav_premium"
+            android:id="@+id/navPremium"
             android:icon="@drawable/ic_premium"
             android:title="Reddit Premium" />
         <item
-            android:id="@+id/nav_saved"
+            android:id="@+id/navSaved"
             android:icon="@drawable/ic_bookmark"
             android:title="Saved" />
 
         <item
-            android:id="@+id/nav_history"
+            android:id="@+id/navHistory"
             android:icon="@drawable/ic_history"
             android:title="History" />
     </group>

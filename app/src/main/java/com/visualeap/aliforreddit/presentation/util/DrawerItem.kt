@@ -62,14 +62,6 @@ class DrawerItem : ConstraintLayout {
         val rippleBackground = typedArray.getResourceId(0, 0)
         typedArray.recycle()
         setBackgroundResource(rippleBackground)
-        //TODO remove
-        setOnClickListener {
-            Toast.makeText(
-                context,
-                "Hello from the other side",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
         val verticalPadding = resources.getDimension(R.dimen.item_drawer_top_bottom_padding).toInt()
         val horizontalPadding =
             resources.getDimension(R.dimen.item_drawer_start_end_padding).toInt()
