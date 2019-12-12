@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.visualeap.aliforreddit.presentation.util.RoundedImageView
+        android:id="@+id/profileImage"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="@string/nav_header_desc"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        app:cornerRadius="8dp"
+        app:isCircular="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/avatar_default" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/usernameLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintEnd_toEndOf="@id/profileImage"
+        app:layout_constraintStart_toStartOf="@id/profileImage"
+        app:layout_constraintTop_toBottomOf="@id/profileImage">
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="u/Ducloss"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="#000000"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/dropDownIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/username"
+            app:layout_constraintStart_toEndOf="@id/username"
+            app:layout_constraintTop_toTopOf="@+id/username"
+            app:srcCompat="@drawable/ic_arrow_drop_down" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/karmaImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:tint="@color/redditButtonBlue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usernameLayout"
+        app:srcCompat="@drawable/ic_karma" />
+
+    <ImageView
+        android:id="@+id/cakeImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:tint="@color/redditButtonBlue"
+        app:layout_constraintEnd_toStartOf="@id/redditAgeTitle"
+        app:layout_constraintTop_toBottomOf="@+id/usernameLayout"
+        app:srcCompat="@drawable/ic_cake" />
+
+    <TextView
+        android:id="@+id/karmaTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Karma"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_constraintBottom_toBottomOf="@+id/karmaImage"
+        app:layout_constraintStart_toEndOf="@+id/karmaImage"
+        app:layout_constraintTop_toBottomOf="@+id/karma" />
+
+    <TextView
+        android:id="@+id/karma"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="4,016"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toTopOf="@+id/karmaTitle"
+        app:layout_constraintStart_toStartOf="@+id/karmaTitle"
+        app:layout_constraintTop_toTopOf="@+id/karmaImage" />
+
+    <TextView
+        android:id="@+id/redditAgeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="Reddit age"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_constraintBottom_toBottomOf="@+id/cakeImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/redditAge" />
+
+    <TextView
+        android:id="@+id/redditAge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5y 11d"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toTopOf="@+id/redditAgeTitle"
+        app:layout_constraintStart_toStartOf="@+id/redditAgeTitle"
+        app:layout_constraintTop_toTopOf="@+id/cakeImage" />
+
+    <ImageView
+        android:id="@+id/verticalLine"
+        android:layout_width="2dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="24dp"
+        android:background="@color/lightGray"
+        app:layout_constraintEnd_toEndOf="@+id/profileImage"
+        app:layout_constraintStart_toStartOf="@+id/profileImage"
+        app:layout_constraintTop_toBottomOf="@+id/usernameLayout" />
+
+    <ImageView
+        android:id="@+id/horizontalLine"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/lightGray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/karmaTitle" />
+
+    <com.visualeap.aliforreddit.presentation.util.DrawerItem
+        android:id="@+id/nav_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:item_icon="@drawable/ic_profile"
+        app:item_title="My profile"
+        app:layout_constraintTop_toBottomOf="@+id/horizontalLine" />
+
+    <com.visualeap.aliforreddit.presentation.util.DrawerItem
+        android:id="@+id/nav_coins"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_description="0 Coins"
+        app:item_icon="@drawable/ic_coin"
+        app:item_title="Reddit Coins"
+        app:layout_constraintTop_toBottomOf="@+id/nav_profile" />
+
+    <com.visualeap.aliforreddit.presentation.util.DrawerItem
+        android:id="@+id/nav_premium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_description="Ads-free browsing"
+        app:item_icon="@drawable/ic_premium"
+        app:item_title="Reddit Premium"
+        app:layout_constraintTop_toBottomOf="@+id/nav_coins" />
+
+    <com.visualeap.aliforreddit.presentation.util.DrawerItem
+        android:id="@+id/nav_saved"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_icon="@drawable/ic_bookmark"
+        app:item_title="Saved"
+        app:layout_constraintTop_toBottomOf="@+id/nav_premium" />
+
+    <com.visualeap.aliforreddit.presentation.util.DrawerItem
+        android:id="@+id/nav_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:item_icon="@drawable/ic_history"
+        app:item_title="History"
+        app:layout_constraintTop_toBottomOf="@+id/nav_saved" />
+
+    <com.visualeap.aliforreddit.presentation.util.DrawerItem
+        android:id="@+id/drawerItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:icon_tint="@android:color/black"
+        app:item_icon="@drawable/ic_settings"
+        app:item_title="Settings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="?android:selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toBottomOf="@+id/drawerItem"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/drawerItem"
+        app:srcCompat="@drawable/ic_crescent"
+        tools:targetApi="lollipop" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

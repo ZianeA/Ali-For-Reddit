@@ -57,7 +57,7 @@ class FrontPageContainerFragment : Fragment(), FrontPageContainerView, BackButto
         presenter.stop()
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }

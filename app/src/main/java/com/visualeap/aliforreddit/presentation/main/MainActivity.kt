@@ -49,22 +49,19 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
         NavigationView.OnNavigationItemSelectedListener {
             // Handle navigation view item clicks here.
             when (it.itemId) {
-                R.id.nav_camera -> {
+                R.id.nav_profile -> {
                     // Handle the camera action
                 }
-                R.id.nav_gallery -> {
+                R.id.nav_coins -> {
 
                 }
-                R.id.nav_slideshow -> {
+                R.id.nav_premium -> {
 
                 }
-                R.id.nav_manage -> {
+                R.id.nav_saved -> {
 
                 }
-                R.id.nav_share -> {
-
-                }
-                R.id.nav_send -> {
+                R.id.nav_history -> {
 
                 }
             }
@@ -124,7 +121,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         fragNavController.onSaveInstanceState(outState)
     }

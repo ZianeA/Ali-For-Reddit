@@ -4,4 +4,11 @@
         <attr name="cornerRadius" format="dimension"/>
         <attr name="isCircular" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="DrawerItem">
+        <attr name="item_icon" format="reference|color"/>
+        <attr name="icon_tint" format="color"/>
+        <attr name="item_title" format="string"/>
+        <attr name="item_description" format="string"/>
+    </declare-styleable>
 </resources>
