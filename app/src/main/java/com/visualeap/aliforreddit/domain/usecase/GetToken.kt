@@ -18,10 +18,11 @@ class GetToken @Inject constructor(private val tokenRepository: TokenRepository)
             .switchIfEmpty(
                 //This is "probably" the first app launch. We should just get the user-less token.
                 tokenRepository.getUserlessToken(generateUniqueId())
-            ).flatMap {
-                tokenRepository.setCurrentToken(it)
-                    .toSingle { it }
-            }
+                    .flatMap {
+                        tokenRepository.setCurrentToken(it)
+                            .toSingle { it }
+                    }
+            )
     }
 
     private fun generateUniqueId() = UUID.randomUUID().toString()

@@ -30,7 +30,8 @@ interface AuthService {
     @POST(URL_PATH)
     fun refreshUserToken(
         @Field(GRANT_TYPE) grantType: String,
-        @Field("refresh_token") refreshToken: String
+        @Field("refresh_token") refreshToken: String,
+        @Header(HttpHeaders.AUTHORIZATION) basicAuth: String
     ): Single<TokenResponse>
 
     companion object {

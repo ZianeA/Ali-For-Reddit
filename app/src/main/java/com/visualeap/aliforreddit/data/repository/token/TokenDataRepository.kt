@@ -61,7 +61,7 @@ class TokenDataRepository @Inject constructor(
      */
     override fun getUserToken(code: String): Single<UserToken> {
         return remoteSource.getUserToken(USER_TOKEN_GRANT_TYPE, code, redirectUrl, basicAuth)
-            .map(::tokenResponseToUserToken)
+            .map { UserToken(NOT_SET_ROW_ID, it.accessToken, it.type, it.refreshToken!!) }
             .map(tokenWithUserTokenEntityMapper::mapReverse)
             .flatMap { Single.fromCallable { localSource.addUserToken(it) } }
             .flatMap { rowId -> localSource.getTokenWithUserTokenEntity(rowId) }
@@ -79,20 +79,15 @@ class TokenDataRepository @Inject constructor(
 
     override fun refreshUserToken(tokenId: Int, refreshToken: String): Single<UserToken> {
         return remoteSource.refreshUserToken(REFRESH_TOKEN_GRANT_TYPE, refreshToken, basicAuth)
-            .map(::tokenResponseToUserToken)
+            .map { UserToken(tokenId, it.accessToken, it.type, refreshToken) }
             .map(tokenWithUserTokenEntityMapper::mapReverse)
             .flatMap {
                 localSource.updateUserToken(it.tokenEntity, it.userTokenEntity)
-                    .andThen(localSource.getTokenWithUserTokenEntity(it.tokenEntity.id))
+                    .andThen(localSource.getTokenWithUserTokenEntity(tokenId))
             }.map(tokenWithUserTokenEntityMapper::map)
     }
 
     override fun refreshUserlessToken(deviceId: String) = getUserlessToken(deviceId)
-
-    private fun tokenResponseToUserToken(tokenRespnose: TokenResponse): UserToken =
-        tokenRespnose.run {
-            UserToken(NOT_SET_ROW_ID, accessToken, type, refreshToken!!)
-        }
 
     private fun tokenResponseToUserlessToken(
         tokenResponse: TokenResponse,

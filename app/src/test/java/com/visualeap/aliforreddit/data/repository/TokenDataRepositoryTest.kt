@@ -179,11 +179,11 @@ class TokenDataRepositoryTest {
         @Test
         fun `return refreshed user token`() {
             //Arrange
-            val tokenResponse = createTokenResponse()
-            val userToken = createUserToken(id = NOT_SET_ROW_ID)
+            val tokenResponse = createTokenResponse(refreshToken = null)
+            val userToken = createUserToken()
             val tokenWithUserTokenEntity = createTokenWithUserTokenEntity()
             every {
-                remote.refreshUserToken(REFRESH_TOKEN_GRANT_TYPE, REFRESH_TOKEN)
+                remote.refreshUserToken(REFRESH_TOKEN_GRANT_TYPE, REFRESH_TOKEN, basicAuth)
             } returns Single.just(tokenResponse)
             every { userTokenMapper.mapReverse(userToken) } returns tokenWithUserTokenEntity
             every {
@@ -207,7 +207,7 @@ class TokenDataRepositoryTest {
         fun `update cached user token`() {
             //Arrange
             val tokenWithUserTokenEntity = createTokenWithUserTokenEntity()
-            every { remote.refreshUserToken(any(), any()) } returns Single.just(
+            every { remote.refreshUserToken(any(), any(), any()) } returns Single.just(
                 createTokenResponse()
             )
             every { userTokenMapper.mapReverse(any()) } returns tokenWithUserTokenEntity
@@ -229,7 +229,7 @@ class TokenDataRepositoryTest {
         @Test
         fun `return error when updating cached user token fails`() {
             //Arrange
-            every { remote.refreshUserToken(any(), any()) } returns Single.just(
+            every { remote.refreshUserToken(any(), any(), any()) } returns Single.just(
                 createTokenResponse()
             )
             every { userTokenMapper.mapReverse(any()) } returns createTokenWithUserTokenEntity()
