@@ -78,7 +78,7 @@ class TokenDataRepository @Inject constructor(
     }
 
     override fun refreshUserToken(tokenId: Int, refreshToken: String): Single<UserToken> {
-        return remoteSource.refreshUserToken(REFRESH_TOKEN_GRANT_TYPE, refreshToken)
+        return remoteSource.refreshUserToken(REFRESH_TOKEN_GRANT_TYPE, refreshToken, basicAuth)
             .map(::tokenResponseToUserToken)
             .map(tokenWithUserTokenEntityMapper::mapReverse)
             .flatMap {

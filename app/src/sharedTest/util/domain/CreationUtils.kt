@@ -106,17 +106,46 @@ fun createCurrentTokenEntity(
 //endregion
 
 //region Redditor
-private const val REDDITOR_USERNAME = "FakeUsername"
 private const val REDDITOR_ID = "FakeRedditorId"
+private const val REDDITOR_USERNAME = "FakeUsername"
+private const val REDDITOR_CREATION_DATE: Long = 1368913866 //Saturday, 18-May-13 21:51:06 UTC
+private const val REDDITOR_LINK_KARMA = 9500
+private const val REDDITOR_COMMENT_KARMA = 950
+private const val REDDITOR_ICON_URL = "https://www.redditstatic.com/avatars/fakeRedditor.png"
+private const val REDDITOR_COINS = 95
 
-fun createRedditor(username: String = REDDITOR_USERNAME, id: String = REDDITOR_ID) =
-    Redditor(username, id)
+fun createRedditor(
+    id: String = REDDITOR_ID,
+    username: String = REDDITOR_USERNAME,
+    creationDate: Long = REDDITOR_CREATION_DATE,
+    linkKarma: Int = REDDITOR_LINK_KARMA,
+    commentKarma: Int = REDDITOR_COMMENT_KARMA,
+    iconUrl: String = REDDITOR_ICON_URL,
+    coins: Int = REDDITOR_COINS
+) =
+    Redditor(id, username, creationDate, linkKarma, commentKarma, iconUrl, coins)
 
-fun createRedditorEntity(username: String = REDDITOR_USERNAME, id: String = REDDITOR_ID) =
-    RedditorEntity(username, id)
+fun createRedditorEntity(
+    id: String = REDDITOR_ID,
+    username: String = REDDITOR_USERNAME,
+    creationDate: Long = REDDITOR_CREATION_DATE,
+    linkKarma: Int = REDDITOR_LINK_KARMA,
+    commentKarma: Int = REDDITOR_COMMENT_KARMA,
+    iconUrl: String = REDDITOR_ICON_URL,
+    coins: Int = REDDITOR_COINS
+) =
+    RedditorEntity(id, username, creationDate, linkKarma, commentKarma, iconUrl, coins)
 
-fun createRedditorReponse(username: String = REDDITOR_USERNAME, id: String = REDDITOR_ID) =
-    RedditorResponse(RedditorResponse.Redditor(username, id))
+fun createRedditorReponse(
+    id: String = REDDITOR_ID,
+    username: String = REDDITOR_USERNAME,
+    creationDate: Long = REDDITOR_CREATION_DATE,
+    linkKarma: Int = REDDITOR_LINK_KARMA,
+    commentKarma: Int = REDDITOR_COMMENT_KARMA,
+    iconUrl: String = REDDITOR_ICON_URL,
+    coins: Int = REDDITOR_COINS
+) =
+    RedditorResponse(id, username, creationDate, linkKarma, commentKarma, iconUrl, coins)
 //endregion
 
 //region Account

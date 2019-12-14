@@ -2,6 +2,7 @@ package com.visualeap.aliforreddit.domain.util
 
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -12,4 +13,7 @@ fun <T> Single<T>.applySchedulers(provider: SchedulerProvider): Single<T> =
     subscribeOn(provider.worker).observeOn(provider.main)
 
 fun Completable.applySchedulers(provider: SchedulerProvider): Completable =
+    subscribeOn(provider.worker).observeOn(provider.main)
+
+fun <T> Maybe<T>.applySchedulers(provider: SchedulerProvider): Maybe<T> =
     subscribeOn(provider.worker).observeOn(provider.main)

@@ -39,13 +39,13 @@ class LoginFragment : Fragment(), LoginView, BackButtonHandler {
         return rootView
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         presenter.start()
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         presenter.stop()
     }
 

@@ -115,7 +115,7 @@ class LoginPresenterTest {
             //Act
             presenter.onPageStarted(FINAL_REDIRECT_URL)
 
-            //
+            // Assert
             verify { view.reloadScreen() }
         }
     }

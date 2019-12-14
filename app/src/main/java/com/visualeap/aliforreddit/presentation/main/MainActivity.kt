@@ -2,16 +2,15 @@ package com.visualeap.aliforreddit.presentation.main
 
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
 import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
+import com.visualeap.aliforreddit.domain.model.Redditor
 import com.visualeap.aliforreddit.presentation.main.frontPage.container.FrontPageContainerFragment
 import com.visualeap.aliforreddit.presentation.main.login.BackButtonHandler
 import dagger.android.AndroidInjection
@@ -27,6 +26,9 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
     DrawerController {
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Fragment>
+
+    @Inject
+    lateinit var presenter: MainPresenter
 
     val fragNavController: FragNavController =
         FragNavController(supportFragmentManager, R.id.fragment_container)
@@ -119,6 +121,16 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        presenter.start()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenter.stop()
+    }
+
     override fun onBackPressed() {
         val backButtonHandler = fragNavController.currentFrag as? BackButtonHandler
         if (backButtonHandler != null && backButtonHandler.onBackPressed()) {
@@ -189,5 +201,13 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
 
     companion object {
         private const val REQUEST_CODE_LOGIN = 101
+    }
+
+    override fun displayCurrentRedditor(redditor: Redditor) {
+        redditDrawer.showRedditorInfo(redditor)
+    }
+
+    override fun displayLoginPrompt() {
+        redditDrawer.showLoginPrompt()
     }
 }

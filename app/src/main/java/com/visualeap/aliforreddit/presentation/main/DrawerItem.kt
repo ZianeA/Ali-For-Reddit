@@ -1,11 +1,10 @@
-package com.visualeap.aliforreddit.presentation.util
+package com.visualeap.aliforreddit.presentation.main
 
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat

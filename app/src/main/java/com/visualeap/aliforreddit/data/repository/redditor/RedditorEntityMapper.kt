@@ -9,10 +9,30 @@ import javax.inject.Inject
 class RedditorEntityMapper @Inject constructor() :
     Mapper<RedditorEntity, Redditor> {
     override fun map(model: RedditorEntity): Redditor {
-        return model.run { Redditor(username, id) }
+        return model.run {
+            Redditor(
+                id,
+                username,
+                creationDate,
+                linkKarma,
+                commentKarma,
+                iconUrl,
+                coins
+            )
+        }
     }
 
     override fun mapReverse(model: Redditor): RedditorEntity {
-        return model.run { RedditorEntity(username, id) }
+        return model.run {
+            RedditorEntity(
+                id,
+                username,
+                creationDate,
+                linkKarma,
+                commentKarma,
+                iconUrl,
+                coins
+            )
+        }
     }
 }

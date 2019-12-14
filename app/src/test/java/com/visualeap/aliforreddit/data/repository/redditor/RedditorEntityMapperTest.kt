@@ -13,7 +13,7 @@ internal class RedditorEntityMapperTest {
     private val mapper = RedditorEntityMapper()
 
     @Test
-    internal fun `map RedditorEntity to Redditor`() {
+    fun `map RedditorEntity to Redditor`() {
         //Act
         val mappedRedditor = mapper.map(createRedditorEntity())
 
@@ -22,7 +22,7 @@ internal class RedditorEntityMapperTest {
     }
 
     @Test
-    internal fun `map Redditor to RedditorEntity`() {
+    fun `map Redditor to RedditorEntity`() {
         //Act
         val mappedRedditorEntity = mapper.mapReverse(createRedditor())
 
