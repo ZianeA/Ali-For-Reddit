@@ -9,7 +9,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.visualeap.aliforreddit.R
-import kotlinx.android.synthetic.main.item_drawer.view.*
+import kotlinx.android.synthetic.main.drawer_item.view.*
 
 class DrawerItem : ConstraintLayout {
     constructor(context: Context) : super(context) {
@@ -55,7 +55,7 @@ class DrawerItem : ConstraintLayout {
             recycle()
         }
 
-        inflate(getContext(), R.layout.item_drawer, this)
+        inflate(getContext(), R.layout.drawer_item, this)
 
         val typedArray = context.obtainStyledAttributes(intArrayOf(R.attr.selectableItemBackground))
         val rippleBackground = typedArray.getResourceId(0, 0)

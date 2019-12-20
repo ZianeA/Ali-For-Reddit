@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.animation.addListener
 import androidx.core.content.res.ResourcesCompat
 import com.ncapdevi.fragnav.FragNavController
+import com.visualeap.aliforreddit.presentation.main.MainActivity
 import com.visualeap.aliforreddit.presentation.main.frontPage.container.FrontPageContainerFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -107,9 +108,8 @@ class LoginFragment : Fragment(), LoginView, BackButtonHandler {
     }
 
     override fun reloadScreen() {
-        //TODO find a better way to reload fragment
-        fragNavController.clearStack()
-        fragNavController.replaceFragment(FrontPageContainerFragment())
+        //TODO find a better way to handle reload
+        (activity as MainActivity).reload()
     }
 
     override fun onBackPressed(): Boolean {

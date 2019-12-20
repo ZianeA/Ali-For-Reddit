@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
     @Inject
     lateinit var presenter: MainPresenter
 
+    private var savedInstanceState: Bundle? = null
+
     val fragNavController: FragNavController =
         FragNavController(supportFragmentManager, R.id.fragment_container)
 
@@ -49,35 +51,12 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
             false
         }
 
-    /* private val onDrawerItemSelectedListener =
-         NavigationView.OnNavigationItemSelectedListener {
-             // Handle navigation view item clicks here.
-             when (it.itemId) {
-                 R.id.navProfile -> {
-                     // Handle the camera action
-                 }
-                 R.id.navCoins -> {
-
-                 }
-                 R.id.navPremium -> {
-
-                 }
-                 R.id.navSaved -> {
-
-                 }
-                 R.id.navHistory -> {
-
-                 }
-             }
-
-             drawerLayout.closeDrawer(GravityCompat.START)
-             true
-         }*/
-
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        this.savedInstanceState = savedInstanceState
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
             onBottomNavigationItemSelectedListener
@@ -88,19 +67,10 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
             bottomNavigationView.selectedItemId = R.id.navigation_home
         }
 
-//        drawerNavigationView.setNavigationItemSelectedListener(onDrawerItemSelectedListener)
-
         fragNavController.rootFragmentListener = this
         fragNavController.transactionListener = this
         fragNavController.initialize(FragNavController.TAB1, savedInstanceState)
 
-        //TODO this is temporally
-        /*profileImage.setOnClickListener {
-            startActivityForResult(
-                Intent(this, LoginActivity::class.java), REQUEST_CODE_LOGIN
-            )
-//            drawerLayout.openDrawer(GravityCompat.START)
-        }*/
         redditDrawer.navigationItemSelectedListener = {
             val message = when (it.id) {
                 R.id.navProfile -> "Profile"
@@ -123,7 +93,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
 
     override fun onStart() {
         super.onStart()
-        presenter.start()
+        presenter.start(savedInstanceState == null)
     }
 
     override fun onStop() {
@@ -155,11 +125,11 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        this.savedInstanceState = outState
         fragNavController.onSaveInstanceState(outState)
     }
 
-    override val numberOfRootFragments: Int
-        get() = 1
+    override val numberOfRootFragments: Int = 1
 
     override fun getRootFragment(index: Int): Fragment {
         when (index) {
@@ -168,21 +138,13 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
         throw IllegalStateException("Invalid tab index")
     }
 
-    override fun close() {
-        drawerLayout.closeDrawer(GravityCompat.START)
-    }
+    override fun close() = drawerLayout.closeDrawer(GravityCompat.START)
 
-    override fun lockClosed() {
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-    }
+    override fun lockClosed() = drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
-    override fun open() {
-        drawerLayout.openDrawer(GravityCompat.START)
-    }
+    override fun open() = drawerLayout.openDrawer(GravityCompat.START)
 
-    override fun toggle() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) close() else open()
-    }
+    override fun toggle() = if (drawerLayout.isDrawerOpen(GravityCompat.START)) close() else open()
 
     override fun onFragmentTransaction(
         fragment: Fragment?,
@@ -197,17 +159,19 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
         supportActionBar?.setDisplayHomeAsUpEnabled(fragNavController.isRootFragment.not())
     }
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = androidInjector
-
-    companion object {
-        private const val REQUEST_CODE_LOGIN = 101
-    }
-
     override fun displayCurrentRedditor(redditor: Redditor) {
         redditDrawer.showRedditorInfo(redditor)
     }
 
     override fun displayLoginPrompt() {
-        redditDrawer.showLoginPrompt()
+        redditDrawer.showOfflineMode()
     }
+
+    fun reload() {
+        fragNavController.clearStack()
+        fragNavController.replaceFragment(FrontPageContainerFragment())
+        presenter.start(true)
+    }
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = androidInjector
 }

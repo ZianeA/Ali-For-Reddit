@@ -37,7 +37,7 @@ internal class MainPresenterTest {
         every { view.displayCurrentRedditor(any()) } just runs
 
         //Act
-        presenter.start()
+        presenter.start(true)
 
         //Assert
         verify { view.displayCurrentRedditor(currentRedditor) }
@@ -50,7 +50,7 @@ internal class MainPresenterTest {
         every { view.displayLoginPrompt() } just runs
 
         //Act
-        presenter.start()
+        presenter.start(true)
 
         //Assert
         verify { view.displayLoginPrompt() }

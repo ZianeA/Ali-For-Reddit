@@ -19,12 +19,13 @@ class MainPresenter @Inject constructor(
 ) {
     private val disposables = CompositeDisposable()
 
-    //TODO pass redditor to view only when user is logged in
-    fun start() {
+    fun start(refresh: Boolean) {
+        if(refresh.not()) return
+
         val disposable = isUserLoggedIn.execute(Unit)
             .flatMapMaybe {
                 if (it) redditorRepository.getCurrentRedditor().toMaybe()
-                else Maybe.empty<Redditor>()
+                else Maybe.empty()
             }
             .applySchedulers(schedulerProvider)
             .subscribe(
