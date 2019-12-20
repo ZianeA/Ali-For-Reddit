@@ -74,6 +74,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, MainView,
         redditDrawer.navigationItemSelectedListener = {
             val message = when (it.id) {
                 R.id.navProfile -> "Profile"
+                R.id.navSignUp -> "Sign Up"
                 R.id.navCoins -> "Coins"
                 R.id.navPremium -> "Premium"
                 R.id.navSaved -> "Saved"

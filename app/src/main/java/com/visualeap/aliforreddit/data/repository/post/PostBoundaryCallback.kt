@@ -96,7 +96,6 @@ class PostBoundaryCallback(
                         )
                     }
             }
-            /*.delay(10, TimeUnit.SECONDS)*/ //TODO remove this delay
             .map(postWithSubredditResponseMapper::map)
             .map { postList -> postList.map { postWithSubredditEntityMapper.mapReverse(it) } }
             .flatMapCompletable { postWithSubredditEntityList ->

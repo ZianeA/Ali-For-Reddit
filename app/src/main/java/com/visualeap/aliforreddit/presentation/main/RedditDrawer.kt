@@ -3,6 +3,7 @@ package com.visualeap.aliforreddit.presentation.main
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.children
 import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
@@ -13,8 +14,8 @@ import kotlinx.android.synthetic.main.drawer_online.view.*
 import kotlinx.android.synthetic.main.drawer_item.view.*
 
 class RedditDrawer : NavigationView {
-    private var layoutOnline: View? = null
-    private var layoutOffline: View? = null
+    private var layoutOnline: ViewGroup? = null
+    private var layoutOffline: ViewGroup? = null
 
     var navigationItemSelectedListener: ((selectedItem: View) -> Unit)? = null
 
@@ -47,12 +48,10 @@ class RedditDrawer : NavigationView {
         layoutOffline?.visibility = View.GONE
 
         if (layoutOnline == null) {
-            layoutOnline = inflate(context, R.layout.drawer_online, null)
+            layoutOnline = inflate(context, R.layout.drawer_online, null) as ViewGroup
             layoutOnline?.let {
                 addView(it)
-                setupClickListeners()
-                it.navDarkMode
-                    .setOnClickListener { v -> navigationItemSelectedListener?.invoke(v) }
+                setupClickListeners(it)
                 it.navUsername
                     .setOnClickListener { v -> navigationItemSelectedListener?.invoke(v) }
             }
@@ -76,22 +75,23 @@ class RedditDrawer : NavigationView {
         layoutOnline?.visibility = View.GONE
 
         if (layoutOffline == null) {
-            layoutOffline = inflate(context, R.layout.drawer_offline, null)
+            layoutOffline = inflate(context, R.layout.drawer_offline, null) as ViewGroup
             layoutOffline?.let {
                 it.visibility = View.VISIBLE
                 addView(it)
-                setupClickListeners()
-                it.navDarkMode
-                    .setOnClickListener { v -> navigationItemSelectedListener?.invoke(v) }
+                setupClickListeners(it)
             }
         }
     }
 
-    private fun setupClickListeners() {
-        children.forEach { child ->
+    private fun setupClickListeners(layout: ViewGroup) {
+        layout.children.forEach { child ->
             if (child is DrawerItem) {
                 child.setOnClickListener { navigationItemSelectedListener?.invoke(it) }
             }
         }
+
+        layout.navDarkMode
+            .setOnClickListener { v -> navigationItemSelectedListener?.invoke(v) }
     }
 }
