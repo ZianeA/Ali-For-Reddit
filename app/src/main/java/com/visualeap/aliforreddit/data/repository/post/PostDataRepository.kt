@@ -3,9 +3,12 @@ package com.visualeap.aliforreddit.data.repository.post
 import androidx.paging.PagedList
 import androidx.paging.RxPagedListBuilder
 import com.visualeap.aliforreddit.data.network.RedditService
-import com.visualeap.aliforreddit.data.repository.feed.DefaultFeed
+import com.visualeap.aliforreddit.domain.model.Feed.DefaultFeed
 import com.visualeap.aliforreddit.data.repository.feed.FeedDao
+import com.visualeap.aliforreddit.data.repository.feed.FeedEntity
 import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedDao
+import com.visualeap.aliforreddit.domain.model.Feed.FeedType
+import com.visualeap.aliforreddit.domain.model.Feed.SortBy
 import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.repository.Listing
@@ -40,11 +43,10 @@ class PostDataRepository @Inject constructor(
     override fun getHomePosts(refresh: Boolean): Single<Listing<Post>> {
         return if (refresh) {
             //TODO fix this
-//            nextPageKeyStore.put(PostBoundaryCallback.NEXT_PAGE_STORE_KEY, null)
             postDao.deleteAll()
-                .andThen(getPostsByFeed(DefaultFeed.Home.name, DefaultFeed.Home.name))
+                .andThen(getPostsByFeed(DefaultFeed.Home.name, FeedType.Default))
         } else {
-            getPostsByFeed(DefaultFeed.Home.name, DefaultFeed.Home.name)
+            getPostsByFeed(DefaultFeed.Home.name, FeedType.Default)
         }
     }
 
@@ -52,45 +54,50 @@ class PostDataRepository @Inject constructor(
     override fun getPopularPosts(refresh: Boolean): Single<Listing<Post>> {
         return if (refresh) {
             //TODO fix this
-//            nextPageKeyStore.put(PostBoundaryCallback.NEXT_PAGE_STORE_KEY, null)
             postDao.deleteAll()
-                .andThen(getPostsByFeed(DefaultFeed.Popular.name, DefaultFeed.Popular.name))
+                .andThen(getPostsByFeed(DefaultFeed.Popular.name, FeedType.Default))
         } else {
-            getPostsByFeed(DefaultFeed.Popular.name, DefaultFeed.Popular.name)
+            getPostsByFeed(DefaultFeed.Popular.name, FeedType.Default)
         }
     }
 
-    //TODO rename subredditFeed
-    private fun getPostsByFeed(subredditFeed: String, feedId: String): Single<Listing<Post>> {
-        return Single.fromCallable {
-            val postFactory = postFeedDao.getPostsForFeed(feedId)
-                .map(postWithSubredditEntityMapper::map)
-            val postBoundaryCallback = PostBoundaryCallback(
-                subredditFeed,
-                redditService,
-                postDao,
-                feedDao,
-                postFeedDao,
-                nextPageKeyStore,
-                schedulerProvider,
-                postWithSubredditResponseMapper,
-                postWithSubredditEntityMapper
+    private fun getPostsByFeed(feedName: String, feedType: FeedType): Single<Listing<Post>> {
+        return feedDao.getByName(feedName)
+            .switchIfEmpty(
+                feedDao.add(FeedEntity(feedName, SortBy.Best, null, feedType))
+                    .andThen(feedDao.getByName(feedName))
+                    .toSingle()
             )
-            val config = PagedList.Config.Builder()
-                .setPageSize(DATABASE_PAGE_SIZE)
-                .setEnablePlaceholders(false)
-                .build()
+            .flatMap {
+                Single.fromCallable {
+                    val postFactory = postFeedDao.getPostsForFeed(feedName)
+                        .map(postWithSubredditEntityMapper::map)
+                    val postBoundaryCallback = PostBoundaryCallback(
+                        it,
+                        redditService,
+                        postDao,
+                        feedDao,
+                        postFeedDao,
+                        schedulerProvider,
+                        postWithSubredditResponseMapper,
+                        postWithSubredditEntityMapper
+                    )
+                    val config = PagedList.Config.Builder()
+                        .setPageSize(DATABASE_PAGE_SIZE)
+                        .setEnablePlaceholders(false)
+                        .build()
 
-            val pagedList = RxPagedListBuilder(postFactory, config)
-                .setBoundaryCallback(postBoundaryCallback)
-                .buildObservable()
-                .doOnDispose(postBoundaryCallback::dispose)
+                    val pagedList = RxPagedListBuilder(postFactory, config)
+                        .setBoundaryCallback(postBoundaryCallback)
+                        .buildObservable()
+                        .doOnDispose(postBoundaryCallback::dispose)
 
-            Listing(
-                pagedList = pagedList,
-                networkState = postBoundaryCallback.networkStateReplay,
-                retry = { postBoundaryCallback.retry() })
-        }
+                    Listing(
+                        pagedList = pagedList,
+                        networkState = postBoundaryCallback.networkStateReplay,
+                        retry = { postBoundaryCallback.retry() })
+                }
+            }
     }
 
     companion object {

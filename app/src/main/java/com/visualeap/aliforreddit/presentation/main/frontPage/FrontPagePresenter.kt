@@ -1,13 +1,10 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage
 
-import androidx.paging.PagedList
-import com.visualeap.aliforreddit.data.repository.feed.DefaultFeed
-import com.visualeap.aliforreddit.domain.model.Post
+import com.visualeap.aliforreddit.domain.model.Feed.DefaultFeed
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
 import com.visualeap.aliforreddit.domain.repository.PostRepository
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import com.visualeap.aliforreddit.domain.util.applySchedulers
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject

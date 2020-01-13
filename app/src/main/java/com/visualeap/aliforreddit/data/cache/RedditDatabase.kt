@@ -16,7 +16,6 @@ import com.visualeap.aliforreddit.data.repository.token.UserTokenEntity
 import com.visualeap.aliforreddit.data.repository.token.UserlessTokenEntity
 import com.visualeap.aliforreddit.data.repository.comment.CommentDao
 import com.visualeap.aliforreddit.data.repository.comment.CommentEntity
-import com.visualeap.aliforreddit.data.repository.feed.DefaultFeed
 import com.visualeap.aliforreddit.data.repository.feed.FeedDao
 import com.visualeap.aliforreddit.data.repository.feed.FeedEntity
 import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedDao
@@ -29,25 +28,16 @@ import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
         SubredditEntity::class, CommentEntity::class, FeedEntity::class, PostFeedEntity::class],
     version = 1
 )
-@TypeConverters(CurrentTokenEntity.TokenTypeConverter::class)
+@TypeConverters(
+    CurrentTokenEntity.TokenTypeConverter::class,
+    FeedEntity.FeedTypeConverter::class,
+    FeedEntity.SortByTypeConverter::class
+)
 abstract class RedditDatabase : RoomDatabase() {
     companion object {
         const val NOT_SET_ROW_ID = 0
         const val SINGLE_RECORD_ID = 1
     }
-
-    //TODO remove
-    /*fun initialize() {
-        //Initialize Feed lookup table
-        feedDao()
-            .addAll(
-                listOf(
-                    FeedEntity(DefaultFeed.Home.name),
-                    FeedEntity(DefaultFeed.Popular.name),
-                    FeedEntity(DefaultFeed.All.name)
-                )
-            )
-    }*/
 
     abstract fun tokenDao(): TokenDao
     abstract fun accountDao(): AccountDao

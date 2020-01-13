@@ -5,7 +5,7 @@ import androidx.room.paging.LimitOffsetDataSource
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.visualeap.aliforreddit.data.cache.RedditDatabase
-import com.visualeap.aliforreddit.data.repository.feed.DefaultFeed
+import com.visualeap.aliforreddit.domain.model.Feed.DefaultFeed
 import com.visualeap.aliforreddit.data.repository.feed.FeedDao
 import com.visualeap.aliforreddit.data.repository.feed.FeedEntity
 import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedDao

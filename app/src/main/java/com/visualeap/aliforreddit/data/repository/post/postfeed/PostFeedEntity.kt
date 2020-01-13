@@ -25,6 +25,5 @@ import com.visualeap.aliforreddit.data.repository.post.PostEntity
 )
 data class PostFeedEntity(
     val postId: String,
-    @ColumnInfo(collate = ColumnInfo.NOCASE) val feedName: String,
-    val postPosition: Int
+    @ColumnInfo(collate = ColumnInfo.NOCASE) val feedName: String
 )

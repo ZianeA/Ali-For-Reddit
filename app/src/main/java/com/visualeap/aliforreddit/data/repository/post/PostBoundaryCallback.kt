@@ -3,10 +3,12 @@ package com.visualeap.aliforreddit.data.repository.post
 import androidx.paging.PagedList
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.visualeap.aliforreddit.data.network.RedditService
-import com.visualeap.aliforreddit.data.repository.feed.DefaultFeed
+import com.visualeap.aliforreddit.domain.model.Feed.DefaultFeed
 import com.visualeap.aliforreddit.data.repository.feed.FeedDao
+import com.visualeap.aliforreddit.data.repository.feed.FeedEntity
 import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedDao
 import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedEntity
+import com.visualeap.aliforreddit.domain.model.Feed.SortBy
 import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.repository.NetworkState
@@ -17,12 +19,12 @@ import io.reactivex.disposables.CompositeDisposable
 
 //TODO add unit tests
 class PostBoundaryCallback(
-    private val feedOrSubreddit: String, //TODO rename
+    private val feed: FeedEntity,
     private val redditService: RedditService,
     private val postDao: PostDao,
     private val feedDao: FeedDao,
     private val postFeedDao: PostFeedDao,
-    private val nextPageKeyStore: KeyValueStore<String?>,
+//    private val nextPageKeyStore: KeyValueStore<String?>,
     private val schedulerProvider: SchedulerProvider,
     private val postWithSubredditResponseMapper: @JvmSuppressWildcards Mapper<PostWithSubredditResponse, List<Post>>,
     private val postWithSubredditEntityMapper: Mapper<PostWithSubredditEntity, Post>
@@ -35,11 +37,11 @@ class PostBoundaryCallback(
     }
 
     val networkStateReplay: BehaviorRelay<NetworkState> = BehaviorRelay.create()
-    private var nextPageKey: String? = nextPageKeyStore.get(feedOrSubreddit, null)
-        set(value) {
-            field = value
-            nextPageKeyStore.put(feedOrSubreddit, value)
-        }
+    //    private var nextPageKey: String? = nextPageKeyStore.get(feedName, null)
+//        set(value) {
+//            field = value
+//            nextPageKeyStore.put(feedName, value)
+//        }
     private var isRequestInProgress = false
     private val disposables = CompositeDisposable()
 
@@ -72,23 +74,16 @@ class PostBoundaryCallback(
         networkStateReplay.accept(NetworkState.LOADING)
         isRequestInProgress = true
 
-        val disposable = Single.just(feedOrSubreddit.equals(DefaultFeed.Home.name, true))
+        val disposable = Single.just(feed.name.equals(DefaultFeed.Home.name, true))
             .flatMap {
-                if (it) {
-                    redditService.getHomePosts(NETWORK_PAGE_SIZE, nextPageKey)
-                } else {
-                    redditService.getPostsBySubreddit(
-                        feedOrSubreddit,
-                        NETWORK_PAGE_SIZE,
-                        nextPageKey
-                    )
-                }
+                if (it) redditService.getHomePosts(NETWORK_PAGE_SIZE, feed.afterKey)
+                else redditService.getPostsBySubreddit(feed.name, NETWORK_PAGE_SIZE, feed.afterKey)
             }
             .flatMap { postResponse ->
-                nextPageKey = postResponse.data.afterKey
                 val subredditIds = postResponse.data.postHolders.map { it.post.subredditId }
 
-                redditService.getSubreddits(subredditIds.joinToString())
+                feedDao.update(feed.copy(afterKey = postResponse.data.afterKey))
+                    .andThen(redditService.getSubreddits(subredditIds.joinToString()))
                     .map { subredditResponse ->
                         PostWithSubredditResponse(
                             postResponse,
@@ -99,31 +94,16 @@ class PostBoundaryCallback(
             .map(postWithSubredditResponseMapper::map)
             .map { postList -> postList.map { postWithSubredditEntityMapper.mapReverse(it) } }
             .flatMapCompletable { postWithSubredditEntityList ->
-                feedDao.getByName(feedOrSubreddit)
-                    .isEmpty
-                    .map { !it }
-                    .flatMapCompletable { feedExists ->
-                        Observable.fromIterable(postWithSubredditEntityList.withIndex())
-                            .flatMapCompletable {
-                                Completable.fromAction {
-                                    postDao.add(it.value.subredditEntity, it.value.postEntity)
-                                }
-                                    .andThen(Completable.defer {
-                                        if (feedExists.not()) {
-                                            Completable.complete()
-                                        } else {
-                                            postFeedDao.add(
-                                                PostFeedEntity(
-                                                    it.value.postEntity.id,
-                                                    feedOrSubreddit,
-                                                    it.index //TODO post position depends on pagesize and ...
-                                                )
-                                            )
-                                        }
-                                    })
-                            }
-
+                Observable.fromIterable(postWithSubredditEntityList.withIndex())
+                    .flatMapCompletable {
+                        Completable.fromAction {
+                            postDao.add(it.value.subredditEntity, it.value.postEntity)
+                        }
+                            .andThen(Completable.defer {
+                                postFeedDao.add(PostFeedEntity(it.value.postEntity.id, feed.name))
+                            })
                     }
+
             }
             .doFinally { isRequestInProgress = false }
             .applySchedulers(schedulerProvider)

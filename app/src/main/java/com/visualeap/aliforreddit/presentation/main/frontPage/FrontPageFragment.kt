@@ -2,21 +2,18 @@ package com.visualeap.aliforreddit.presentation.main.frontPage
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.paging.PagedList
-import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.data.repository.feed.DefaultFeed
+import com.visualeap.aliforreddit.domain.model.Feed.DefaultFeed
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.util.Mapper
-import com.visualeap.aliforreddit.presentation.main.frontPage.container.FrontPageContainerFragment
 import com.visualeap.aliforreddit.presentation.main.postDetail.PostDetailFragment
 import com.visualeap.aliforreddit.presentation.model.PostView
 import dagger.android.support.AndroidSupportInjection
