@@ -25,7 +25,6 @@ class PostDataRepository @Inject constructor(
     private val feedDao: FeedDao,
     private val postFeedDao: PostFeedDao,
     private val redditService: RedditService,
-    private val nextPageKeyStore: KeyValueStore<String?>,
     private val schedulerProvider: SchedulerProvider,
     private val postWithSubredditEntityMapper: Mapper<PostWithSubredditEntity, Post>,
     private val postWithSubredditResponseMapper: @JvmSuppressWildcards Mapper<PostWithSubredditResponse, List<Post>>

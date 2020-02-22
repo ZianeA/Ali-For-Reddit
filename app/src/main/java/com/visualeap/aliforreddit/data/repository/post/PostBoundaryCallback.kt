@@ -24,24 +24,16 @@ class PostBoundaryCallback(
     private val postDao: PostDao,
     private val feedDao: FeedDao,
     private val postFeedDao: PostFeedDao,
-//    private val nextPageKeyStore: KeyValueStore<String?>,
     private val schedulerProvider: SchedulerProvider,
     private val postWithSubredditResponseMapper: @JvmSuppressWildcards Mapper<PostWithSubredditResponse, List<Post>>,
     private val postWithSubredditEntityMapper: Mapper<PostWithSubredditEntity, Post>
 ) : PagedList.BoundaryCallback<Post>() {
 
     companion object {
-        //TODO change to 25
         private const val NETWORK_PAGE_SIZE = 25
-//        const val NEXT_PAGE_STORE_KEY = "next_page_key"
     }
 
     val networkStateReplay: BehaviorRelay<NetworkState> = BehaviorRelay.create()
-    //    private var nextPageKey: String? = nextPageKeyStore.get(feedName, null)
-//        set(value) {
-//            field = value
-//            nextPageKeyStore.put(feedName, value)
-//        }
     private var isRequestInProgress = false
     private val disposables = CompositeDisposable()
 

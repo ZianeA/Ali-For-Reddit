@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.presentation.main.login
 
-import android.util.Log
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
 import com.visualeap.aliforreddit.domain.usecase.*
 import com.visualeap.aliforreddit.domain.util.applySchedulers
@@ -20,7 +19,6 @@ class LoginPresenter @Inject constructor(
     @Named("redirectUrl") private val redirectUrl: String
 ) {
 
-    private val tag = LoginPresenter::class.java.simpleName
     private val compositeDisposable = CompositeDisposable()
 
     fun start() {}
@@ -40,8 +38,7 @@ class LoginPresenter @Inject constructor(
 
             val disposable = authenticateUser.execute(params)
                 .applySchedulers(schedulerProvider)
-                .subscribe({ view.reloadScreen() },
-                    { /*TODO error*/ Log.i(tag, it.message) })
+                .subscribe({ view.reloadScreen() }, { /*TODO error*/ })
 
             compositeDisposable.add(disposable)
         }

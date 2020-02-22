@@ -6,6 +6,7 @@ import com.visualeap.aliforreddit.presentation.main.login.LoginPresenter
 import com.visualeap.aliforreddit.presentation.main.login.LoginView
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
+import io.reactivex.Completable
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -24,10 +25,10 @@ class LoginPresenterTest {
         private const val FINAL_REDIRECT_URL = "$REDIRECT_URL?state=$STATE"
     }
 
-    private val view: LoginView = mockk(relaxed = true)
-    private val generateAuthCode: GenerateAuthCode = mockk(relaxed = true)
+    private val view: LoginView = mockk()
+    private val generateAuthCode: GenerateAuthCode = mockk()
     private val buildAuthUrl: BuildAuthUrl = mockk()
-    private val authenticateUser: AuthenticateUser = mockk(relaxed = true)
+    private val authenticateUser: AuthenticateUser = mockk()
 
     private val presenter = LoginPresenter(
         view,
@@ -50,6 +51,8 @@ class LoginPresenterTest {
             //Arrange
             every { generateAuthCode.execute(Unit) } returns STATE
             every { buildAuthUrl.execute(STATE) } returns AUTH_URL
+            every { view.hideLoginPrompt() } just runs
+            every { view.showLoginPage(any()) } just runs
 
             //Act
             presenter.onLogInClicked()
@@ -63,6 +66,8 @@ class LoginPresenterTest {
             //Arrange
             every { generateAuthCode.execute(Unit) } returns STATE
             every { buildAuthUrl.execute(STATE) } returns AUTH_URL
+            every { view.hideLoginPrompt() } just runs
+            every { view.showLoginPage(any()) } just runs
 
             //Act
             presenter.onLogInClicked()
@@ -76,6 +81,13 @@ class LoginPresenterTest {
     inner class OnPageStarted {
         @Test
         fun `hide login ui when url is valid`() {
+            // Arrange
+            every { view.hideLoginPage() } just runs
+            every { generateAuthCode.execute(Unit) } returns STATE
+            every {
+                authenticateUser.execute(AuthenticateUser.Params(FINAL_REDIRECT_URL, STATE))
+            } returns Completable.complete()
+
             //Act
             presenter.onPageStarted(FINAL_REDIRECT_URL)
 
@@ -112,6 +124,11 @@ class LoginPresenterTest {
 
         @Test
         fun `reload UI when login is successful`() {
+            // Arrange
+            every { view.hideLoginPage() } just runs
+            every { generateAuthCode.execute(Unit) } returns STATE
+            every { authenticateUser.execute(AuthenticateUser.Params(FINAL_REDIRECT_URL, STATE)) } returns Completable.complete()
+
             //Act
             presenter.onPageStarted(FINAL_REDIRECT_URL)
 
