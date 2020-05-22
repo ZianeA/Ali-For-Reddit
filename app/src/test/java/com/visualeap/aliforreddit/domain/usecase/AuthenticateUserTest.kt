@@ -4,6 +4,7 @@ import com.visualeap.aliforreddit.data.network.auth.AuthService
 import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
+import com.visualeap.aliforreddit.domain.util.OAuthException
 import com.visualeap.aliforreddit.domain.util.TokenResponseMapper
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
@@ -23,6 +24,7 @@ import java.net.MalformedURLException
 class AuthenticateUserTest {
     companion object {
         private const val STATE = "STATE"
+        private const val AUTH_URL = "https://www.reddit.com/api/v1/authorize?state=$STATE"
         private const val CODE = "CODE"
         private const val REDIRECT_URL = "https://example.com/path"
     }
@@ -59,7 +61,7 @@ class AuthenticateUserTest {
         } returns Single.just(token)
 
         //Act
-        authenticateUser.execute(REDIRECT_URL, buildValidFinalUrl(), STATE)
+        authenticateUser.execute(REDIRECT_URL, buildValidFinalUrl(), AUTH_URL)
             .test()
             .assertResult()
 
@@ -82,7 +84,7 @@ class AuthenticateUserTest {
         every { authService.getUserToken(any(), any(), any(), any()) } returns Single.just(token)
 
         //Act, Assert
-        authenticateUser.execute(REDIRECT_URL, buildValidFinalUrl(), STATE)
+        authenticateUser.execute(REDIRECT_URL, buildValidFinalUrl(), AUTH_URL)
             .test()
             .assertResult()
 
@@ -146,7 +148,7 @@ class AuthenticateUserTest {
         val finalUrl = "Malformed URL"
 
         //Act, Assert
-        authenticateUser.execute(REDIRECT_URL, finalUrl, STATE)
+        authenticateUser.execute(REDIRECT_URL, finalUrl, AUTH_URL)
             .test()
             .assertFailure(MalformedURLException::class.java)
     }
@@ -161,7 +163,7 @@ class AuthenticateUserTest {
             .toString()
 
         //Act, Assert
-        authenticateUser.execute(REDIRECT_URL, finalUrl, STATE)
+        authenticateUser.execute(REDIRECT_URL, finalUrl, AUTH_URL)
             .test()
             .assertFailure(OAuthException::class.java)
     }
@@ -176,9 +178,9 @@ class AuthenticateUserTest {
             .toString()
 
         //Act, Assert
-        authenticateUser.execute(REDIRECT_URL, finalUrl, STATE)
+        authenticateUser.execute(REDIRECT_URL, finalUrl, AUTH_URL)
             .test()
-            .assertFailure(IllegalArgumentException::class.java)
+            .assertFailure(NullPointerException::class.java)
     }
 
     @Test
@@ -191,9 +193,9 @@ class AuthenticateUserTest {
             .toString()
 
         //Act, Assert
-        authenticateUser.execute(REDIRECT_URL, finalUrl, STATE)
+        authenticateUser.execute(REDIRECT_URL, finalUrl, AUTH_URL)
             .test()
-            .assertFailure(IllegalArgumentException::class.java)
+            .assertFailure(NullPointerException::class.java)
     }
 
     @Test
@@ -207,7 +209,7 @@ class AuthenticateUserTest {
             .toString()
 
         //Act, Assert
-        authenticateUser.execute(REDIRECT_URL, finalUrl, STATE)
+        authenticateUser.execute(REDIRECT_URL, finalUrl, AUTH_URL)
             .test()
             .assertFailure(IllegalStateException::class.java)
     }

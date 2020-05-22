@@ -1,41 +1,34 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.usecase.base.NonReactiveUseCase
+import com.visualeap.aliforreddit.domain.util.UniqueStringGenerator
 import dagger.Reusable
 import okhttp3.HttpUrl
+import java.math.BigInteger
+import java.security.SecureRandom
 import javax.inject.Inject
-import javax.inject.Named
 
 @Reusable
-class BuildAuthUrl @Inject constructor(
-    @Named("clientId") private val clientId: String,
-    @Named("redirectUrl") private val redirectUrl: String
-) :
-    NonReactiveUseCase<String, String> {
-
+class BuildAuthUrl @Inject constructor(private val uniqueStringGenerator: UniqueStringGenerator) {
     companion object {
         private const val BASE_URL = "https://www.reddit.com/api/v1/authorize.compact"
-        private const val CLIENT_ID = "client_id"
-        private const val RESPONSE_TYPE = "response_type"
-        private const val STATE = "state"
-        private const val REDIRECT_URL = "redirect_uri"
-        private const val DURATION = "duration"
-        private const val SCOPE = "scope"
+        private const val PARAM_CLIENT_ID = "client_id"
+        private const val PARAM_RESPONSE_TYPE = "response_type"
+        private const val PARAM_STATE = "state"
+        private const val PARAM_REDIRECT_URL = "redirect_uri"
+        private const val PARAM_DURATION = "duration"
+        private const val PARAM_SCOPE = "scope"
         private const val CODE = "code"
         private const val PERMANENT = "permanent"
     }
 
-    /**
-     * @param params the state. A unique, possibly random, string for each authorization request.
-     */
-    override fun execute(params: String) = HttpUrl.parse(BASE_URL)!!
+    fun execute(clientId: String, redirectUrl: String) = HttpUrl.parse(BASE_URL)!!
         .newBuilder()
-        .addQueryParameter(CLIENT_ID, clientId)
-        .addQueryParameter(RESPONSE_TYPE, CODE)
-        .addQueryParameter(STATE, params)
-        .addQueryParameter(REDIRECT_URL, redirectUrl)
-        .addQueryParameter(DURATION, PERMANENT)
-        .addQueryParameter(SCOPE, "identity edit read mysubreddits")
+        .addQueryParameter(PARAM_CLIENT_ID, clientId)
+        .addQueryParameter(PARAM_RESPONSE_TYPE, CODE)
+        .addQueryParameter(PARAM_STATE, uniqueStringGenerator.generate())
+        .addQueryParameter(PARAM_REDIRECT_URL, redirectUrl)
+        .addQueryParameter(PARAM_DURATION, PERMANENT)
+        .addQueryParameter(PARAM_SCOPE, "identity edit read mysubreddits")
         .build()
         .toString()
 }

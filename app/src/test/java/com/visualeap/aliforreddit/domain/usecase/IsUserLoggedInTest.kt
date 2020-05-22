@@ -30,7 +30,7 @@ internal class IsUserLoggedInTest {
         every { tokenRepository.getCurrentToken() } returns Maybe.just(createUserToken())
 
         //Act, assert
-        isUserLoggedIn.execute(Unit)
+        isUserLoggedIn.execute()
             .test()
             .assertResult(true)
     }
@@ -41,7 +41,7 @@ internal class IsUserLoggedInTest {
         every { tokenRepository.getCurrentToken() } returns Maybe.just(createUserlessToken())
 
         //Act, assert
-        isUserLoggedIn.execute(Unit)
+        isUserLoggedIn.execute()
             .test()
             .assertResult(false)
     }
@@ -52,7 +52,7 @@ internal class IsUserLoggedInTest {
         every { tokenRepository.getCurrentToken() } returns Maybe.empty()
 
         //Act, assert
-        isUserLoggedIn.execute(Unit)
+        isUserLoggedIn.execute()
             .test()
             .assertResult(false)
     }

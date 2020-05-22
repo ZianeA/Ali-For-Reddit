@@ -3,6 +3,7 @@ package com.visualeap.aliforreddit.domain.usecase
 import com.visualeap.aliforreddit.data.network.auth.AuthService
 import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
+import com.visualeap.aliforreddit.domain.util.OAuthException
 import com.visualeap.aliforreddit.domain.util.TokenResponseMapper
 import dagger.Reusable
 import io.reactivex.*
@@ -19,37 +20,37 @@ class AuthenticateUser @Inject constructor(
 ) {
     companion object {
         private const val GRANT_TYPE = "authorization_code"
+        private const val PARAM_STATE = "state"
     }
 
     fun execute(
         redirectUrl: String,
         finalUrl: String,
-        state: String
+        authUrl: String
     ): Completable {
-        val parsedFinalUrl = HttpUrl.parse(finalUrl)
-            ?: return Completable.error(MalformedURLException())
+        return Single.defer {
+            val parsedFinalUrl = HttpUrl.parse(finalUrl) ?: throw MalformedURLException()
 
-        parsedFinalUrl.queryParameter("error")
-            ?.let { return Completable.error(OAuthException("Reddit responded with error: $it")) }
+            parsedFinalUrl.queryParameter("error")
+                ?.let { throw OAuthException(
+                    "Reddit responded with error: $it"
+                )
+                }
 
-        parsedFinalUrl.queryParameter("state")
-            ?.let { stateReceived ->
-                if (state != stateReceived)
-                    return Completable.error(IllegalStateException("State doesn't match"))
-            }
-            ?: return Completable.error(IllegalArgumentException("Final redirect URL did not contain the 'state' query parameter"))
+            val parsedAuthUrl = HttpUrl.parse(authUrl) ?: throw MalformedURLException()
+            val requestState = parsedAuthUrl.queryParameter(PARAM_STATE)!!
+            val responseState = parsedFinalUrl.queryParameter(PARAM_STATE)!!
+            if (requestState != responseState) throw IllegalStateException("State doesn't match")
 
-
-        val code = parsedFinalUrl.queryParameter("code")
-            ?: return Completable.error(IllegalArgumentException("Final redirect URL did not contain the 'code' query parameter"))
-
-        // Fetch user token and set it as the current token.
-        return authService.getUserToken(
-            GRANT_TYPE,
-            code,
-            redirectUrl,
-            authCredentialProvider.getAuthCredential()
-        )
+            val code = parsedFinalUrl.queryParameter("code")!!
+            // Fetch user token and set it as the current token.
+            authService.getUserToken(
+                GRANT_TYPE,
+                code,
+                redirectUrl,
+                authCredentialProvider.getAuthCredential()
+            )
+        }
             .map { tokenMapper.toUserToken(it, 0) }
             .flatMapCompletable { userToken ->
                 tokenRepository.addUserToken(userToken)

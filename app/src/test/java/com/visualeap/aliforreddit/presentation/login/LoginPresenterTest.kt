@@ -3,12 +3,16 @@ package com.visualeap.aliforreddit.presentation.login
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.SyncSchedulerProvider
 import com.visualeap.aliforreddit.domain.usecase.*
+import com.visualeap.aliforreddit.domain.util.UniqueStringGenerator
 import com.visualeap.aliforreddit.presentation.common.ResourceProvider
 import com.visualeap.aliforreddit.presentation.main.login.LoginPresenter
 import com.visualeap.aliforreddit.presentation.main.login.LoginView
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable
+import okhttp3.HttpUrl
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -20,19 +24,16 @@ import org.junit.jupiter.api.extension.ExtendWith
 class LoginPresenterTest {
     companion object {
         private const val REDIRECT_URL = "https://example.com/path"
-        private const val AUTH_URL = "https://www.reddit.com/api/v1/authorize"
-        private const val STATE = "STATE"
-        private const val FINAL_REDIRECT_URL = "$REDIRECT_URL?state=$STATE"
+        private const val CLIENT_ID = "CLIENT_ID"
+        private const val FINAL_REDIRECT_URL = "$REDIRECT_URL?key=value"
     }
 
     private val view: LoginView = mockk(relaxed = true)
-    private val generateAuthCode: GenerateAuthCode = mockk(relaxed = true)
     private val buildAuthUrl: BuildAuthUrl = mockk(relaxed = true)
-    private val authenticateUser: AuthenticateUser = mockk()
+    private val authenticateUser: AuthenticateUser = mockk(relaxed = true)
     private val resourceProvider: ResourceProvider = mockk(relaxed = true)
     private val presenter = LoginPresenter(
         view,
-        generateAuthCode,
         buildAuthUrl,
         authenticateUser,
         resourceProvider,
@@ -45,6 +46,7 @@ class LoginPresenterTest {
 
         // Set defaults
         every { resourceProvider.getString(R.string.redirect_url) } returns REDIRECT_URL
+        every { resourceProvider.getString(R.string.client_id) } returns CLIENT_ID
     }
 
     @Nested
@@ -52,22 +54,18 @@ class LoginPresenterTest {
         @Test
         fun `pass auth url to view`() {
             //Arrange
-            every { generateAuthCode.execute(Unit) } returns STATE
-            every { buildAuthUrl.execute(STATE) } returns AUTH_URL
+            val authUrl = "https://www.reddit.com/api/v1/authorize?state=RANDOM_STRING"
+            every { buildAuthUrl.execute(CLIENT_ID, REDIRECT_URL) } returns authUrl
 
             //Act
             presenter.onLogInClicked()
 
             //Assert
-            verify { view.showLoginPage(AUTH_URL) }
+            verify { view.showLoginPage(authUrl) }
         }
 
         @Test
         fun `hide login prompt`() {
-            //Arrange
-            every { generateAuthCode.execute(Unit) } returns STATE
-            every { buildAuthUrl.execute(STATE) } returns AUTH_URL
-
             //Act
             presenter.onLogInClicked()
 
@@ -79,13 +77,7 @@ class LoginPresenterTest {
     @Nested
     inner class OnPageStarted {
         @Test
-        fun `hide login ui when url is valid`() {
-            // Arrange
-            every { generateAuthCode.execute(Unit) } returns STATE
-            every {
-                authenticateUser.execute(REDIRECT_URL, FINAL_REDIRECT_URL, STATE)
-            } returns Completable.complete()
-
+        fun `when url is final should hide login ui`() {
             //Act
             presenter.onPageStarted(FINAL_REDIRECT_URL)
 
@@ -94,7 +86,7 @@ class LoginPresenterTest {
         }
 
         @Test
-        fun `keep login ui when url doesn't contain the redirect url`() {
+        fun `when url is not the redirect url should keep the login ui`() {
             //Act
             presenter.onPageStarted("https://invalid.com")
 
@@ -103,7 +95,7 @@ class LoginPresenterTest {
         }
 
         @Test
-        fun `keep login ui when url doesn't contain any query`() {
+        fun `when url doesn't contain any query should keep the login ui`() {
             //Act
             presenter.onPageStarted(REDIRECT_URL)
 
@@ -112,21 +104,26 @@ class LoginPresenterTest {
         }
 
         @Test
-        fun `keep login ui when url is malformed`() {
+        fun `when url is final should authenticate user`() {
+            //Arrange
+            val authUrl = "https://www.reddit.com/api/v1/authorize?state="
+            every { buildAuthUrl.execute(any(), any()) }.returns(authUrl + "FIRST_STATE")
+                .andThen(authUrl + "SECOND_STATE")
+
             //Act
-            presenter.onPageStarted("this is a malformed URL $REDIRECT_URL")
+            presenter.onLogInClicked()
+            presenter.onPageStarted(FINAL_REDIRECT_URL)
 
             //Assert
-            verify { view wasNot Called }
+            verify {
+                authenticateUser.execute(REDIRECT_URL, FINAL_REDIRECT_URL, authUrl + "FIRST_STATE")
+            }
         }
 
         @Test
-        fun `reload UI when login is successful`() {
+        fun `when login is successful should reload UI`() {
             // Arrange
-            every { generateAuthCode.execute(Unit) } returns STATE
-            every {
-                authenticateUser.execute(REDIRECT_URL, FINAL_REDIRECT_URL, STATE)
-            } returns Completable.complete()
+            every { authenticateUser.execute(any(), any(), any()) } returns Completable.complete()
 
             //Act
             presenter.onPageStarted(FINAL_REDIRECT_URL)

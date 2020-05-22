@@ -22,7 +22,7 @@ class MainPresenter @Inject constructor(
     fun start(refresh: Boolean) {
         if(refresh.not()) return
 
-        val disposable = isUserLoggedIn.execute(Unit)
+        val disposable = isUserLoggedIn.execute()
             .flatMapMaybe {
                 if (it) redditorRepository.getCurrentRedditor().toMaybe()
                 else Maybe.empty()

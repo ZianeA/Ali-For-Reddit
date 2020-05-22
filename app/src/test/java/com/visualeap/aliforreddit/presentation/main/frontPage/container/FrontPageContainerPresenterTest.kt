@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
 internal class FrontPageContainerPresenterTest {
-    private val view: FrontPageContainerView = mockk()
+    private val view: FrontPageContainerView = mockk(relaxed = true)
     private val isUserLoggedIn: IsUserLoggedIn = mockk()
     private val presenter =
         FrontPageContainerPresenter(view, isUserLoggedIn, SyncSchedulerProvider())
@@ -26,8 +26,7 @@ internal class FrontPageContainerPresenterTest {
     @Test
     fun `show login screen when user is not logged in`() {
         //Arrange
-        every { isUserLoggedIn.execute(Unit) } returns Single.just(false)
-        every { view.showLoginScreen() } just runs
+        every { isUserLoggedIn.execute() } returns Single.just(false)
 
         //Act
         presenter.start()
@@ -39,8 +38,7 @@ internal class FrontPageContainerPresenterTest {
     @Test
     fun `show home screen when user is logged in`() {
         //Arrange
-        every { isUserLoggedIn.execute(Unit) } returns Single.just(true)
-        every { view.showHomeScreen() } just runs
+        every { isUserLoggedIn.execute() } returns Single.just(true)
 
         //Act
         presenter.start()

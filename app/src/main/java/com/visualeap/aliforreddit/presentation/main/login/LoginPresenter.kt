@@ -14,19 +14,21 @@ import javax.inject.Named
 @FragmentScope
 class LoginPresenter @Inject constructor(
     private val view: LoginView,
-    private val generateAuthCode: GenerateAuthCode,
     private val buildAuthUrl: BuildAuthUrl,
     private val authenticateUser: AuthenticateUser,
     private val resourceProvider: ResourceProvider,
     private val schedulerProvider: SchedulerProvider
 ) {
-
     private val compositeDisposable = CompositeDisposable()
+    private lateinit var authUrl: String
 
     fun start() {}
 
     fun onLogInClicked() {
-        val authUrl = buildAuthUrl.execute(generateAuthCode.execute(Unit))
+        authUrl = buildAuthUrl.execute(
+            resourceProvider.getString(R.string.client_id),
+            resourceProvider.getString(R.string.redirect_url)
+        )
         view.hideLoginPrompt()
         view.showLoginPage(authUrl)
     }
@@ -39,7 +41,7 @@ class LoginPresenter @Inject constructor(
             val disposable = authenticateUser.execute(
                 resourceProvider.getString(R.string.redirect_url),
                 url,
-                generateAuthCode.execute(Unit)
+                authUrl
             )
                 .applySchedulers(schedulerProvider)
                 .subscribe({ view.reloadScreen() }, { /*TODO error*/ })

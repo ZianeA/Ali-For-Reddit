@@ -10,9 +10,8 @@ import io.reactivex.Single
 import javax.inject.Inject
 
 @Reusable
-class IsUserLoggedIn @Inject constructor(private val tokenRepository: TokenRepository) :
-    SingleUseCase<Boolean, Unit> {
-    override fun execute(params: Unit): Single<Boolean> {
+class IsUserLoggedIn @Inject constructor(private val tokenRepository: TokenRepository) {
+    fun execute(): Single<Boolean> {
         return tokenRepository.getCurrentToken()
             .map {
                 when (it) {

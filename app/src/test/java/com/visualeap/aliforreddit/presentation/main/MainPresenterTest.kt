@@ -19,7 +19,7 @@ import util.domain.createRedditor
 @ExtendWith(MockKExtension::class)
 internal class MainPresenterTest {
     private val repository: RedditorRepository = mockk()
-    private val view: MainView = mockk()
+    private val view: MainView = mockk(relaxed = true)
     private val isUserLoggedIn: IsUserLoggedIn = mockk()
     private val presenter = MainPresenter(view, repository, isUserLoggedIn, SyncSchedulerProvider())
 
@@ -32,9 +32,8 @@ internal class MainPresenterTest {
     fun `pass current redditor to view when user is logged-in`() {
         //Arrange
         val currentRedditor = createRedditor()
-        every { isUserLoggedIn.execute(Unit) } returns Single.just(true)
+        every { isUserLoggedIn.execute() } returns Single.just(true)
         every { repository.getCurrentRedditor() } returns Single.just(currentRedditor)
-        every { view.displayCurrentRedditor(any()) } just runs
 
         //Act
         presenter.start(true)
@@ -46,8 +45,7 @@ internal class MainPresenterTest {
     @Test
     fun `display login prompt when user is not logged-in`() {
         //Arrange
-        every { isUserLoggedIn.execute(Unit) } returns Single.just(false)
-        every { view.displayLoginPrompt() } just runs
+        every { isUserLoggedIn.execute() } returns Single.just(false)
 
         //Act
         presenter.start(true)

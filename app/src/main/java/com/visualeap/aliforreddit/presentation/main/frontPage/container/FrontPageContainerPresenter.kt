@@ -16,7 +16,7 @@ class FrontPageContainerPresenter @Inject constructor(
     private val disposables = CompositeDisposable()
 
     fun start() {
-        val disposable = isUserLoggedIn.execute(Unit)
+        val disposable = isUserLoggedIn.execute()
             .applySchedulers(schedulerProvider)
             .subscribe(
                 { if (it) view.showHomeScreen() else view.showLoginScreen() },
