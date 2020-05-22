@@ -1,6 +1,5 @@
 package util.domain
 
-import android.graphics.Color
 import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity
 import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity.*
 import com.visualeap.aliforreddit.data.repository.token.TokenEntity
@@ -17,8 +16,6 @@ import com.visualeap.aliforreddit.data.repository.post.PostWithSubredditResponse
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorResponse
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
-import com.visualeap.aliforreddit.data.repository.token.TokenWithUserTokenEntity
-import com.visualeap.aliforreddit.data.repository.token.TokenWithUserlessTokenEntity
 import com.visualeap.aliforreddit.domain.model.*
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
@@ -28,21 +25,16 @@ import com.visualeap.aliforreddit.presentation.model.PostView
 import com.visualeap.aliforreddit.presentation.model.SubredditView
 import com.visualeap.aliforreddit.presentation.util.formatCount
 import com.visualeap.aliforreddit.presentation.util.formatTimestamp
-import okhttp3.Credentials
-import okhttp3.Protocol
-import okhttp3.Request
-import okhttp3.Response
-import java.sql.Timestamp
+import io.mockk.every
+import io.mockk.mockk
+import okhttp3.*
 import kotlin.random.Random
 
 const val ACCESS_TOKEN = "ACCESS TOKEN"
 const val TOKEN_TYPE = "bearer"
 const val REFRESH_TOKEN = "REFRESH TOKEN"
 const val DEVICE_ID = "DEVICE ID"
-const val REDIRECT_URL = "https://example.com/path"
-const val CODE = "CODE"
 const val ID = 101
-const val NOT_SET_ROW_ID = 0
 const val SINGLE_RECORD_ID = 1
 
 //region Token
@@ -86,17 +78,6 @@ fun createUserTokenEntity(id: Int = ID, refreshToken: String = REFRESH_TOKEN) =
 
 fun createUserlessTokenEntity(id: Int = ID, deviceId: String = DEVICE_ID) =
     UserlessTokenEntity(id, deviceId)
-
-fun createTokenWithUserTokenEntity(
-    token: TokenEntity = createTokenEntity(),
-    userToken: UserTokenEntity = createUserTokenEntity()
-) = TokenWithUserTokenEntity(token, userToken)
-
-fun createTokenWithUserlessTokenEntity(
-    token: TokenEntity = createTokenEntity(),
-    userlessToken: UserlessTokenEntity = createUserlessTokenEntity()
-) =
-    TokenWithUserlessTokenEntity(token, userlessToken)
 
 fun createCurrentTokenEntity(
     id: Int = SINGLE_RECORD_ID,
@@ -390,6 +371,7 @@ fun createCommentView(
 
 fun createBasicAuth(clientId: String = "CLIENT ID"): String = Credentials.basic(clientId, "")
 
+//region OkHttp Chain
 fun createResponse(request: Request = createRequest()): Response {
     return Response.Builder()
         .request(request)
@@ -399,9 +381,21 @@ fun createResponse(request: Request = createRequest()): Response {
         .build()
 }
 
-fun createRequest(): Request = Request.Builder()
-    .url("https://www.example.com")
-    .build()
+fun createMockChain(): Interceptor.Chain {
+    val chain: Interceptor.Chain = mockk()
+
+    every { chain.request() } returns createRequest()
+    every { chain.proceed(any()) } answers { createResponse(firstArg()) }
+
+    return chain
+}
+
+fun createRequest(): Request {
+    return Request.Builder()
+        .url("https://www.example.com")
+        .build()
+}
+//endregion
 
 val randomInteger: Int
     get() = Random.nextInt()

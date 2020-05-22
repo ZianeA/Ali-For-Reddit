@@ -1,74 +1,156 @@
 package com.visualeap.aliforreddit.domain.usecase
 
+import com.visualeap.aliforreddit.data.network.auth.AuthService
+import com.visualeap.aliforreddit.domain.model.token.UserToken
+import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import io.mockk.*
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import okhttp3.Credentials
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import util.domain.createTokenResponse
 import util.domain.createUserToken
 import util.domain.createUserlessToken
+import util.domain.match
+import java.lang.Exception
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class RefreshTokenTest {
+    private val authService: AuthService = mockk()
     private val tokenRepository: TokenRepository = mockk()
-    private val refreshToken = RefreshToken(tokenRepository)
+    private val refreshToken = RefreshToken(authService, tokenRepository)
 
     companion object {
-        private const val REFRESHED_ACCESS_TOKEN = "ACCESS TOKEN HAS BEEN REFRESHED"
+        private const val CLIENT_ID = "CLIENT_ID"
     }
 
     @BeforeEach
     internal fun setUp() {
         clearAllMocks()
+
+        // Set defaults
+        every { tokenRepository.setUserlessToken(any()) } returns Single.just(0)
+        every { tokenRepository.updateUserToken(any()) } returns Completable.complete()
     }
 
     @Test
-    fun `refresh user-token when user is logged in`() {
+    fun `should refresh user token`() {
         //Arrange
-        val currentToken = createUserToken()
-        val refreshedUserToken =
-            createUserToken(accessToken = REFRESHED_ACCESS_TOKEN)
+        val cachedUserToken = createUserToken()
+        every { tokenRepository.getCurrentToken() } returns Maybe.just(cachedUserToken)
 
-        every { tokenRepository.getCurrentToken() } returns Maybe.just(currentToken)
+        val refreshedUserToken = createTokenResponse(accessToken = "REFRESHED_ACCESS_TOKEN")
         every {
-            tokenRepository.refreshUserToken(currentToken.id, currentToken.refreshToken)
+            authService.refreshUserToken(
+                "refresh_token",
+                cachedUserToken.refreshToken,
+                Credentials.basic(CLIENT_ID, "")
+            )
         } returns Single.just(refreshedUserToken)
 
-        //Act, Assert
-        refreshToken.execute(Unit)
+        // Act
+        refreshToken.execute(CLIENT_ID)
             .test()
-            .assertResult(refreshedUserToken)
-    }
+            .assertNoErrors()
 
-    @Test
-    fun `refresh user-less token when no user is logged in`() {
-        //Arrange
-        val currentToken = createUserlessToken()
-        val refreshedUserLessToken =
-            createUserlessToken(accessToken = REFRESHED_ACCESS_TOKEN)
-
-        every { tokenRepository.getCurrentToken() } returns Maybe.just(currentToken)
-        every { tokenRepository.refreshUserlessToken(currentToken.deviceId) } returns Single.just(
-            refreshedUserLessToken
+        // Assert
+        val expectedToken = UserToken(
+            cachedUserToken.id,
+            refreshedUserToken.accessToken,
+            refreshedUserToken.type,
+            refreshedUserToken.refreshToken!!
         )
-
-        //Act, Assert
-        refreshToken.execute(Unit)
-            .test()
-            .assertResult(refreshedUserLessToken)
+        verify { tokenRepository.updateUserToken(withArg { assertThat(it).isEqualTo(expectedToken) }) }
     }
 
     @Test
-    fun `throw exception when no token is currently in use`() {
+    fun `should return the refreshed user token`() {
+        //Arrange
+        val cachedUserToken = createUserToken()
+        every { tokenRepository.getCurrentToken() } returns Maybe.just(cachedUserToken)
+
+        val refreshedUserToken = createTokenResponse(accessToken = "REFRESHED_ACCESS_TOKEN")
+        every { authService.refreshUserToken(any(), any(), any()) }
+            .returns(Single.just(refreshedUserToken))
+
+        //Act, Assert
+        val expectedToken = UserToken(
+            cachedUserToken.id,
+            refreshedUserToken.accessToken,
+            refreshedUserToken.type,
+            refreshedUserToken.refreshToken!!
+        )
+        refreshToken.execute(CLIENT_ID)
+            .test()
+            .assertValue(match { assertThat(it).isEqualTo(expectedToken) })
+    }
+
+    @Test
+    fun `should refresh userless token`() {
+        //Arrange
+        val cachedUserlessToken = createUserlessToken()
+        every { tokenRepository.getCurrentToken() } returns Maybe.just(cachedUserlessToken)
+
+        val refreshedUserLessToken = createTokenResponse(accessToken = "REFRESHED_ACCESS_TOKEN")
+        every {
+            authService.getUserlessToken(
+                "https://oauth.reddit.com/grants/installed_client",
+                cachedUserlessToken.deviceId,
+                Credentials.basic(CLIENT_ID, "")
+            )
+        } returns Single.just(refreshedUserLessToken)
+
+        //Act
+        refreshToken.execute(CLIENT_ID)
+            .test()
+            .assertNoErrors()
+
+        //Assert
+        val expectedToken = UserlessToken(
+            cachedUserlessToken.id,
+            refreshedUserLessToken.accessToken,
+            refreshedUserLessToken.type,
+            cachedUserlessToken.deviceId
+        )
+        verify { tokenRepository.setUserlessToken(withArg { assertThat(it).isEqualTo(expectedToken) }) }
+    }
+
+    @Test
+    fun `should return the refreshed userless token`() {
+        //Arrange
+        val cachedUserlessToken = createUserlessToken()
+        every { tokenRepository.getCurrentToken() } returns Maybe.just(cachedUserlessToken)
+
+        val refreshedUserLessToken = createTokenResponse(accessToken = "REFRESHED_ACCESS_TOKEN")
+        every { authService.getUserlessToken(any(), any(), any()) }
+            .returns(Single.just(refreshedUserLessToken))
+
+        //Act, Assert
+        val expectedToken = UserlessToken(
+            cachedUserlessToken.id,
+            refreshedUserLessToken.accessToken,
+            refreshedUserLessToken.type,
+            cachedUserlessToken.deviceId
+        )
+        refreshToken.execute(CLIENT_ID)
+            .test()
+            .assertValue(match { assertThat(it).isEqualTo(expectedToken) })
+    }
+
+    @Test
+    fun `when there is no current token should return error`() {
         //Arrange
         every { tokenRepository.getCurrentToken() } returns Maybe.empty()
 
         //Act, Assert
-        refreshToken.execute(Unit)
+        refreshToken.execute(CLIENT_ID)
             .test()
-            .assertError(NoSuchElementException::class.java)
+            .assertError(Exception::class.java)
     }
 }
 

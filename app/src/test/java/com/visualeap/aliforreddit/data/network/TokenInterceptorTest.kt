@@ -1,8 +1,10 @@
 package com.visualeap.aliforreddit.data.network
 
+import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.data.network.auth.TokenInterceptor
-import com.visualeap.aliforreddit.domain.usecase.GetToken
+import com.visualeap.aliforreddit.domain.usecase.FetchToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
+import com.visualeap.aliforreddit.presentation.common.ResourceProvider
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -15,18 +17,14 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import util.domain.createRequest
-import util.domain.createResponse
+import util.domain.createMockChain
 import util.domain.createToken
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TokenInterceptorTest {
-
-    private val chain: Interceptor.Chain = mockk()
-    private val getToken: GetToken = mockk()
-    private val tokenInterceptor =
-        TokenInterceptor(getToken)
-
+    private val fetchToken: FetchToken = mockk()
+    private val resourceProvider: ResourceProvider = mockk(relaxed = true)
+    private val tokenInterceptor = TokenInterceptor(fetchToken, resourceProvider)
     @BeforeEach
     internal fun setUp() {
         clearAllMocks()
@@ -35,22 +33,14 @@ class TokenInterceptorTest {
     @Nested
     inner class Intercept {
         @Test
-        fun `add bearer token to request`() {
+        fun `when token is not null should add it to request`() {
             //Arrange
             val token = createToken()
-            val requestSlot = slot<Request>()
-            val request = createRequest()
-
-            every { chain.request() } returns request
-            every { chain.proceed(capture(requestSlot)) } answers {
-                createResponse(
-                    requestSlot.captured
-                )
-            }
-            every { getToken.execute(Unit) } returns Single.just(token)
+            every { resourceProvider.getString(R.string.client_id) } returns "CLIENT_ID"
+            every { fetchToken.execute("CLIENT_ID") } returns Single.just(token)
 
             //Act
-            val response = tokenInterceptor.intercept(chain)
+            val response = tokenInterceptor.intercept(createMockChain())
 
             //Assert
             val header = response.request().header(HttpHeaders.AUTHORIZATION)
@@ -58,23 +48,16 @@ class TokenInterceptorTest {
         }
 
         @Test
-        fun `ignore when token is null`() {
+        fun `when token retrieval fails should leave request as is`() {
             //Arrange
-            val request = createRequest()
-            val requestSlot = slot<Request>()
-            every { chain.request() } returns request
-            every { chain.proceed(capture(requestSlot)) } answers {
-                createResponse(
-                    requestSlot.captured
-                )
-            }
-            every { getToken.execute(Unit) } returns Single.error(Throwable())
+            val chain = createMockChain()
+            every { fetchToken.execute(any()) } returns Single.error(Throwable())
 
             //Act
             val response = tokenInterceptor.intercept(chain)
 
             //Assert
-            assertThat(response.request()).isEqualTo(request)
+            assertThat(response.request()).isEqualTo(chain.request())
         }
     }
 }

@@ -1,8 +1,10 @@
 package com.visualeap.aliforreddit.data.network
 
+import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.data.network.auth.TokenAuthenticator
 import com.visualeap.aliforreddit.domain.usecase.RefreshToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
+import com.visualeap.aliforreddit.presentation.common.ResourceProvider
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -14,86 +16,67 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
+import util.domain.createRequest
 import util.domain.createResponse
 import util.domain.createToken
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TokenAuthenticatorTest {
-
     private val refreshToken: RefreshToken = mockk()
-    private val authenticator =
-        TokenAuthenticator(refreshToken)
+    private val resourceProvider: ResourceProvider = mockk()
+    private val authenticator = TokenAuthenticator(refreshToken, resourceProvider)
 
     @BeforeEach
     internal fun setUp() {
         clearAllMocks()
+        every { resourceProvider.getString(R.string.client_id) } returns "CLIENT_ID"
     }
 
     @Nested
     inner class Authenticate {
-
         @Test
-        fun `add refreshed access token to request`() {
+        fun `when token is not null should add it request`() {
             //Arrange
-            val response = createResponse()
             val token = createToken()
-            every { refreshToken.execute(Unit) } returns Single.just(token)
+            every { refreshToken.execute("CLIENT_ID") } returns Single.just(token)
 
             //Act
-            val request = authenticator.authenticate(null, response)
+            val request = authenticator.authenticate(null, createResponse())
 
             //Assert
-            val header = request?.header(HttpHeaders.AUTHORIZATION)
+            val header = request!!.header(HttpHeaders.AUTHORIZATION)
             assertThat(header)
                 .isEqualTo("${token.type} ${token.accessToken}")
         }
 
         @Test
-        fun `attempt to authenticate only once`() {
+        fun `when token retrieval fails should leave request as is`() {
             //Arrange
-            var response = createResponse()
-            var request: Request? = null
-            every { refreshToken.execute(Unit) } returns Single.just(createToken())
+            every { refreshToken.execute("CLIENT_ID") } returns Single.error(Throwable())
 
             //Act
-            repeat(2) {
-                request = authenticator.authenticate(null, response)
-                //Set response with the return request
-                request?.let { response = createResponse(it) }
-            }
+            val request = authenticator.authenticate(null, createResponse())
 
             //Assert
-            verify(atMost = 1) { refreshToken.execute(Unit) }
             assertThat(request).isNull()
         }
 
-        @Test
-        fun `attempt to authenticate only once (repeat times = 3)`() {
+        @ParameterizedTest
+        @ValueSource(ints = [2, 3])
+        fun `should attempt to authenticate only once`(time: Int) {
             //Arrange
             var response = createResponse()
             var request: Request? = null
-            every { refreshToken.execute(Unit) } returns Single.just(createToken())
+            every { refreshToken.execute("CLIENT_ID") } returns Single.just(createToken())
 
             //Act
-            repeat(3) {
+            repeat(time) {
                 request = authenticator.authenticate(null, response)
-                //Set the inserted response with the returned request
+                // Add the previous request to the new response
                 request?.let { response = createResponse(it) }
             }
-
-            //Assert
-            verify(atMost = 1) { refreshToken.execute(Unit) }
-            assertThat(request).isNull()
-        }
-
-        @Test
-        fun `return null when new token is null`() {
-            //Arrange
-            val response = createResponse()
-            every { refreshToken.execute(Unit) } returns Single.error(Throwable())
-
-            //Act
-            val request = authenticator.authenticate(null, response)
 
             //Assert
             assertThat(request).isNull()

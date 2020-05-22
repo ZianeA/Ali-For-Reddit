@@ -1,7 +1,9 @@
 package com.visualeap.aliforreddit.presentation.login
 
+import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.SyncSchedulerProvider
 import com.visualeap.aliforreddit.domain.usecase.*
+import com.visualeap.aliforreddit.presentation.common.ResourceProvider
 import com.visualeap.aliforreddit.presentation.main.login.LoginPresenter
 import com.visualeap.aliforreddit.presentation.main.login.LoginView
 import io.mockk.*
@@ -16,7 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
 class LoginPresenterTest {
-
     companion object {
         private const val REDIRECT_URL = "https://example.com/path"
         private const val AUTH_URL = "https://www.reddit.com/api/v1/authorize"
@@ -25,23 +26,27 @@ class LoginPresenterTest {
         private const val FINAL_REDIRECT_URL = "$REDIRECT_URL?state=$STATE"
     }
 
-    private val view: LoginView = mockk()
-    private val generateAuthCode: GenerateAuthCode = mockk()
-    private val buildAuthUrl: BuildAuthUrl = mockk()
+    private val view: LoginView = mockk(relaxed = true)
+    private val generateAuthCode: GenerateAuthCode = mockk(relaxed = true)
+    private val buildAuthUrl: BuildAuthUrl = mockk(relaxed = true)
     private val authenticateUser: AuthenticateUser = mockk()
-
+    private val resourceProvider: ResourceProvider = mockk(relaxed = true)
     private val presenter = LoginPresenter(
         view,
         generateAuthCode,
         buildAuthUrl,
         authenticateUser,
-        SyncSchedulerProvider(),
-        REDIRECT_URL
+        resourceProvider,
+        SyncSchedulerProvider()
     )
 
     @BeforeEach
     internal fun setUp() {
         clearAllMocks()
+
+        // Set defaults
+        every { resourceProvider.getString(R.string.client_id) } returns CLIENT_ID
+        every { resourceProvider.getString(R.string.redirect_url) } returns REDIRECT_URL
     }
 
     @Nested
@@ -51,8 +56,6 @@ class LoginPresenterTest {
             //Arrange
             every { generateAuthCode.execute(Unit) } returns STATE
             every { buildAuthUrl.execute(STATE) } returns AUTH_URL
-            every { view.hideLoginPrompt() } just runs
-            every { view.showLoginPage(any()) } just runs
 
             //Act
             presenter.onLogInClicked()
@@ -66,8 +69,6 @@ class LoginPresenterTest {
             //Arrange
             every { generateAuthCode.execute(Unit) } returns STATE
             every { buildAuthUrl.execute(STATE) } returns AUTH_URL
-            every { view.hideLoginPrompt() } just runs
-            every { view.showLoginPage(any()) } just runs
 
             //Act
             presenter.onLogInClicked()
@@ -82,10 +83,9 @@ class LoginPresenterTest {
         @Test
         fun `hide login ui when url is valid`() {
             // Arrange
-            every { view.hideLoginPage() } just runs
             every { generateAuthCode.execute(Unit) } returns STATE
             every {
-                authenticateUser.execute(AuthenticateUser.Params(FINAL_REDIRECT_URL, STATE))
+                authenticateUser.execute(CLIENT_ID, REDIRECT_URL, FINAL_REDIRECT_URL, STATE)
             } returns Completable.complete()
 
             //Act
@@ -125,9 +125,10 @@ class LoginPresenterTest {
         @Test
         fun `reload UI when login is successful`() {
             // Arrange
-            every { view.hideLoginPage() } just runs
             every { generateAuthCode.execute(Unit) } returns STATE
-            every { authenticateUser.execute(AuthenticateUser.Params(FINAL_REDIRECT_URL, STATE)) } returns Completable.complete()
+            every {
+                authenticateUser.execute(CLIENT_ID, REDIRECT_URL, FINAL_REDIRECT_URL, STATE)
+            } returns Completable.complete()
 
             //Act
             presenter.onPageStarted(FINAL_REDIRECT_URL)

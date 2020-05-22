@@ -29,7 +29,7 @@ interface RepositoryModule {
     fun provideAccountRepository(accountRepo: AccountDataRepository): AccountRepository
 
     @Binds
-    fun provideTokenRepository(tokenRepo: TokenDataRepository): TokenRepository
+    fun provideTokenRepository(tokenRepo: DbTokenRepository): TokenRepository
 
     @Binds
     fun provideRedditorRepository(redditorRepo: RedditorDataRepository): RedditorRepository
@@ -60,12 +60,6 @@ interface RepositoryModule {
 
     @Binds
     fun provideCommentEntityMapper(mapper: CommentEntityMapper): Mapper<List<CommentEntity>, List<Comment>>
-
-    @Binds
-    fun provideUserTokenMapper(mapper: TokenWithUserTokenEntityMapper): Mapper<TokenWithUserTokenEntity, UserToken>
-
-    @Binds
-    fun provideUserlessTokenMapper(mapper: TokenWithUserlessTokenEntityMapper): Mapper<TokenWithUserlessTokenEntity, UserlessToken>
 
     @Binds
     fun provideNextPageKeyStore(store: NextPageKeyStore): KeyValueStore<String?>

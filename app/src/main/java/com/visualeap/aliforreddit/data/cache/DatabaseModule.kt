@@ -15,6 +15,9 @@ import com.visualeap.aliforreddit.data.repository.comment.CommentDao
 import com.visualeap.aliforreddit.domain.model.Feed.DefaultFeed
 import com.visualeap.aliforreddit.data.repository.feed.FeedDao
 import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedDao
+import com.visualeap.aliforreddit.data.repository.token.CurrentTokenDao
+import com.visualeap.aliforreddit.data.repository.token.UserTokenDao
+import com.visualeap.aliforreddit.data.repository.token.UserlessTokenDao
 import com.visualeap.aliforreddit.domain.model.Feed.FeedType
 import com.visualeap.aliforreddit.domain.model.Feed.SortBy
 import dagger.Provides
@@ -58,6 +61,24 @@ class DatabaseModule {
     @Provides
     fun provideTokenDao(database: RedditDatabase): TokenDao {
         return database.tokenDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserTokenDao(database: RedditDatabase): UserTokenDao {
+        return database.userTokenDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserlessTokenDao(database: RedditDatabase): UserlessTokenDao {
+        return database.userlessTokenDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideCurrentTokenDao(database: RedditDatabase): CurrentTokenDao {
+        return database.currentTokenDao()
     }
 
     @Singleton

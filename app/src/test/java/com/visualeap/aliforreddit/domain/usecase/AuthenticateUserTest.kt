@@ -1,86 +1,95 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.repository.AccountRepository
-import com.visualeap.aliforreddit.domain.repository.RedditorRepository
+import com.visualeap.aliforreddit.data.network.auth.AuthService
+import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity
+import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable
 import io.reactivex.Single
+import okhttp3.Credentials
 import okhttp3.HttpUrl
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 import util.domain.*
-import java.io.IOException
 import java.net.MalformedURLException
-import java.sql.SQLException
-import kotlin.IllegalArgumentException
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
 class AuthenticateUserTest {
-
     companion object {
         private const val STATE = "STATE"
+        private const val CODE = "CODE"
+        private const val CLIENT_ID = "CLIENT_ID"
+        private const val REDIRECT_URL = "https://example.com/path"
     }
 
+    private val authService: AuthService = mockk()
     private val tokenRepository: TokenRepository = mockk()
-    private val accountRepository: AccountRepository = mockk()
-    private val redditorRepository: RedditorRepository = mockk()
     private val authenticateUser =
-        AuthenticateUser(tokenRepository, accountRepository, redditorRepository)
+        AuthenticateUser(authService, tokenRepository)
 
     @BeforeEach
     internal fun setUp() {
         clearAllMocks()
+
+        // Set defaults
+        every { tokenRepository.addUserToken(any()) } returns Single.just(0)
+        every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
     }
 
     @Test
-    fun `fetch user token`() {
+    fun `should save fetched token`() {
         //Arrange
-        every { tokenRepository.getUserToken(CODE) } returns Single.just(createUserToken())
-        every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
-        every { redditorRepository.getCurrentRedditor() } returns Single.just(createRedditor())
-        every { accountRepository.addAccount(any()) } returns Completable.complete()
+        val grantType = "authorization_code"
+        val basicAuth = Credentials.basic(CLIENT_ID, "")
+        val token = createTokenResponse()
+        every {
+            authService.getUserToken(grantType, CODE, REDIRECT_URL, basicAuth)
+        } returns Single.just(token)
 
-        //Act, Assert
-        authenticateUser.execute(createParams())
+        //Act
+        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, buildValidFinalUrl(), STATE)
             .test()
             .assertResult()
+
+        // Assert
+        verify {
+            tokenRepository.addUserToken(withArg {
+                assertThat(it)
+                    .isEqualTo(UserToken(0, token.accessToken, token.type, token.refreshToken!!))
+            })
+        }
     }
 
+    //TODO handle authentication of an existing user
+
     @Test
-    fun `set the fetched user token as the current token`() {
+    fun `should set the fetched token as the current token`() {
         //Arrange
-        val token = createUserToken()
-        every { tokenRepository.getUserToken(CODE) } returns Single.just(token)
-        every { tokenRepository.setCurrentToken(any()) } returns Completable.complete()
+        val token = createTokenResponse()
+        every { tokenRepository.addUserToken(any()) } returns Single.just(202)
+        every { authService.getUserToken(any(), any(), any(), any()) } returns Single.just(token)
 
         //Act, Assert
-        authenticateUser.execute(createParams())
+        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, buildValidFinalUrl(), STATE)
             .test()
+            .assertResult()
 
-        verify { tokenRepository.setCurrentToken(token) }
+        verify {
+            tokenRepository.setCurrentToken(withArg {
+                assertThat(it)
+                    .isEqualTo(UserToken(202, token.accessToken, token.type, token.refreshToken!!))
+            })
+        }
     }
 
-    @Test
-    fun `return error when setting current token fails`() {
-        //Arrange
-        val token = createUserToken()
-        every { tokenRepository.getUserToken(CODE) } returns Single.just(token)
-        every { tokenRepository.setCurrentToken(any()) } returns Completable.error(SQLException())
-        every { redditorRepository.getCurrentRedditor() } returns Single.just(createRedditor())
-        every { accountRepository.addAccount(any()) } returns Completable.complete()
-
-        //Act, Assert
-        authenticateUser.execute(createParams())
-            .test()
-            .assertFailure(SQLException::class.java)
-    }
-
-    @Test
+    /* @Test
     fun `create a new account`() {
         //Arrange
         val token = createUserToken()
@@ -124,18 +133,15 @@ class AuthenticateUserTest {
         authenticateUser.execute(createParams())
             .test()
             .assertFailure(IOException::class.java)
-    }
-
-    //TODO handle authentication of an existing user
+    }*/
 
     @Test
     fun `return error when the final redirect url is malformed`() {
         //Arrange
         val finalUrl = "Malformed URL"
-        val params = createParams(finalUrl)
 
         //Act, Assert
-        authenticateUser.execute(params)
+        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, finalUrl, STATE)
             .test()
             .assertFailure(MalformedURLException::class.java)
     }
@@ -149,10 +155,8 @@ class AuthenticateUserTest {
             .build()
             .toString()
 
-        val params = createParams(finalUrl)
-
         //Act, Assert
-        authenticateUser.execute(params)
+        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, finalUrl, STATE)
             .test()
             .assertFailure(OAuthException::class.java)
     }
@@ -166,10 +170,8 @@ class AuthenticateUserTest {
             .build()
             .toString()
 
-        val params = createParams(finalUrl)
-
         //Act, Assert
-        authenticateUser.execute(params)
+        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, finalUrl, STATE)
             .test()
             .assertFailure(IllegalArgumentException::class.java)
     }
@@ -183,10 +185,8 @@ class AuthenticateUserTest {
             .build()
             .toString()
 
-        val params = createParams(finalUrl)
-
         //Act, Assert
-        authenticateUser.execute(params)
+        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, finalUrl, STATE)
             .test()
             .assertFailure(IllegalArgumentException::class.java)
     }
@@ -201,18 +201,13 @@ class AuthenticateUserTest {
             .build()
             .toString()
 
-        val params = createParams(finalUrl)
-
         //Act, Assert
-        authenticateUser.execute(params)
+        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, finalUrl, STATE)
             .test()
             .assertFailure(IllegalStateException::class.java)
     }
 
-    private fun createParams(finalUrl: String = createCorrectFinalUrl()) =
-        AuthenticateUser.Params(finalUrl, STATE)
-
-    private fun createCorrectFinalUrl(): String {
+    private fun buildValidFinalUrl(): String {
         return HttpUrl.parse(REDIRECT_URL)!!
             .newBuilder()
             .addQueryParameter("code", CODE)

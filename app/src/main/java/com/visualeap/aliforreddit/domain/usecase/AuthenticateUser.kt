@@ -1,27 +1,31 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.model.Account
-import com.visualeap.aliforreddit.domain.repository.AccountRepository
-import com.visualeap.aliforreddit.domain.repository.RedditorRepository
+import com.visualeap.aliforreddit.data.network.auth.AuthService
+import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
-import com.visualeap.aliforreddit.domain.usecase.AuthenticateUser.*
-import com.visualeap.aliforreddit.domain.usecase.base.CompletableUseCase
 import dagger.Reusable
 import io.reactivex.*
+import okhttp3.Credentials
 import okhttp3.HttpUrl
 import java.net.MalformedURLException
 import javax.inject.Inject
 
 @Reusable
 class AuthenticateUser @Inject constructor(
-    private val tokenRepository: TokenRepository,
-    private val accountRepository: AccountRepository,
-    private val redditorRepository: RedditorRepository
-) : CompletableUseCase<Params> {
+    private val authService: AuthService,
+    private val tokenRepository: TokenRepository
+) {
+    companion object {
+        private const val GRANT_TYPE = "authorization_code"
+    }
 
-    override fun execute(params: Params): Completable {
-
-        val parsedFinalUrl = HttpUrl.parse(params.finalUrl)
+    fun execute(
+        clientId: String,
+        redirectUrl: String,
+        finalUrl: String,
+        state: String
+    ): Completable {
+        val parsedFinalUrl = HttpUrl.parse(finalUrl)
             ?: return Completable.error(MalformedURLException())
 
         parsedFinalUrl.queryParameter("error")
@@ -29,7 +33,7 @@ class AuthenticateUser @Inject constructor(
 
         parsedFinalUrl.queryParameter("state")
             ?.let { stateReceived ->
-                if (params.state != stateReceived)
+                if (state != stateReceived)
                     return Completable.error(IllegalStateException("State doesn't match"))
             }
             ?: return Completable.error(IllegalArgumentException("Final redirect URL did not contain the 'state' query parameter"))
@@ -38,22 +42,17 @@ class AuthenticateUser @Inject constructor(
         val code = parsedFinalUrl.queryParameter("code")
             ?: return Completable.error(IllegalArgumentException("Final redirect URL did not contain the 'code' query parameter"))
 
-        //Fetch user token, set it as the current token, and use it to fetch current redditor.
-        // Use redditor username to create a new Account.
-        return tokenRepository.getUserToken(code)
-            .flatMapCompletable { token ->
-                tokenRepository.setCurrentToken(token)
-                    /*.andThen(redditorRepository.getCurrentRedditor())
-                    .flatMapCompletable { redditor ->
-                        accountRepository.addAccount(
-                            Account(redditor.username)
-                        )
-                    }*/
+        // Fetch user token and set it as the current token.
+        return authService.getUserToken(
+            GRANT_TYPE,
+            code,
+            redirectUrl,
+            Credentials.basic(clientId, "")
+        )
+            .map { UserToken(0, it.accessToken, it.type, it.refreshToken!!) }
+            .flatMapCompletable { userToken ->
+                tokenRepository.addUserToken(userToken)
+                    .flatMapCompletable { rowId -> tokenRepository.setCurrentToken(userToken.copy(id = rowId)) }
             }
     }
-
-    data class Params(
-        val finalUrl: String,
-        val state: String
-    )
 }

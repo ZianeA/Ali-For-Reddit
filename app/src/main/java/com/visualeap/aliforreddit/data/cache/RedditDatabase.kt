@@ -9,11 +9,6 @@ import com.visualeap.aliforreddit.data.repository.post.PostDao
 import com.visualeap.aliforreddit.data.repository.post.PostEntity
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorDao
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
-import com.visualeap.aliforreddit.data.repository.token.TokenDao
-import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity
-import com.visualeap.aliforreddit.data.repository.token.TokenEntity
-import com.visualeap.aliforreddit.data.repository.token.UserTokenEntity
-import com.visualeap.aliforreddit.data.repository.token.UserlessTokenEntity
 import com.visualeap.aliforreddit.data.repository.comment.CommentDao
 import com.visualeap.aliforreddit.data.repository.comment.CommentEntity
 import com.visualeap.aliforreddit.data.repository.feed.FeedDao
@@ -21,6 +16,7 @@ import com.visualeap.aliforreddit.data.repository.feed.FeedEntity
 import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedDao
 import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
+import com.visualeap.aliforreddit.data.repository.token.*
 
 @Database(
     entities = [TokenEntity::class, UserTokenEntity::class, UserlessTokenEntity::class,
@@ -40,6 +36,9 @@ abstract class RedditDatabase : RoomDatabase() {
     }
 
     abstract fun tokenDao(): TokenDao
+    abstract fun userTokenDao(): UserTokenDao
+    abstract fun userlessTokenDao(): UserlessTokenDao
+    abstract fun currentTokenDao(): CurrentTokenDao
     abstract fun accountDao(): AccountDao
     abstract fun redditorDao(): RedditorDao
     abstract fun postDao(): PostDao
