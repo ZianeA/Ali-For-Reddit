@@ -11,14 +11,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TokenInterceptor @Inject constructor(
-    private val fetchToken: FetchToken,
-    private val resourceProvider: ResourceProvider
-) : Interceptor {
+class TokenInterceptor @Inject constructor(private val fetchToken: FetchToken) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val clientId = resourceProvider.getString(R.string.client_id)
         // if the fetching of the token is unsuccessful, we leave the request as is.
-        val token = kotlin.runCatching { fetchToken.execute(clientId).blockingGet() }.getOrNull()
+        val token = kotlin.runCatching { fetchToken.execute().blockingGet() }.getOrNull()
             ?: return chain.proceed(chain.request())
 
         val newRequest = chain.request()

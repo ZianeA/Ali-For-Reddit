@@ -25,13 +25,11 @@ import util.domain.createToken
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TokenAuthenticatorTest {
     private val refreshToken: RefreshToken = mockk()
-    private val resourceProvider: ResourceProvider = mockk()
-    private val authenticator = TokenAuthenticator(refreshToken, resourceProvider)
+    private val authenticator = TokenAuthenticator(refreshToken)
 
     @BeforeEach
     internal fun setUp() {
         clearAllMocks()
-        every { resourceProvider.getString(R.string.client_id) } returns "CLIENT_ID"
     }
 
     @Nested
@@ -40,7 +38,7 @@ class TokenAuthenticatorTest {
         fun `when token is not null should add it request`() {
             //Arrange
             val token = createToken()
-            every { refreshToken.execute("CLIENT_ID") } returns Single.just(token)
+            every { refreshToken.execute() } returns Single.just(token)
 
             //Act
             val request = authenticator.authenticate(null, createResponse())
@@ -54,7 +52,7 @@ class TokenAuthenticatorTest {
         @Test
         fun `when token retrieval fails should leave request as is`() {
             //Arrange
-            every { refreshToken.execute("CLIENT_ID") } returns Single.error(Throwable())
+            every { refreshToken.execute() } returns Single.error(Throwable())
 
             //Act
             val request = authenticator.authenticate(null, createResponse())
@@ -69,7 +67,7 @@ class TokenAuthenticatorTest {
             //Arrange
             var response = createResponse()
             var request: Request? = null
-            every { refreshToken.execute("CLIENT_ID") } returns Single.just(createToken())
+            every { refreshToken.execute() } returns Single.just(createToken())
 
             //Act
             repeat(time) {

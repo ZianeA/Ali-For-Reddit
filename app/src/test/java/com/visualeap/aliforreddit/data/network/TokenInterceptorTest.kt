@@ -23,8 +23,7 @@ import util.domain.createToken
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TokenInterceptorTest {
     private val fetchToken: FetchToken = mockk()
-    private val resourceProvider: ResourceProvider = mockk(relaxed = true)
-    private val tokenInterceptor = TokenInterceptor(fetchToken, resourceProvider)
+    private val tokenInterceptor = TokenInterceptor(fetchToken)
     @BeforeEach
     internal fun setUp() {
         clearAllMocks()
@@ -36,8 +35,7 @@ class TokenInterceptorTest {
         fun `when token is not null should add it to request`() {
             //Arrange
             val token = createToken()
-            every { resourceProvider.getString(R.string.client_id) } returns "CLIENT_ID"
-            every { fetchToken.execute("CLIENT_ID") } returns Single.just(token)
+            every { fetchToken.execute() } returns Single.just(token)
 
             //Act
             val response = tokenInterceptor.intercept(createMockChain())
@@ -51,7 +49,7 @@ class TokenInterceptorTest {
         fun `when token retrieval fails should leave request as is`() {
             //Arrange
             val chain = createMockChain()
-            every { fetchToken.execute(any()) } returns Single.error(Throwable())
+            every { fetchToken.execute() } returns Single.error(Throwable())
 
             //Act
             val response = tokenInterceptor.intercept(chain)

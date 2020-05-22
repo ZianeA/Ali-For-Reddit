@@ -1,11 +1,11 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.data.network.auth.AuthService
+import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import io.reactivex.Single
-import okhttp3.Credentials
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,13 +13,14 @@ import javax.inject.Singleton
 @Singleton
 class FetchToken @Inject constructor(
     private val authService: AuthService,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val authCredentialProvider: BasicAuthCredentialProvider
 ) {
     companion object {
         private const val GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client"
     }
 
-    fun execute(clientId: String): Single<Token> {
+    fun execute(): Single<Token> {
         val deviceId = generateUniqueId()
         return tokenRepository.getCurrentToken()
             .switchIfEmpty(Single.defer {
@@ -27,7 +28,7 @@ class FetchToken @Inject constructor(
                 authService.getUserlessToken(
                     GRANT_TYPE,
                     deviceId,
-                    Credentials.basic(clientId, "")
+                    authCredentialProvider.getAuthCredential()
                 )
                     .map { UserlessToken(0, it.accessToken, it.type, deviceId) }
                     .flatMap { token ->

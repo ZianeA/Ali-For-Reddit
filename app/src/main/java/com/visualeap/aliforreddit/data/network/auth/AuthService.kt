@@ -15,7 +15,7 @@ interface AuthService {
         @Field(GRANT_TYPE) grantType: String,
         @Field("code") code: String,
         @Field("redirect_uri") redirectUrl: String,
-        @Header(HttpHeaders.AUTHORIZATION) basicAuth: String
+        @Header(HttpHeaders.AUTHORIZATION) basicAuthCredential: String
     ): Single<TokenResponse>
 
     @FormUrlEncoded
@@ -23,7 +23,7 @@ interface AuthService {
     fun getUserlessToken(
         @Field(GRANT_TYPE) grantType: String,
         @Field("device_id") deviceId: String,
-        @Header(HttpHeaders.AUTHORIZATION) basicAuth: String
+        @Header(HttpHeaders.AUTHORIZATION) basicAuthCredential: String
     ): Single<TokenResponse>
 
     @FormUrlEncoded
@@ -31,7 +31,7 @@ interface AuthService {
     fun refreshUserToken(
         @Field(GRANT_TYPE) grantType: String,
         @Field("refresh_token") refreshToken: String,
-        @Header(HttpHeaders.AUTHORIZATION) basicAuth: String
+        @Header(HttpHeaders.AUTHORIZATION) basicAuthCredential: String
     ): Single<TokenResponse>
 
     companion object {

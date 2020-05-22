@@ -1,6 +1,7 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.data.network.auth.AuthService
+import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
@@ -8,7 +9,6 @@ import io.mockk.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import okhttp3.Credentials
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -23,11 +23,8 @@ import java.lang.Exception
 internal class RefreshTokenTest {
     private val authService: AuthService = mockk()
     private val tokenRepository: TokenRepository = mockk()
-    private val refreshToken = RefreshToken(authService, tokenRepository)
-
-    companion object {
-        private const val CLIENT_ID = "CLIENT_ID"
-    }
+    private val authCredentialProvider: BasicAuthCredentialProvider = mockk(relaxed = true)
+    private val refreshToken = RefreshToken(authService, tokenRepository, authCredentialProvider)
 
     @BeforeEach
     internal fun setUp() {
@@ -44,17 +41,20 @@ internal class RefreshTokenTest {
         val cachedUserToken = createUserToken()
         every { tokenRepository.getCurrentToken() } returns Maybe.just(cachedUserToken)
 
+        val authCredential = "BASIC_AUTH_CREDENTIAL"
+        every { authCredentialProvider.getAuthCredential() } returns authCredential
+
         val refreshedUserToken = createTokenResponse(accessToken = "REFRESHED_ACCESS_TOKEN")
         every {
             authService.refreshUserToken(
                 "refresh_token",
                 cachedUserToken.refreshToken,
-                Credentials.basic(CLIENT_ID, "")
+                authCredential
             )
         } returns Single.just(refreshedUserToken)
 
         // Act
-        refreshToken.execute(CLIENT_ID)
+        refreshToken.execute()
             .test()
             .assertNoErrors()
 
@@ -85,7 +85,7 @@ internal class RefreshTokenTest {
             refreshedUserToken.type,
             refreshedUserToken.refreshToken!!
         )
-        refreshToken.execute(CLIENT_ID)
+        refreshToken.execute()
             .test()
             .assertValue(match { assertThat(it).isEqualTo(expectedToken) })
     }
@@ -96,17 +96,20 @@ internal class RefreshTokenTest {
         val cachedUserlessToken = createUserlessToken()
         every { tokenRepository.getCurrentToken() } returns Maybe.just(cachedUserlessToken)
 
+        val authCredential = "BASIC_AUTH_CREDENTIAL"
+        every { authCredentialProvider.getAuthCredential() } returns authCredential
+
         val refreshedUserLessToken = createTokenResponse(accessToken = "REFRESHED_ACCESS_TOKEN")
         every {
             authService.getUserlessToken(
                 "https://oauth.reddit.com/grants/installed_client",
                 cachedUserlessToken.deviceId,
-                Credentials.basic(CLIENT_ID, "")
+                authCredential
             )
         } returns Single.just(refreshedUserLessToken)
 
         //Act
-        refreshToken.execute(CLIENT_ID)
+        refreshToken.execute()
             .test()
             .assertNoErrors()
 
@@ -137,7 +140,7 @@ internal class RefreshTokenTest {
             refreshedUserLessToken.type,
             cachedUserlessToken.deviceId
         )
-        refreshToken.execute(CLIENT_ID)
+        refreshToken.execute()
             .test()
             .assertValue(match { assertThat(it).isEqualTo(expectedToken) })
     }
@@ -148,7 +151,7 @@ internal class RefreshTokenTest {
         every { tokenRepository.getCurrentToken() } returns Maybe.empty()
 
         //Act, Assert
-        refreshToken.execute(CLIENT_ID)
+        refreshToken.execute()
             .test()
             .assertError(Exception::class.java)
     }

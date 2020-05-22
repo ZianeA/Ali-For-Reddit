@@ -21,7 +21,6 @@ class LoginPresenterTest {
     companion object {
         private const val REDIRECT_URL = "https://example.com/path"
         private const val AUTH_URL = "https://www.reddit.com/api/v1/authorize"
-        private const val CLIENT_ID = "CLIENT ID"
         private const val STATE = "STATE"
         private const val FINAL_REDIRECT_URL = "$REDIRECT_URL?state=$STATE"
     }
@@ -45,7 +44,6 @@ class LoginPresenterTest {
         clearAllMocks()
 
         // Set defaults
-        every { resourceProvider.getString(R.string.client_id) } returns CLIENT_ID
         every { resourceProvider.getString(R.string.redirect_url) } returns REDIRECT_URL
     }
 
@@ -85,7 +83,7 @@ class LoginPresenterTest {
             // Arrange
             every { generateAuthCode.execute(Unit) } returns STATE
             every {
-                authenticateUser.execute(CLIENT_ID, REDIRECT_URL, FINAL_REDIRECT_URL, STATE)
+                authenticateUser.execute(REDIRECT_URL, FINAL_REDIRECT_URL, STATE)
             } returns Completable.complete()
 
             //Act
@@ -127,7 +125,7 @@ class LoginPresenterTest {
             // Arrange
             every { generateAuthCode.execute(Unit) } returns STATE
             every {
-                authenticateUser.execute(CLIENT_ID, REDIRECT_URL, FINAL_REDIRECT_URL, STATE)
+                authenticateUser.execute(REDIRECT_URL, FINAL_REDIRECT_URL, STATE)
             } returns Completable.complete()
 
             //Act

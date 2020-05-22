@@ -1,16 +1,14 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.data.network.auth.AuthService
-import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity
+import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable
 import io.reactivex.Single
-import okhttp3.Credentials
 import okhttp3.HttpUrl
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,14 +23,14 @@ class AuthenticateUserTest {
     companion object {
         private const val STATE = "STATE"
         private const val CODE = "CODE"
-        private const val CLIENT_ID = "CLIENT_ID"
         private const val REDIRECT_URL = "https://example.com/path"
     }
 
     private val authService: AuthService = mockk()
     private val tokenRepository: TokenRepository = mockk()
+    private val authCredentialProvider: BasicAuthCredentialProvider = mockk(relaxed = true)
     private val authenticateUser =
-        AuthenticateUser(authService, tokenRepository)
+        AuthenticateUser(authService, tokenRepository, authCredentialProvider)
 
     @BeforeEach
     internal fun setUp() {
@@ -46,15 +44,16 @@ class AuthenticateUserTest {
     @Test
     fun `should save fetched token`() {
         //Arrange
+        val basicAuth = "BASIC_AUTH_CREDENTIAL"
+        every { authCredentialProvider.getAuthCredential() } returns basicAuth
         val grantType = "authorization_code"
-        val basicAuth = Credentials.basic(CLIENT_ID, "")
         val token = createTokenResponse()
         every {
             authService.getUserToken(grantType, CODE, REDIRECT_URL, basicAuth)
         } returns Single.just(token)
 
         //Act
-        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, buildValidFinalUrl(), STATE)
+        authenticateUser.execute(REDIRECT_URL, buildValidFinalUrl(), STATE)
             .test()
             .assertResult()
 
@@ -77,7 +76,7 @@ class AuthenticateUserTest {
         every { authService.getUserToken(any(), any(), any(), any()) } returns Single.just(token)
 
         //Act, Assert
-        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, buildValidFinalUrl(), STATE)
+        authenticateUser.execute(REDIRECT_URL, buildValidFinalUrl(), STATE)
             .test()
             .assertResult()
 
@@ -141,7 +140,7 @@ class AuthenticateUserTest {
         val finalUrl = "Malformed URL"
 
         //Act, Assert
-        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, finalUrl, STATE)
+        authenticateUser.execute(REDIRECT_URL, finalUrl, STATE)
             .test()
             .assertFailure(MalformedURLException::class.java)
     }
@@ -156,7 +155,7 @@ class AuthenticateUserTest {
             .toString()
 
         //Act, Assert
-        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, finalUrl, STATE)
+        authenticateUser.execute(REDIRECT_URL, finalUrl, STATE)
             .test()
             .assertFailure(OAuthException::class.java)
     }
@@ -171,7 +170,7 @@ class AuthenticateUserTest {
             .toString()
 
         //Act, Assert
-        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, finalUrl, STATE)
+        authenticateUser.execute(REDIRECT_URL, finalUrl, STATE)
             .test()
             .assertFailure(IllegalArgumentException::class.java)
     }
@@ -186,7 +185,7 @@ class AuthenticateUserTest {
             .toString()
 
         //Act, Assert
-        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, finalUrl, STATE)
+        authenticateUser.execute(REDIRECT_URL, finalUrl, STATE)
             .test()
             .assertFailure(IllegalArgumentException::class.java)
     }
@@ -202,7 +201,7 @@ class AuthenticateUserTest {
             .toString()
 
         //Act, Assert
-        authenticateUser.execute(CLIENT_ID, REDIRECT_URL, finalUrl, STATE)
+        authenticateUser.execute(REDIRECT_URL, finalUrl, STATE)
             .test()
             .assertFailure(IllegalStateException::class.java)
     }

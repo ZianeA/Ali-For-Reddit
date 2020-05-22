@@ -6,7 +6,6 @@ import com.visualeap.aliforreddit.presentation.AliForRedditApp
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
-import okhttp3.Credentials
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -22,10 +21,4 @@ class AppModule {
     @Provides
     @Named("redirectUrl")
     fun provideRedirectUrl(app: Application): String = app.getString(R.string.redirect_url)
-
-    @Reusable
-    @Provides
-    @Named("basicAuth")
-    fun provideBasicAuth(@Named("clientId") clientId: String): String =
-        Credentials.basic(clientId, "")
 }

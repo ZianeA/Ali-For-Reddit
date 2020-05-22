@@ -37,7 +37,6 @@ class LoginPresenter @Inject constructor(
 
             //Authenticate user
             val disposable = authenticateUser.execute(
-                resourceProvider.getString(R.string.client_id),
                 resourceProvider.getString(R.string.redirect_url),
                 url,
                 generateAuthCode.execute(Unit)

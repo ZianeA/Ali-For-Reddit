@@ -2,6 +2,7 @@ package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.data.network.auth.AuthService
 import com.visualeap.aliforreddit.data.repository.token.TokenResponse
+import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
@@ -9,7 +10,6 @@ import io.mockk.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import okhttp3.Credentials
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -22,10 +22,10 @@ import util.domain.match
 class FetchTokenTest {
     private val authService: AuthService = mockk()
     private val tokenRepository: TokenRepository = mockk()
-    private val getToken = FetchToken(authService, tokenRepository)
+    private val authCredentialProvider: BasicAuthCredentialProvider = mockk(relaxed = true)
+    private val getToken = FetchToken(authService, tokenRepository, authCredentialProvider)
 
     companion object {
-        private const val CLIENT_ID = "CLIENT_ID"
         private const val GRANT_TYPE =
             "https://oauth.reddit.com/grants/installed_client"
     }
@@ -49,7 +49,7 @@ class FetchTokenTest {
         every { tokenRepository.getCurrentToken() } returns Maybe.just(expectedToken)
 
         //Act, Assert
-        getToken.execute(CLIENT_ID)
+        getToken.execute()
             .test()
             .assertValue(match { assertThat(it).isEqualTo(expectedToken) })
     }
@@ -59,14 +59,16 @@ class FetchTokenTest {
         //Arrange
         every { tokenRepository.getCurrentToken() } returns Maybe.empty()
 
-        val basicAuth = Credentials.basic(CLIENT_ID, "")
+        val basicAuth = "BASIC_AUTH_CREDENTIAL"
+        every { authCredentialProvider.getAuthCredential() } returns basicAuth
+
         val deviceIdSlot = slot<String>()
         val fetchedToken = createTokenResponse()
         every { authService.getUserlessToken(GRANT_TYPE, capture(deviceIdSlot), basicAuth) }
             .returns(Single.just(fetchedToken))
 
         //Act
-        getToken.execute(CLIENT_ID)
+        getToken.execute()
             .test()
             .assertNoErrors()
 
@@ -96,7 +98,7 @@ class FetchTokenTest {
         every { tokenRepository.setUserlessToken(any()) } returns Single.just(202)
 
         //Act
-        getToken.execute(CLIENT_ID)
+        getToken.execute()
             .test()
             .assertNoErrors()
 
@@ -120,7 +122,7 @@ class FetchTokenTest {
         every { tokenRepository.setUserlessToken(any()) } returns Single.just(202)
 
         //Act, Assert
-        getToken.execute(CLIENT_ID)
+        getToken.execute()
             .test()
             .assertValue(match {
                 assertThat(it).isEqualTo(

@@ -10,22 +10,17 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TokenAuthenticator @Inject constructor(
-    private val refreshToken: RefreshToken,
-    private val resourceProvider: ResourceProvider
-) :
+class TokenAuthenticator @Inject constructor(private val refreshToken: RefreshToken) :
     Authenticator {
-
     override fun authenticate(route: Route?, response: Response): Request? {
         if (response.request().header(ATTEMPT_HEADER) != null) {
             return null; // Give up, we've already attempted to authenticate.
         }
 
         synchronized(this) {
-            val clientId = resourceProvider.getString(R.string.client_id)
             // if the refreshing of the token is unsuccessful, we leave the request as is.
             val token =
-                kotlin.runCatching { refreshToken.execute(clientId).blockingGet() }.getOrNull()
+                kotlin.runCatching { refreshToken.execute().blockingGet() }.getOrNull()
                     ?: return null
 
             return response.request().newBuilder()

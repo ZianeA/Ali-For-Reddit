@@ -1,11 +1,11 @@
 package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.data.network.auth.AuthService
+import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
 import dagger.Reusable
 import io.reactivex.*
-import okhttp3.Credentials
 import okhttp3.HttpUrl
 import java.net.MalformedURLException
 import javax.inject.Inject
@@ -13,14 +13,14 @@ import javax.inject.Inject
 @Reusable
 class AuthenticateUser @Inject constructor(
     private val authService: AuthService,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val authCredentialProvider: BasicAuthCredentialProvider
 ) {
     companion object {
         private const val GRANT_TYPE = "authorization_code"
     }
 
     fun execute(
-        clientId: String,
         redirectUrl: String,
         finalUrl: String,
         state: String
@@ -47,7 +47,7 @@ class AuthenticateUser @Inject constructor(
             GRANT_TYPE,
             code,
             redirectUrl,
-            Credentials.basic(clientId, "")
+            authCredentialProvider.getAuthCredential()
         )
             .map { UserToken(0, it.accessToken, it.type, it.refreshToken!!) }
             .flatMapCompletable { userToken ->

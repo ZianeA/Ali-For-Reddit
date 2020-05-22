@@ -369,8 +369,6 @@ fun createCommentView(
 )
 //endregion
 
-fun createBasicAuth(clientId: String = "CLIENT ID"): String = Credentials.basic(clientId, "")
-
 //region OkHttp Chain
 fun createResponse(request: Request = createRequest()): Response {
     return Response.Builder()
