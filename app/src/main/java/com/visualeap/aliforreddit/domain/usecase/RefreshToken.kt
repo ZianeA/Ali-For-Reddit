@@ -6,6 +6,7 @@ import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
+import com.visualeap.aliforreddit.domain.util.TokenResponseMapper
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,7 +16,8 @@ import kotlin.IllegalStateException
 class RefreshToken @Inject constructor(
     private val authService: AuthService,
     private val tokenRepository: TokenRepository,
-    private val authCredentialProvider: BasicAuthCredentialProvider
+    private val authCredentialProvider: BasicAuthCredentialProvider,
+    private val tokenMapper: TokenResponseMapper
 ) {
     companion object {
         private const val REFRESH_TOKEN_GRANT_TYPE = "refresh_token"
@@ -28,8 +30,8 @@ class RefreshToken @Inject constructor(
             .toSingle()
             .flatMap { cachedToken ->
                 when (cachedToken) {
-                    is UserToken -> { refreshUserToken(cachedToken) }
-                    is UserlessToken -> { refreshUserlessToken(cachedToken) }
+                    is UserToken -> refreshUserToken(cachedToken)
+                    is UserlessToken -> refreshUserlessToken(cachedToken)
                     else -> throw IllegalStateException("Unknown Token type")
                 }
             }
@@ -42,13 +44,9 @@ class RefreshToken @Inject constructor(
             authCredentialProvider.getAuthCredential()
         )
             .map { fetchedToken ->
-                UserlessToken(
-                    cachedToken.id,
-                    fetchedToken.accessToken,
-                    fetchedToken.type,
-                    cachedToken.deviceId
-                )
-            }.flatMap { updatedToken ->
+                tokenMapper.toUserlessToken(fetchedToken, cachedToken.id, cachedToken.deviceId)
+            }
+            .flatMap { updatedToken ->
                 tokenRepository.setUserlessToken(updatedToken)
                     .map { updatedToken }
             }
@@ -59,14 +57,8 @@ class RefreshToken @Inject constructor(
             REFRESH_TOKEN_GRANT_TYPE,
             cachedToken.refreshToken,
             authCredentialProvider.getAuthCredential()
-        ).map { fetchedToken ->
-            UserToken(
-                cachedToken.id,
-                fetchedToken.accessToken,
-                fetchedToken.type,
-                fetchedToken.refreshToken!!
-            )
-        }
+        )
+            .map { fetchedToken -> tokenMapper.toUserToken(fetchedToken, cachedToken.id) }
             .flatMap { updatedToken ->
                 tokenRepository.updateUserToken(updatedToken)
                     .andThen(Single.just(updatedToken))

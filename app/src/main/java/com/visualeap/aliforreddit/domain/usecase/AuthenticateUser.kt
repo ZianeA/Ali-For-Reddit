@@ -2,8 +2,8 @@ package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.data.network.auth.AuthService
 import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
-import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
+import com.visualeap.aliforreddit.domain.util.TokenResponseMapper
 import dagger.Reusable
 import io.reactivex.*
 import okhttp3.HttpUrl
@@ -14,7 +14,8 @@ import javax.inject.Inject
 class AuthenticateUser @Inject constructor(
     private val authService: AuthService,
     private val tokenRepository: TokenRepository,
-    private val authCredentialProvider: BasicAuthCredentialProvider
+    private val authCredentialProvider: BasicAuthCredentialProvider,
+    private val tokenMapper: TokenResponseMapper
 ) {
     companion object {
         private const val GRANT_TYPE = "authorization_code"
@@ -49,7 +50,7 @@ class AuthenticateUser @Inject constructor(
             redirectUrl,
             authCredentialProvider.getAuthCredential()
         )
-            .map { UserToken(0, it.accessToken, it.type, it.refreshToken!!) }
+            .map { tokenMapper.toUserToken(it, 0) }
             .flatMapCompletable { userToken ->
                 tokenRepository.addUserToken(userToken)
                     .flatMapCompletable { rowId -> tokenRepository.setCurrentToken(userToken.copy(id = rowId)) }

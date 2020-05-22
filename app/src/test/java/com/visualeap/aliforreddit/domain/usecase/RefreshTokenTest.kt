@@ -5,6 +5,7 @@ import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
+import com.visualeap.aliforreddit.domain.util.TokenResponseMapper
 import io.mockk.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -24,7 +25,8 @@ internal class RefreshTokenTest {
     private val authService: AuthService = mockk()
     private val tokenRepository: TokenRepository = mockk()
     private val authCredentialProvider: BasicAuthCredentialProvider = mockk(relaxed = true)
-    private val refreshToken = RefreshToken(authService, tokenRepository, authCredentialProvider)
+    private val refreshToken =
+        RefreshToken(authService, tokenRepository, authCredentialProvider, TokenResponseMapper())
 
     @BeforeEach
     internal fun setUp() {

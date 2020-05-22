@@ -4,6 +4,7 @@ import com.visualeap.aliforreddit.data.network.auth.AuthService
 import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.repository.TokenRepository
+import com.visualeap.aliforreddit.domain.util.TokenResponseMapper
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable
@@ -30,7 +31,12 @@ class AuthenticateUserTest {
     private val tokenRepository: TokenRepository = mockk()
     private val authCredentialProvider: BasicAuthCredentialProvider = mockk(relaxed = true)
     private val authenticateUser =
-        AuthenticateUser(authService, tokenRepository, authCredentialProvider)
+        AuthenticateUser(
+            authService,
+            tokenRepository,
+            authCredentialProvider,
+            TokenResponseMapper()
+        )
 
     @BeforeEach
     internal fun setUp() {
