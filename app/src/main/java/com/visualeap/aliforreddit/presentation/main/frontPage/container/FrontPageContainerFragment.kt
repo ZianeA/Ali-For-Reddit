@@ -10,7 +10,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.viewpager.widget.ViewPager
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.domain.model.Feed.DefaultFeed
+import com.visualeap.aliforreddit.domain.model.feed.DefaultFeed
 import com.visualeap.aliforreddit.presentation.main.DrawerController
 import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageFragment
 import com.visualeap.aliforreddit.presentation.main.login.BackButtonHandler

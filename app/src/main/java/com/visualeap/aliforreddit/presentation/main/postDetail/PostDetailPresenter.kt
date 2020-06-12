@@ -21,15 +21,17 @@ class PostDetailPresenter @Inject constructor(
     private val disposables = CompositeDisposable()
 
     fun start(post: PostView) {
-        view.showPost(post)
+        /*view.showPost(post)
 
         val disposable = commentRepository.getCommentsByPost(post.subreddit.name, post.id,
             { print(it.status) }, { it.message })
             .map(commentViewMapper::mapReverse)
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.showComments(it) }, { /*onError*/ })
+            .subscribe({ view.showComments(it) }, { *//*onError*//* })
 
-        disposables.add(disposable)
+        disposables.add(disposable)*/
+
+        TODO("Not implemented")
     }
 
     fun onCommentLongClicked(clickedComment: CommentView, allComments: List<CommentView>): Boolean {

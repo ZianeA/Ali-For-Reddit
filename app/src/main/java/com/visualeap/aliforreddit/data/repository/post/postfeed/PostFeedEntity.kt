@@ -6,9 +6,11 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.visualeap.aliforreddit.data.repository.feed.FeedEntity
 import com.visualeap.aliforreddit.data.repository.post.PostEntity
+import com.visualeap.aliforreddit.data.repository.sort.SortTypeEntity
+import com.visualeap.aliforreddit.domain.model.feed.SortType
 
 @Entity(
-    primaryKeys = ["postId", "feedName"],
+    primaryKeys = ["postId", "feedName", "sortType"],
     foreignKeys = [ForeignKey(
         entity = PostEntity::class,
         parentColumns = ["id"],
@@ -21,9 +23,17 @@ import com.visualeap.aliforreddit.data.repository.post.PostEntity
         childColumns = ["feedName"],
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE
+    ), ForeignKey(
+        entity = SortTypeEntity::class,
+        parentColumns = ["name"],
+        childColumns = ["sortType"],
+        onDelete = ForeignKey.CASCADE,
+        onUpdate = ForeignKey.CASCADE
     )]
 )
 data class PostFeedEntity(
     val postId: String,
-    @ColumnInfo(collate = ColumnInfo.NOCASE) val feedName: String
+    val feedName: String,
+    val sortType: SortType,
+    val rank: Int
 )

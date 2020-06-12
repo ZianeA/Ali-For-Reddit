@@ -12,8 +12,8 @@ class SubredditResponseMapper @Inject constructor() :
         return model.data.subredditHolders.map { subredditHolder ->
             subredditHolder.subreddit.run {
                 Subreddit(
-                    name,
                     id,
+                    name,
                     iconUrl,
                     if (primaryColor.isNullOrEmpty() || primaryColor.isBlank()) null else primaryColor, //TODO Unit test or refactor
                     if (keyColor.isNullOrEmpty() || keyColor.isBlank()) null else keyColor

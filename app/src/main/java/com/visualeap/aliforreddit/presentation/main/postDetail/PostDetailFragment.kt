@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
-import androidx.paging.PagedList
 import com.ncapdevi.fragnav.FragNavController
 
 import com.visualeap.aliforreddit.R
@@ -76,7 +75,8 @@ class PostDetailFragment : Fragment(), PostDetailView {
     }
 
     override fun showPost(post: PostView) {
-        epoxyController.post = post
+        // TODO
+//        epoxyController.post = post
         epoxyController.requestModelBuild()
     }
 
@@ -91,8 +91,8 @@ class PostDetailFragment : Fragment(), PostDetailView {
     companion object {
         private const val ARG_SELECTED_POST = "selected_post"
 
-        fun newInstance(selectedPost: PostView) = PostDetailFragment().apply {
+        fun newInstance(/*selectedPost: PostView*/) = PostDetailFragment()/*.apply {
             arguments = bundleOf(ARG_SELECTED_POST to selectedPost)
-        }
+        }*/
     }
 }

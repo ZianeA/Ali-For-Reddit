@@ -8,6 +8,7 @@ import io.reactivex.Single
 import retrofit2.http.*
 
 interface RedditService {
+    // TODO remove
     @GET("/r/{subreddit}")
     fun getPostsBySubreddit(
         @Path("subreddit") subredditName: String,
@@ -15,9 +16,11 @@ interface RedditService {
         @Query("after") after: String?
     ): Single<PostResponse>
 
+    // TODO remove
     @GET(".")
     fun getHomePosts(@Query("limit") limit: Int, @Query("after") after: String?): Single<PostResponse>
 
+    // TODO remove
     @GET("/api/info")
     fun getSubreddits(@Query("id") subredditIds: String): Single<SubredditResponse>
 

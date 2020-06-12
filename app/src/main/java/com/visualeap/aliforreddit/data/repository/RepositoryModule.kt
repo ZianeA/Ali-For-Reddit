@@ -1,20 +1,17 @@
 package com.visualeap.aliforreddit.data.repository
 
 import com.visualeap.aliforreddit.data.repository.account.AccountDataRepository
+import com.visualeap.aliforreddit.data.repository.afterkey.DbAfterKeyRepository
 import com.visualeap.aliforreddit.data.repository.comment.*
+import com.visualeap.aliforreddit.data.repository.feed.DbFeedRepository
 import com.visualeap.aliforreddit.data.repository.post.*
 import com.visualeap.aliforreddit.data.repository.redditor.*
-import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
-import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntityMapper
-import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
-import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponseMapper
+import com.visualeap.aliforreddit.data.repository.subreddit.*
 import com.visualeap.aliforreddit.data.repository.token.*
 import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Redditor
 import com.visualeap.aliforreddit.domain.model.Subreddit
-import com.visualeap.aliforreddit.domain.model.token.UserToken
-import com.visualeap.aliforreddit.domain.model.token.UserlessToken
 import com.visualeap.aliforreddit.domain.repository.*
 import com.visualeap.aliforreddit.domain.util.Mapper
 import dagger.Binds
@@ -23,7 +20,10 @@ import dagger.Module
 @Module
 interface RepositoryModule {
     @Binds
-    fun providePostRepository(postRepo: PostDataRepository): PostRepository
+    fun providePostRepository(postRepo: DbPostRepository): PostRepository
+
+    @Binds
+    fun provideSubredditRepository(subredditRepo: DbSubredditRepository): SubredditRepository
 
     @Binds
     fun provideAccountRepository(accountRepo: AccountDataRepository): AccountRepository
@@ -38,7 +38,10 @@ interface RepositoryModule {
     fun provideCommentRepository(commentRepo: CommentDataRepository): CommentRepository
 
     @Binds
-    fun providePostWithSubredditEntityMapper(mapper: PostWithSubredditEntityMapper): Mapper<PostWithSubredditEntity, Post>
+    fun provideFeedRepository(feedRepo: DbFeedRepository): FeedRepository
+
+    @Binds
+    fun provideAfterKeyRepository(afterKeyRepo: DbAfterKeyRepository): AfterKeyRepository
 
     @Binds
     fun providePostWithSubredditResponseMapper(mapper: PostWithSubredditResponseMapper): Mapper<PostWithSubredditResponse, List<Post>>
@@ -60,7 +63,4 @@ interface RepositoryModule {
 
     @Binds
     fun provideCommentEntityMapper(mapper: CommentEntityMapper): Mapper<List<CommentEntity>, List<Comment>>
-
-    @Binds
-    fun provideNextPageKeyStore(store: NextPageKeyStore): KeyValueStore<String?>
 }

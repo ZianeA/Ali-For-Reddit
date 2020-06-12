@@ -5,6 +5,7 @@ import com.visualeap.aliforreddit.data.network.auth.TokenInterceptor
 import com.visualeap.aliforreddit.domain.usecase.FetchToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import com.visualeap.aliforreddit.presentation.common.ResourceProvider
+import com.visualeap.aliforreddit.util.createMockChain
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import util.domain.createMockChain
 import util.domain.createToken
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

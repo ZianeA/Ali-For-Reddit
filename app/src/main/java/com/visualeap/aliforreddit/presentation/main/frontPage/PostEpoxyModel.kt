@@ -1,10 +1,8 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
-import android.text.format.DateUtils.*
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,26 +12,24 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.bumptech.glide.Glide
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.domain.model.Post
-import com.visualeap.aliforreddit.domain.model.Subreddit
-import com.visualeap.aliforreddit.presentation.model.PostView
 import com.visualeap.aliforreddit.presentation.util.KotlinEpoxyHolder
-import com.visualeap.aliforreddit.presentation.util.formatTimestamp
-import java.util.concurrent.TimeUnit
 
 @EpoxyModelClass(layout = R.layout.item_post)
 abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
     @EpoxyAttribute
-    lateinit var post: PostView
+    lateinit var post: FeedPostDto
 
     @EpoxyAttribute
-    lateinit var listener: View.OnClickListener
+    lateinit var bindListener: () -> Unit
+
+    @EpoxyAttribute
+    lateinit var clickListener: View.OnClickListener
 
     @EpoxyAttribute
     var maxLines: Int = 0
 
     override fun bind(holder: PostHolder) {
-        val subreddit = post.subreddit
+        bindListener()
 
         holder.postTitle.text = post.title
         holder.postText.maxLines = maxLines
@@ -50,22 +46,22 @@ abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
         )
         holder.postScore.text = post.score
         holder.postCommentCount.text = post.commentCount
-        holder.subredditName.text = subreddit.name
-        holder.view.setOnClickListener(listener)
+        holder.subredditName.text = post.subreddit
+        holder.view.setOnClickListener(clickListener)
 
         //Subreddits' icons have no alpha/transparency.
         holder.subredditImage.background.setColorFilter(
-            Color.parseColor(subreddit.color),
+            Color.parseColor(post.subredditColor),
             PorterDuff.Mode.MULTIPLY
         )
 
-        if (subreddit.iconUrl.isNullOrEmpty()) {
+        if (post.subredditIconUrl.isNullOrEmpty()) {
             //If a subreddit has no icon we use a default subreddit icon.
             holder.subredditImage.scaleType = ImageView.ScaleType.CENTER
             holder.subredditImage.setImageDrawable(holder.defaultSubredditIcon)
         } else {
             Glide.with(holder.view)
-                .load(subreddit.iconUrl)
+                .load(post.subredditIconUrl)
                 .into(holder.subredditImage);
         }
     }

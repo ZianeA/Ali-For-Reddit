@@ -10,6 +10,6 @@ data class Post(
     val text: String,
     val score: Int,
     val commentCount: Int,
-    val subreddit: Subreddit,
+    val subredditId: String,
     val created: Long
 )

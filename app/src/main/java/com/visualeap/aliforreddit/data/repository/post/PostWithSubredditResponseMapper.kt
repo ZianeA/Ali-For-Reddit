@@ -35,7 +35,7 @@ class PostWithSubredditResponseMapper @Inject constructor(
         //map List<PostHolder> to List<Post>. And use the index to fetch the corresponding subreddit. This, of course, assumes that the two lists are in sync.
         //Or, I can use the find method. It's less performant but more practical.
         //I can also convert the list to a dictionary for faster lookup, however I'm not sure if the memory allocation is worth it.
-        val subredditList = subredditMapper.map(model.subredditResponse)
+        /*val subredditList = subredditMapper.map(model.subredditResponse)
         return model.postResponse.data.postHolders.map { postHolder ->
             postHolder.post.run {
                 Post(
@@ -49,6 +49,8 @@ class PostWithSubredditResponseMapper @Inject constructor(
                     created
                 )
             }
-        }
+        }*/
+
+        TODO("Not Implemented")
     }
 }

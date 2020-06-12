@@ -1,15 +1,13 @@
 package com.visualeap.aliforreddit.data.repository.token
 
-import com.visualeap.aliforreddit.data.cache.RedditDatabase
+import com.visualeap.aliforreddit.data.database.RedditDatabase
 import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity.*
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested

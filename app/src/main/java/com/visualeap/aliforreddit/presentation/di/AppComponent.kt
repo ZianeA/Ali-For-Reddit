@@ -1,7 +1,7 @@
 package com.visualeap.aliforreddit.presentation.di
 
 import android.app.Application
-import com.visualeap.aliforreddit.data.cache.DatabaseModule
+import com.visualeap.aliforreddit.data.database.DatabaseModule
 import com.visualeap.aliforreddit.data.network.NetworkModule
 import com.visualeap.aliforreddit.presentation.AliForRedditApp
 import com.visualeap.aliforreddit.presentation.util.SchedulerProviderModule

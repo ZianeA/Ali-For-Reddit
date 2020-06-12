@@ -1,12 +1,12 @@
 package com.visualeap.aliforreddit.domain.util
 
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Observable
-import io.reactivex.Single
+import io.reactivex.*
 
 fun <T> Observable<T>.applySchedulers(provider: SchedulerProvider): Observable<T> =
+    subscribeOn(provider.worker).observeOn(provider.main)
+
+fun <T> Flowable<T>.applySchedulers(provider: SchedulerProvider): Flowable<T> =
     subscribeOn(provider.worker).observeOn(provider.main)
 
 fun <T> Single<T>.applySchedulers(provider: SchedulerProvider): Single<T> =

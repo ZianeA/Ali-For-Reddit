@@ -3,6 +3,7 @@ package com.visualeap.aliforreddit.presentation.main.postDetail
 import android.view.View
 import com.airbnb.epoxy.AsyncEpoxyController
 import com.visualeap.aliforreddit.domain.model.Comment
+import com.visualeap.aliforreddit.presentation.main.frontPage.FeedPostDto
 import com.visualeap.aliforreddit.presentation.main.frontPage.PostEpoxyModel_
 import com.visualeap.aliforreddit.presentation.model.CommentView
 import com.visualeap.aliforreddit.presentation.model.PostView
@@ -15,13 +16,13 @@ class PostDetailEpoxyController(private val onCommentLongClickListener: ((longCl
             requestModelBuild()
         }
 
-    lateinit var post: PostView
+    lateinit var post: FeedPostDto
 
     override fun buildModels() {
         PostEpoxyModel_()
             .id(post.id)
             .post(post)
-            .listener(View.OnClickListener { }) //TODO refactor
+            .clickListener(View.OnClickListener { }) //TODO refactor
             .maxLines(Int.MAX_VALUE)
             .addTo(this)
 

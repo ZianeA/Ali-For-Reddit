@@ -29,7 +29,7 @@ internal class PostDetailPresenterTest {
         clearAllMocks()
     }
 
-    @Nested
+    /*@Nested
     inner class Start {
         @Test
         fun `display post`() {
@@ -74,7 +74,7 @@ internal class PostDetailPresenterTest {
             //Assert
             verify { view.showComments(commentViews) }
         }
-    }
+    }*/
 
     @Nested
     inner class OnCommentLongClicked {

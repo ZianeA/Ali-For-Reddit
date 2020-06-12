@@ -1,54 +1,45 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage
 
-import com.jakewharton.rxrelay2.BehaviorRelay
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.visualeap.aliforreddit.SyncSchedulerProvider
-import com.visualeap.aliforreddit.domain.model.Post
-import com.visualeap.aliforreddit.domain.repository.Listing
-import com.visualeap.aliforreddit.domain.repository.NetworkState
+import com.visualeap.aliforreddit.data.repository.afterkey.DbAfterKeyRepository
+import com.visualeap.aliforreddit.data.repository.feed.DbFeedRepository
+import com.visualeap.aliforreddit.data.repository.post.DbPostRepository
+import com.visualeap.aliforreddit.data.repository.subreddit.DbSubredditRepository
 import com.visualeap.aliforreddit.domain.repository.PostRepository
-import com.visualeap.aliforreddit.util.mockPagedList
+import com.visualeap.aliforreddit.domain.usecase.FetchFeedPosts
+import com.visualeap.aliforreddit.util.fake.FakePostWebService
+import com.visualeap.aliforreddit.util.fake.FakeSubredditWebService
 import io.mockk.*
-import io.mockk.junit5.MockKExtension
-import io.reactivex.Observable
-import io.reactivex.Single
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.extension.ExtendWith
-import util.domain.createPost
+import org.junit.Before
+import org.junit.Rule
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import util.domain.createDatabase
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(MockKExtension::class)
+@RunWith(RobolectricTestRunner::class)
 class FrontPagePresenterTest {
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
     private val view: FrontPageView = mockk()
-    private val repository: PostRepository = mockk()
+    private lateinit var fetchFeedPosts: FetchFeedPosts
     private lateinit var presenter: FrontPagePresenter
 
-    @BeforeEach
+    @Before
     internal fun setUp() {
-        clearAllMocks()
-        presenter = FrontPagePresenter(view, repository, SyncSchedulerProvider())
+        val db = createDatabase()
+        fetchFeedPosts = FetchFeedPosts(
+            DbPostRepository(db, db.postDao(), db.postFeedDao()),
+            DbSubredditRepository(db.subredditDao()),
+            FakePostWebService(),
+            FakeSubredditWebService(),
+            DbAfterKeyRepository(db.feedAfterKeyDao()),
+            DbFeedRepository(db.feedDao())
+        )
+
+        presenter = FrontPagePresenter(view, fetchFeedPosts, SyncSchedulerProvider())
     }
 
-    //TODO rewrite
-    /*@Nested
-    inner class Start {
-        @Test
-        fun `pass a PagedList of post to view`() {
-            //Arrange
-            val pagedList = mockPagedList(listOf(createPost()))
-            every { repository.getHomePosts(false) } returns Single.just(Listing(
-                Observable.just(pagedList),
-                BehaviorRelay.create()
-            ) {})
-            every { view.displayPosts(any()) } just runs
 
-            //Act
-            presenter.start()
-
-            //Assert
-            verify { view.displayPosts(pagedList) }
-        }
-    }*/
 }

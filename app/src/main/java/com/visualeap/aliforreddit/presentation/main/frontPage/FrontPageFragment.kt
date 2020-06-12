@@ -7,11 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.paging.PagedList
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.domain.model.Feed.DefaultFeed
+import com.visualeap.aliforreddit.domain.model.feed.DefaultFeed
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.presentation.main.postDetail.PostDetailFragment
@@ -40,9 +41,8 @@ class FrontPageFragment : Fragment(), FrontPageView {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_home, container, false)
 
-        epoxyController = FrontPageEpoxyController(postViewMapper) {
-            //TODO Refactor, move to presenter
-            fragNavController.pushFragment(PostDetailFragment.newInstance(it))
+        epoxyController = FrontPageEpoxyController(presenter::onPostBound) {
+            fragNavController.pushFragment(PostDetailFragment.newInstance(/*it*/))
         }
 
         recyclerView = rootView.frontPageRecyclerView
@@ -66,11 +66,12 @@ class FrontPageFragment : Fragment(), FrontPageView {
         presenter.stop()
     }
 
-    override fun displayPosts(posts: PagedList<Post>) {
+    override fun displayPosts(posts: List<FeedPostDto>) {
         if (recyclerView.adapter == null) {
             recyclerView.setController(epoxyController)
         }
-        epoxyController.submitList(posts)
+        epoxyController.posts = posts
+        epoxyController.requestModelBuild()
     }
 
     private val feed: DefaultFeed

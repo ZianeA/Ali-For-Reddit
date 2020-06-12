@@ -4,13 +4,13 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import se.ansman.kotshi.JsonSerializable
 
-/*@JsonClass(generateAdapter = true)*/@JsonSerializable
+@JsonSerializable
 data class PostResponse(val data: Data) {
-    /*@JsonClass(generateAdapter = true)*/@JsonSerializable
-    data class Data(@Json(name = "after") val afterKey: String, @Json(name = "children") val postHolders: List<PostHolder>) {
-        /*@JsonClass(generateAdapter = true)*/@JsonSerializable
+    @JsonSerializable
+    data class Data(@Json(name = "after") val afterKey: String?, @Json(name = "children") val postHolders: List<PostHolder>) {
+        @JsonSerializable
         data class PostHolder(@Json(name = "data") val post: Post) {
-            /*@JsonClass(generateAdapter = true)*/@JsonSerializable
+            @JsonSerializable
             data class Post(
                 @Json(name = "name") val id: String,
                 @Json(name = "author") val authorName: String,

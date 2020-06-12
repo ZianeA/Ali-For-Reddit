@@ -3,7 +3,7 @@ package com.visualeap.aliforreddit.data.repository.comment
 import androidx.room.Room
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
-import com.visualeap.aliforreddit.data.cache.RedditDatabase
+import com.visualeap.aliforreddit.data.database.RedditDatabase
 import com.visualeap.aliforreddit.data.repository.post.PostDao
 import io.reactivex.Completable
 import org.junit.After

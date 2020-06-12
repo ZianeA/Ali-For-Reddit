@@ -5,6 +5,7 @@ import com.visualeap.aliforreddit.data.network.auth.TokenAuthenticator
 import com.visualeap.aliforreddit.domain.usecase.RefreshToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
 import com.visualeap.aliforreddit.presentation.common.ResourceProvider
+import com.visualeap.aliforreddit.util.createResponse
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -18,8 +19,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import util.domain.createRequest
-import util.domain.createResponse
 import util.domain.createToken
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

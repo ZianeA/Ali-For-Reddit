@@ -1,25 +1,12 @@
 package com.visualeap.aliforreddit.data.repository.post
 
-import androidx.room.Room
-import androidx.room.paging.LimitOffsetDataSource
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import com.visualeap.aliforreddit.data.cache.RedditDatabase
-import com.visualeap.aliforreddit.domain.model.Feed.DefaultFeed
-import com.visualeap.aliforreddit.data.repository.feed.FeedDao
-import com.visualeap.aliforreddit.data.repository.feed.FeedEntity
-import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedDao
-import com.visualeap.aliforreddit.data.repository.post.postfeed.PostFeedEntity
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
-import util.domain.*
 
 @RunWith(AndroidJUnit4::class)
 class PostFeedDaoTest {
-    private lateinit var postDao: PostDao
+    //TODO
+    /*private lateinit var postDao: PostDao
     private lateinit var feedDao: FeedDao
     private lateinit var postFeedDao: PostFeedDao
     private lateinit var db: RedditDatabase
@@ -120,5 +107,5 @@ class PostFeedDaoTest {
 
         //Assert
         Assert.assertEquals(listOf(createPostWithSubreddit(homePost)), posts)
-    }
+    }*/
 }

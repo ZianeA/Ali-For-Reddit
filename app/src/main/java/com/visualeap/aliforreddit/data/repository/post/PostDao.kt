@@ -1,28 +1,45 @@
 package com.visualeap.aliforreddit.data.repository.post
 
-import androidx.paging.DataSource
 import androidx.room.*
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
+import com.visualeap.aliforreddit.domain.model.feed.Feed
+import com.visualeap.aliforreddit.domain.model.feed.SortType
 import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.Maybe
+import io.reactivex.Observable
 
 @Dao
 interface PostDao {
     @Query("SELECT * FROM PostEntity")
-    fun getAll(): DataSource.Factory<Int, PostWithSubredditEntity>
+    fun getAll(): Observable<List<PostEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addAll(
-        subreddits: List<SubredditEntity>,
-        posts: List<PostEntity>
+    @Query(
+        """
+        SELECT * 
+        FROM PostEntity
+        INNER JOIN PostFeedEntity  
+        ON PostEntity.id = postId 
+        WHERE feedName = :feed AND sortType = :sortType AND rank >= :offset
+        ORDER BY rank
+        LIMIT :limit
+        """
     )
+    fun getByFeed(
+        feed: String,
+        sortType: SortType,
+        offset: Int,
+        limit: Int
+    ): Flowable<List<PostEntity>>
 
-    // Since Posts can have the same author/redditor, inserting a PostEntity along with its RedditorEntity can result in a conflict if the redditor already exists in the database.
-    // Since Posts can be from the same subreddit, inserting a PostEntity along with its SubredditEntity can result in a conflict if the subreddit is already cached.
-    // One solution is to just replace, but this is also problematic see https://stackoverflow.com/questions/45677230/android-room-persistence-library-upsert
-    // This is why I opted for the current solution.
+    // TODO use upsert
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun add(subreddit: SubredditEntity, post: PostEntity)
+    fun add(post: PostEntity): Completable
+
+    // TODO use upsert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun addAll(posts: List<PostEntity>)
 
     @Query("DELETE FROM PostEntity")
     fun deleteAll(): Completable

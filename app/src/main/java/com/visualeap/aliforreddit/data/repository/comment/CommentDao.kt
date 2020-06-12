@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.data.repository.comment
 
-import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy

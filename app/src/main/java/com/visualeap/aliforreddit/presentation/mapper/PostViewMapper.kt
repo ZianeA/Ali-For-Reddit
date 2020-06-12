@@ -18,16 +18,18 @@ class PostViewMapper @Inject constructor(private val subredditViewMapper: Mapper
     }
 
     override fun mapReverse(model: Post): PostView = model.run {
-        PostView(
+        /*PostView(
             id,
             "$USER_PREFIX$authorName",
             title,
             text,
             formatCount(score),
             formatCount(commentCount),
-            subredditViewMapper.mapReverse(subreddit),
+            subredditViewMapper.mapReverse(subredditId),
             formatTimestamp(created)
-        )
+        )*/
+
+        TODO("Not implemented")
     }
 
     companion object{

@@ -11,8 +11,8 @@ class SubredditEntityMapper @Inject constructor() :
     override fun map(model: SubredditEntity): Subreddit {
         return model.run {
             Subreddit(
-                name,
                 id,
+                name,
                 iconUrl,
                 if (primaryColor.isNullOrEmpty() || primaryColor.isBlank()) null else primaryColor, //TODO Unit test or refactor
                 if (keyColor.isNullOrEmpty() || keyColor.isBlank()) null else keyColor
@@ -21,6 +21,6 @@ class SubredditEntityMapper @Inject constructor() :
     }
 
     override fun mapReverse(model: Subreddit): SubredditEntity {
-        return model.run { SubredditEntity(name, id, iconUrl, primaryColor, keyColor) }
+        return model.run { SubredditEntity(id, name, iconUrl, primaryColor, keyColor) }
     }
 }

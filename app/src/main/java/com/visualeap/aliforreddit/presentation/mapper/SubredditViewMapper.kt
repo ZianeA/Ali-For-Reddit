@@ -13,7 +13,7 @@ class SubredditViewMapper @Inject constructor() : Mapper<SubredditView, Subreddi
     }
 
     override fun mapReverse(model: Subreddit): SubredditView = model.run {
-        SubredditView("r/$name", id, iconUrl, primaryColor ?: keyColor ?: DEFAULT_COLOR)
+        SubredditView(id, "r/$name", iconUrl, primaryColor ?: keyColor ?: DEFAULT_COLOR)
     }
 
     companion object {

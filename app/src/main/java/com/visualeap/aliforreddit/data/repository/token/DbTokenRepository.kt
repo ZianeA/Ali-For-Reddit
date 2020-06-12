@@ -1,8 +1,6 @@
 package com.visualeap.aliforreddit.data.repository.token
 
-import com.visualeap.aliforreddit.data.cache.RedditDatabase
-import com.visualeap.aliforreddit.data.cache.RedditDatabase.Companion.NOT_SET_ROW_ID
-import com.visualeap.aliforreddit.data.cache.RedditDatabase.Companion.SINGLE_RECORD_ID
+import com.visualeap.aliforreddit.data.database.RedditDatabase
 import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity.*
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
@@ -12,7 +10,6 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import java.lang.IllegalArgumentException
-import java.util.concurrent.Callable
 import javax.inject.Inject
 import javax.inject.Singleton
 

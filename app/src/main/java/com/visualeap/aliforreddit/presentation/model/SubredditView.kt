@@ -5,8 +5,8 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class SubredditView(
-    val name: String,
     val id: String,
+    val name: String,
     val iconUrl: String?,
     val color: String
 ) : Parcelable

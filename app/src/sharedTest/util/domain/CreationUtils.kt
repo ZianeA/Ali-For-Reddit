@@ -2,16 +2,13 @@ package util.domain
 
 import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity
 import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity.*
-import com.visualeap.aliforreddit.data.repository.token.TokenEntity
-import com.visualeap.aliforreddit.data.repository.token.UserTokenEntity
-import com.visualeap.aliforreddit.data.repository.token.UserlessTokenEntity
 import com.visualeap.aliforreddit.data.repository.token.TokenResponse
 import com.visualeap.aliforreddit.data.repository.comment.CommentEntity
 import com.visualeap.aliforreddit.data.repository.comment.CommentResponse
+import com.visualeap.aliforreddit.data.repository.feed.FeedEntity
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.repository.post.PostEntity
 import com.visualeap.aliforreddit.data.repository.post.PostResponse
-import com.visualeap.aliforreddit.data.repository.post.PostWithSubredditEntity
 import com.visualeap.aliforreddit.data.repository.post.PostWithSubredditResponse
 import com.visualeap.aliforreddit.data.repository.redditor.RedditorResponse
 import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
@@ -25,9 +22,6 @@ import com.visualeap.aliforreddit.presentation.model.PostView
 import com.visualeap.aliforreddit.presentation.model.SubredditView
 import com.visualeap.aliforreddit.presentation.util.formatCount
 import com.visualeap.aliforreddit.presentation.util.formatTimestamp
-import io.mockk.every
-import io.mockk.mockk
-import okhttp3.*
 import kotlin.random.Random
 
 const val ACCESS_TOKEN = "ACCESS TOKEN"
@@ -66,18 +60,6 @@ fun createTokenResponse(
     type: String = TOKEN_TYPE,
     refreshToken: String? = REFRESH_TOKEN
 ) = TokenResponse(accessToken, type, refreshToken)
-
-fun createTokenEntity(
-    id: Int = ID,
-    accessToken: String = ACCESS_TOKEN,
-    type: String = TOKEN_TYPE
-) = TokenEntity(id, accessToken, type)
-
-fun createUserTokenEntity(id: Int = ID, refreshToken: String = REFRESH_TOKEN) =
-    UserTokenEntity(id, refreshToken)
-
-fun createUserlessTokenEntity(id: Int = ID, deviceId: String = DEVICE_ID) =
-    UserlessTokenEntity(id, deviceId)
 
 fun createCurrentTokenEntity(
     id: Int = SINGLE_RECORD_ID,
@@ -143,26 +125,26 @@ private const val SUBREDDIT_PRIMARY_COLOR = "#ffffff"
 private const val SUBREDDIT_KEY_COLOR = "#000000"
 
 fun createSubreddit(
-    name: String = SUBREDDIT_NAME,
     id: String = SUBREDDIT_ID,
+    name: String = SUBREDDIT_NAME,
     iconUrl: String? = SUBREDDIT_ICON_URL,
     primaryColor: String? = SUBREDDIT_PRIMARY_COLOR,
     keyColor: String? = SUBREDDIT_KEY_COLOR
 ) =
-    Subreddit(name, id, iconUrl, primaryColor, keyColor)
+    Subreddit(id, name, iconUrl, primaryColor, keyColor)
 
 fun createSubredditEntity(
-    name: String = SUBREDDIT_NAME,
     id: String = SUBREDDIT_ID,
+    name: String = SUBREDDIT_NAME,
     iconUrl: String? = SUBREDDIT_ICON_URL,
     primaryColor: String? = SUBREDDIT_PRIMARY_COLOR,
     keyColor: String? = SUBREDDIT_KEY_COLOR
 ) =
-    SubredditEntity(name, id, iconUrl, primaryColor, keyColor)
+    SubredditEntity(id, name, iconUrl, primaryColor, keyColor)
 
 fun createSubredditResponse(
-    name: String = SUBREDDIT_NAME,
     id: String = SUBREDDIT_ID,
+    name: String = SUBREDDIT_NAME,
     iconUrl: String? = SUBREDDIT_ICON_URL,
     primaryColor: String? = SUBREDDIT_PRIMARY_COLOR,
     keyColor: String? = SUBREDDIT_KEY_COLOR
@@ -171,8 +153,8 @@ fun createSubredditResponse(
         listOf(
             SubredditResponse.Data.SubredditHolder(
                 SubredditResponse.Data.SubredditHolder.Subreddit(
-                    name,
                     id,
+                    name,
                     iconUrl,
                     primaryColor,
                     keyColor
@@ -183,11 +165,11 @@ fun createSubredditResponse(
 )
 
 fun createSubredditView(
-    name: String = "r/$SUBREDDIT_NAME",
     id: String = SUBREDDIT_ID,
+    name: String = "r/$SUBREDDIT_NAME",
     iconUrl: String? = SUBREDDIT_ICON_URL,
     color: String = SUBREDDIT_PRIMARY_COLOR
-) = SubredditView(name, id, iconUrl, color)
+) = SubredditView(id, name, iconUrl, color)
 //endregion
 
 //region Post
@@ -205,9 +187,9 @@ fun createPost(
     text: String = POST_TEXT,
     score: Int = POST_SCORE,
     commentCount: Int = POST_COMMENT_COUNT,
-    subreddit: Subreddit = createSubreddit(),
+    subredditId: String = SUBREDDIT_ID,
     created: Long = POST_CREATED
-) = Post(id, authorName, title, text, score, commentCount, subreddit, created)
+) = Post(id, authorName, title, text, score, commentCount, subredditId, created)
 
 fun createPostEntity(
     id: String = POST_ID,
@@ -216,14 +198,9 @@ fun createPostEntity(
     text: String = POST_TEXT,
     score: Int = POST_SCORE,
     commentCount: Int = POST_COMMENT_COUNT,
-    subredditName: String = SUBREDDIT_NAME,
+    subredditId: String = SUBREDDIT_ID,
     created: Long = POST_CREATED
-) = PostEntity(id, authorName, title, text, score, commentCount, subredditName, created)
-
-fun createPostWithSubreddit(
-    postEntity: PostEntity = createPostEntity(),
-    subredditEntity: SubredditEntity = createSubredditEntity()
-) = PostWithSubredditEntity(postEntity, subredditEntity)
+) = PostEntity(id, authorName, title, text, score, commentCount, subredditId, created)
 
 fun createPostResponse(
     afterKey: String = "FAKE_AFTER_KEY",
@@ -369,31 +346,8 @@ fun createCommentView(
 )
 //endregion
 
-//region OkHttp Chain
-fun createResponse(request: Request = createRequest()): Response {
-    return Response.Builder()
-        .request(request)
-        .protocol(Protocol.HTTP_2)
-        .code(401)
-        .message("")
-        .build()
-}
-
-fun createMockChain(): Interceptor.Chain {
-    val chain: Interceptor.Chain = mockk()
-
-    every { chain.request() } returns createRequest()
-    every { chain.proceed(any()) } answers { createResponse(firstArg()) }
-
-    return chain
-}
-
-fun createRequest(): Request {
-    return Request.Builder()
-        .url("https://www.example.com")
-        .build()
-}
-//endregion
+const val FEED_NAME = "FAKE_FEED"
+fun createFeedEntity(name: String = FEED_NAME) = FeedEntity(name)
 
 val randomInteger: Int
     get() = Random.nextInt()

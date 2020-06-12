@@ -6,7 +6,6 @@ import android.R.id
 import android.view.View
 import com.airbnb.epoxy.EpoxyAsyncUtil
 import com.airbnb.epoxy.EpoxyModel
-import com.airbnb.epoxy.paging.PagedListEpoxyController
 import com.visualeap.aliforreddit.domain.model.Redditor
 import com.visualeap.aliforreddit.domain.model.Subreddit
 import com.visualeap.aliforreddit.domain.util.Mapper
@@ -16,24 +15,24 @@ import java.util.concurrent.Executor
 
 
 class FrontPageEpoxyController(
-    private val postViewMapper: Mapper<PostView, Post>,
-    private val onPostClickListener: ((clickedPost: PostView) -> Unit)
-) :
-    PagedListEpoxyController<Post>(
-        diffingHandler = EpoxyAsyncUtil.getAsyncBackgroundHandler()
-    ) {
-    override fun buildItemModel(currentPosition: Int, item: Post?): EpoxyModel<*> {
-        //Placeholders are disabled so item is not null
-        val postView = postViewMapper.mapReverse(item!!)
+    private val onBindPostListener: (position: Int) -> Unit,
+    private val onPostClickListener: ((clickedPost: FeedPostDto) -> Unit)
+) : AsyncEpoxyController() {
+    var posts = listOf<FeedPostDto>()
 
-        return PostEpoxyModel_()
-            .id(postView.id)
-            .post(postView)
-            .listener(View.OnClickListener { onPostClickListener.invoke(postView) })
-            .maxLines(POST_TEXT_MAX_LINES)
+    override fun buildModels() {
+        posts.forEachIndexed { index, postDto ->
+            post {
+                id(postDto.id)
+                post(postDto)
+                bindListener { onBindPostListener(index) }
+                clickListener(View.OnClickListener { onPostClickListener.invoke(postDto) })
+                maxLines(POST_TEXT_MAX_LINES)
+            }
+        }
     }
 
-    companion object{
+    companion object {
         private const val POST_TEXT_MAX_LINES = 3
     }
 }

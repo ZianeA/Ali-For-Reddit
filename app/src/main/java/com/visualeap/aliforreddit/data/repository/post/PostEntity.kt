@@ -9,8 +9,8 @@ import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
 @Entity(
     foreignKeys = [ForeignKey(
         entity = SubredditEntity::class,
-        parentColumns = ["name"],
-        childColumns = ["subredditName"],
+        parentColumns = ["id"],
+        childColumns = ["subredditId"],
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE
     )]
@@ -22,6 +22,6 @@ data class PostEntity(
     val text: String,
     val score: Int,
     val commentCount: Int,
-    val subredditName: String,
+    val subredditId: String,
     val created: Long
 )
