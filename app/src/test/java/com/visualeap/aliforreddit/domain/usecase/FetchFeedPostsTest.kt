@@ -6,6 +6,7 @@ import com.visualeap.aliforreddit.data.repository.afterkey.DbAfterKeyRepository
 import com.visualeap.aliforreddit.data.repository.feed.DbFeedRepository
 import com.visualeap.aliforreddit.data.repository.post.DbPostRepository
 import com.visualeap.aliforreddit.data.repository.subreddit.DbSubredditRepository
+import com.visualeap.aliforreddit.domain.model.AfterKey
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.feed.SortType
 import com.visualeap.aliforreddit.domain.repository.AfterKeyRepository
@@ -282,11 +283,16 @@ internal class FetchFeedPostsTest {
     @Test
     fun `when the end of the cached items is reached, should load more`() {
         //Arrange
-        val localPost = createPost(id = "1", title = "Local Post")
-        postRepository.addPosts(listOf(localPost), FEED_NAME, SortType.Best).blockingGet()
+        afterKeyRepository.setAfterKey(FEED_NAME, SortType.Best, AfterKey.Next("1")).blockingGet()
 
-        val remotePost = createPost(id = "2", title = "Remote Post")
-        postService.addPost(FEED_NAME, remotePost)
+        val remotePost = createPost(id = "2", title = "Next Remote Post")
+        postService.addPosts(
+            FEED_NAME,
+            listOf(createPost(id = "1", title = "Remote"), remotePost)
+        )
+
+        postRepository.addPosts(listOf(createPost(id = "1")), FEED_NAME, SortType.Best)
+            .blockingGet()
 
         //Act and assert
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 1, 1)
@@ -317,6 +323,18 @@ internal class FetchFeedPostsTest {
     }
 
     @Test
+    fun `when the end of the remote items is reached, after key should be end`() {
+        //Act
+        fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 2)
+            .test()
+            .assertNoErrors()
+
+        afterKeyRepository.getAfterKey(FEED_NAME, SortType.Best)
+            .test()
+            .assertValue(match { assertThat(it).isEqualTo(AfterKey.End) })
+    }
+
+    @Test
     fun `return posts by feed`() {
         //Arrange
         postService.addPosts(FEED_NAME, listOf(createPost(id = "1"), createPost(id = "2")))
@@ -325,7 +343,7 @@ internal class FetchFeedPostsTest {
         postService.addPosts("FakeFeed2", feedPosts)
 
         //Act and assert
-        fetchFeedPosts.execute("FakeFeed2", SortType.Best, 0, 10)
+        fetchFeedPosts.execute("FakeFeed2", SortType.Best, 0, 2)
             .test()
             .assertValueAt(1, match {
                 assertThat(it.items).extracting<Post> { it.second }

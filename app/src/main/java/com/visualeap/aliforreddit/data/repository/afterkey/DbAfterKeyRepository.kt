@@ -10,25 +10,30 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Reusable
-class DbAfterKeyRepository @Inject constructor(private val feedAfterKeyDao: FeedAfterKeyDao) : AfterKeyRepository {
+class DbAfterKeyRepository @Inject constructor(private val feedAfterKeyDao: FeedAfterKeyDao) :
+    AfterKeyRepository {
+    companion object {
+        private const val END = "End"
+    }
+
     override fun setAfterKey(feed: String, sortType: SortType, afterKey: AfterKey): Completable {
         return Single.fromCallable {
             when (afterKey) {
                 is AfterKey.Next -> afterKey.value
-                AfterKey.End -> ""
+                AfterKey.End -> END
                 AfterKey.Empty -> throw IllegalArgumentException("Can't set after key to empty.")
             }
         }
-            .flatMapCompletable { key -> feedAfterKeyDao.add(FeedAfterKeyEntity(feed, sortType, key)) }
+            .flatMapCompletable { key ->
+                feedAfterKeyDao.add(FeedAfterKeyEntity(feed, sortType, key))
+            }
     }
 
     override fun getAfterKey(feed: String, sortType: SortType): Single<AfterKey> {
         return Single.fromCallable<AfterKey> {
-            val key = feedAfterKeyDao.get("FAKE_FEED", SortType.Best)
-
-            when {
-                key == null -> AfterKey.Empty
-                key.isBlank() -> AfterKey.End
+            when (val key = feedAfterKeyDao.get(feed, sortType)) {
+                null -> AfterKey.Empty
+                END -> AfterKey.End
                 else -> AfterKey.Next(key)
             }
         }

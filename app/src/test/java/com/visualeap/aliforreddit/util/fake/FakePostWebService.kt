@@ -43,7 +43,7 @@ class FakePostWebService : PostWebService {
             PostResponse(
                 PostResponse.Data(
                     afterKey?.toString(),
-                    posts.subList(0, toIndex).map { PostResponse.Data.PostHolder(it) }
+                    posts.subList(fromIndex, toIndex).map { PostResponse.Data.PostHolder(it) }
                 )
             )
         }

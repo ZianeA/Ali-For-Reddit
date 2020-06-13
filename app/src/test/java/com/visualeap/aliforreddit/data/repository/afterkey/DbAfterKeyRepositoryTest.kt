@@ -75,4 +75,21 @@ internal class DbAfterKeyRepositoryTest {
             .test()
             .assertFailure(IllegalArgumentException::class.java)
     }
+
+    @Test
+    fun `should return key by feed and sort type`() {
+        //Arrange
+        afterKeyRepository.setAfterKey(FEED_NAME, SortType.Best, AfterKey.Next("FakeAfterKey"))
+            .blockingGet()
+
+        val newFeed = "MyFeed"
+        db.feedDao().add(createFeedEntity(name = newFeed)).blockingGet()
+        afterKeyRepository.setAfterKey(newFeed, SortType.Rising, AfterKey.Next("MyFeedAfterKey"))
+            .blockingGet()
+
+        //Act and assert
+        afterKeyRepository.getAfterKey(newFeed, SortType.Rising)
+            .test()
+            .assertValue(match { assertThat(it).isEqualTo(AfterKey.Next("MyFeedAfterKey")) })
+    }
 }

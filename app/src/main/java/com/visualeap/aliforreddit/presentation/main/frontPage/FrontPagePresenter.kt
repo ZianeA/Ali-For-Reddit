@@ -14,6 +14,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.BehaviorProcessor
 import javax.inject.Inject
+import kotlin.math.max
 
 @FragmentScope
 class FrontPagePresenter @Inject constructor(
@@ -34,8 +35,7 @@ class FrontPagePresenter @Inject constructor(
     private val offsetProcessor = BehaviorProcessor.createDefault(lastOffset)
 
     fun start(feed: DefaultFeed) {
-        val disposable = offsetProcessor
-            .distinctUntilChanged()
+        val disposable = offsetProcessor.distinctUntilChanged()
             .switchMap { offset ->
                 when (feed) {
                     DefaultFeed.Home -> fetchFeedPosts.execute(
@@ -87,13 +87,13 @@ class FrontPagePresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    fun onPostBound(position: Int) {
-        if (addItemsAtTop(position)) {
-            val nextOffset = lastOffset - PAGINATION_STEP
+    fun onScroll(firstVisiblePostPosition: Int, lastVisiblePostPosition: Int) {
+        if (addItemsAtTop(firstVisiblePostPosition)) {
+            // Keep the offset above zero.
+            val nextOffset = max(0, lastOffset - PAGINATION_STEP)
             offsetProcessor.offer(nextOffset)
-        } else if (addItemsAtBottom(position)) {
-            val nextOffset = lastOffset + PAGINATION_STEP
-            offsetProcessor.offer(nextOffset)
+        } else if (addItemsAtBottom(lastVisiblePostPosition)) {
+            offsetProcessor.offer(lastOffset + PAGINATION_STEP)
         }
     }
 
@@ -101,7 +101,7 @@ class FrontPagePresenter @Inject constructor(
         disposables.clear()
     }
 
-    private fun addItemsAtTop(position: Int): Boolean = position == TOP_PAGINATION_POINT - 1
+    private fun addItemsAtTop(position: Int) = position < PAGE_SIZE / 4
 
-    private fun addItemsAtBottom(position: Int): Boolean = position == BOTTOM_PAGINATION_POINT + 1
+    private fun addItemsAtBottom(position: Int) = position > PAGE_SIZE * 3 / 4
 }

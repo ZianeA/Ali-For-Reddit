@@ -2,6 +2,7 @@ package com.visualeap.aliforreddit.data.repository.post.postfeed
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.visualeap.aliforreddit.domain.model.feed.SortType
 import io.reactivex.Completable
@@ -9,10 +10,10 @@ import io.reactivex.Single
 
 @Dao
 interface PostFeedDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun add(postFeed: PostFeedEntity): Completable
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAll(postFeed: List<PostFeedEntity>)
 
     @Query("SELECT * FROM PostFeedEntity")

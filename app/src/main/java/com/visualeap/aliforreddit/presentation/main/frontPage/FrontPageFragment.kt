@@ -47,6 +47,16 @@ class FrontPageFragment : Fragment(), FrontPageView {
 
         recyclerView = rootView.frontPageRecyclerView
         recyclerView.setItemSpacingDp(8) //TODO Make this a constant
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                presenter.onScroll(
+                    layoutManager.findFirstVisibleItemPosition(),
+                    layoutManager.findLastVisibleItemPosition()
+                )
+            }
+        })
 
         return rootView
     }

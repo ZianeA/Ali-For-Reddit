@@ -29,10 +29,6 @@ class FetchFeedPosts @Inject constructor(
     private val afterKeyRepository: AfterKeyRepository,
     private val feedRepository: FeedRepository
 ) {
-    // Retrieve posts from database by joining these three tables: Post, Feed, PostFeed.
-    // The result of the query should include: PostEntity, SubredditEntity, SortBy
-    // If we have reached the end of cached data, we request new data from the Reddit API
-    // But first we need to get the after key from the database.
     fun execute(
         feed: String,
         sortType: SortType,
@@ -55,8 +51,8 @@ class FetchFeedPosts @Inject constructor(
                     .onBackpressureDrop()
                     .concatMap { cachedPosts ->
                         afterKeyRepository.getAfterKey(feed, sortType)
-                            .map { afterKey -> afterKey is AfterKey.End }
-                            .flatMapPublisher { endOfRemote ->
+                            .flatMapPublisher { afterKey ->
+                                val endOfRemote = afterKey is AfterKey.End
                                 // If we have reached the end of cached items
                                 // but not the end of the remote ones, fetch new items
                                 val endOfCache = isEndOfCache(
@@ -66,7 +62,7 @@ class FetchFeedPosts @Inject constructor(
                                     // Return cached items first (first observable) while fetching remote items (second observable)
                                     Flowable.merge(
                                         loadFromCache(cachedPosts, endOfRemote, correctedOffset),
-                                        loadFromNetwork(feed, pageSize, sortType, offset)
+                                        loadFromNetwork(feed, pageSize, sortType, afterKey, offset)
                                     )
                                 } else {
                                     // If not, just return the cached items.
@@ -106,10 +102,11 @@ class FetchFeedPosts @Inject constructor(
         feed: String,
         pageSize: Int,
         sortType: SortType,
+        afterKey: AfterKey,
         offset: Int
     ): Flowable<Listing<Pair<Subreddit, Post>>> {
         return feedRepository.addFeed(feed)
-            .andThen(postService.getPostsBySubreddit(feed, pageSize, null))
+            .andThen(postService.getPostsBySubreddit(feed, pageSize, afterKey.toStringOrNull()))
             .map { postResponse -> postResponse.getAfterKey() to postResponse.toDomain() }
             .flatMapCompletable { (afterKey, remotePost) ->
                 afterKeyRepository.setAfterKey(feed, sortType, afterKey)
@@ -151,11 +148,9 @@ class FetchFeedPosts @Inject constructor(
     }
 
     private fun PostResponse.getAfterKey(): AfterKey {
-        val key = this.data.afterKey
-
-        return when {
-            key != null -> AfterKey.Next(key)
-            else -> AfterKey.End
+        return when (val key = this.data.afterKey) {
+            null -> AfterKey.End
+            else -> AfterKey.Next(key)
         }
     }
 }
