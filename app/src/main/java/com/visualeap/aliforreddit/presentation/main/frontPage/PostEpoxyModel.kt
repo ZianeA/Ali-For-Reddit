@@ -20,49 +20,49 @@ abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
     lateinit var post: FeedPostDto
 
     @EpoxyAttribute
-    lateinit var bindListener: () -> Unit
-
-    @EpoxyAttribute
     lateinit var clickListener: View.OnClickListener
 
     @EpoxyAttribute
     var maxLines: Int = 0
 
     override fun bind(holder: PostHolder) {
-        bindListener()
+        holder.apply {
+            postTitle.text = post.title
+            postText.maxLines = maxLines
+            postText.text = post.text
 
-        holder.postTitle.text = post.title
-        holder.postText.maxLines = maxLines
-        holder.postText.text = post.text
+            if (post.text.isEmpty()) {
+                postText.visibility = View.GONE
+            }
 
-        if (post.text.isEmpty()) {
-            holder.postText.visibility = View.GONE
-        }
+            postedByAndAt.text = view.context.getString(
+                R.string.post_posted_by_and_at,
+                post.authorName,
+                post.timestamp
+            )
+            postScore.text = post.score
+            postCommentCount.text = post.commentCount
+            subredditName.text = post.subreddit
+            view.setOnClickListener(clickListener)
 
-        holder.postedByAndAt.text = holder.view.context.getString(
-            R.string.post_posted_by_and_at,
-            post.authorName,
-            post.timestamp
-        )
-        holder.postScore.text = post.score
-        holder.postCommentCount.text = post.commentCount
-        holder.subredditName.text = post.subreddit
-        holder.view.setOnClickListener(clickListener)
+            subredditImage.background.setColorFilter(
+                Color.parseColor(post.subredditColor),
+                PorterDuff.Mode.MULTIPLY
+            )
 
-        //Subreddits' icons have no alpha/transparency.
-        holder.subredditImage.background.setColorFilter(
-            Color.parseColor(post.subredditColor),
-            PorterDuff.Mode.MULTIPLY
-        )
-
-        if (post.subredditIconUrl.isNullOrEmpty()) {
-            //If a subreddit has no icon we use a default subreddit icon.
-            holder.subredditImage.scaleType = ImageView.ScaleType.CENTER
-            holder.subredditImage.setImageDrawable(holder.defaultSubredditIcon)
-        } else {
-            Glide.with(holder.view)
-                .load(post.subredditIconUrl)
-                .into(holder.subredditImage);
+            when (val icon = post.subredditIcon) {
+                is SubredditIcon.Custom -> {
+                    Glide.with(holder.view)
+                        .load(icon.url)
+                        .into(subredditImage)
+                }
+                is SubredditIcon.Default -> {
+                    subredditImage.scaleType = ImageView.ScaleType.CENTER
+                    subredditImage.setImageDrawable(
+                        ContextCompat.getDrawable(view.context, icon.resId)
+                    )
+                }
+            }
         }
     }
 

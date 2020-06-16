@@ -41,7 +41,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_home, container, false)
 
-        epoxyController = FrontPageEpoxyController(presenter::onPostBound) {
+        epoxyController = FrontPageEpoxyController {
             fragNavController.pushFragment(PostDetailFragment.newInstance(/*it*/))
         }
 
@@ -76,22 +76,28 @@ class FrontPageFragment : Fragment(), FrontPageView {
         presenter.stop()
     }
 
-    override fun displayPosts(posts: List<FeedPostDto>) {
-        if (recyclerView.adapter == null) {
-            recyclerView.setController(epoxyController)
+    override fun render(viewState: FrontPageViewState) {
+        when (viewState) {
+            FrontPageViewState.Loading -> ""
+            FrontPageViewState.Failure -> ""
+            is FrontPageViewState.Success -> {
+                if (recyclerView.adapter == null) {
+                    recyclerView.setController(epoxyController)
+                }
+                epoxyController.posts = viewState.posts
+                epoxyController.requestModelBuild()
+            }
         }
-        epoxyController.posts = posts
-        epoxyController.requestModelBuild()
     }
 
-    private val feed: DefaultFeed
-        get() = arguments?.getSerializable(ARG_FEED) as? DefaultFeed
+    private val feed: String
+        get() = arguments?.getString(ARG_FEED)
             ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
 
     companion object {
         private const val ARG_FEED = "feed"
 
-        fun newInstance(feed: DefaultFeed) = FrontPageFragment().apply {
+        fun newInstance(feed: String) = FrontPageFragment().apply {
             arguments = bundleOf(ARG_FEED to feed)
         }
     }

@@ -15,7 +15,6 @@ import java.util.concurrent.Executor
 
 
 class FrontPageEpoxyController(
-    private val onBindPostListener: (position: Int) -> Unit,
     private val onPostClickListener: ((clickedPost: FeedPostDto) -> Unit)
 ) : AsyncEpoxyController() {
     var posts = listOf<FeedPostDto>()
@@ -25,7 +24,6 @@ class FrontPageEpoxyController(
             post {
                 id(postDto.id)
                 post(postDto)
-                bindListener { onBindPostListener(index) }
                 clickListener(View.OnClickListener { onPostClickListener.invoke(postDto) })
                 maxLines(POST_TEXT_MAX_LINES)
             }

@@ -10,6 +10,6 @@ data class FeedPostDto(
     val timestamp: String,
     val subredditId: String,
     val subreddit: String,
-    val subredditIconUrl: String?,
-    val subredditColor: String
+    val subredditColor: String,
+    val subredditIcon: SubredditIcon
 )

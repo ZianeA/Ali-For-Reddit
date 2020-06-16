@@ -4,5 +4,5 @@ import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.presentation.model.PostView
 
 interface FrontPageView {
-    fun displayPosts(posts: List<FeedPostDto>)
+    fun render(viewState: FrontPageViewState)
 }

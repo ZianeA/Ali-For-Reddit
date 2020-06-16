@@ -17,6 +17,8 @@ import com.visualeap.aliforreddit.domain.model.*
 import com.visualeap.aliforreddit.domain.model.token.Token
 import com.visualeap.aliforreddit.domain.model.token.UserToken
 import com.visualeap.aliforreddit.domain.model.token.UserlessToken
+import com.visualeap.aliforreddit.presentation.main.frontPage.FeedPostDto
+import com.visualeap.aliforreddit.presentation.main.frontPage.SubredditIcon
 import com.visualeap.aliforreddit.presentation.model.CommentView
 import com.visualeap.aliforreddit.presentation.model.PostView
 import com.visualeap.aliforreddit.presentation.model.SubredditView
@@ -232,21 +234,31 @@ fun createPostResponse(
     )
 )
 
-fun createPostWithSubredditResponse(
-    postResponse: PostResponse = createPostResponse(),
-    subredditResponse: SubredditResponse = createSubredditResponse()
-) = PostWithSubredditResponse(postResponse, subredditResponse)
-
-fun createPostView(
+fun createFeedPostDto(
     id: String = POST_ID,
     authorName: String = "u/$REDDITOR_USERNAME",
     title: String = POST_TITLE,
     text: String = POST_TEXT,
     score: String = formatCount(POST_SCORE),
     commentCount: String = formatCount(POST_COMMENT_COUNT),
-    subreddit: SubredditView = createSubredditView(),
-    timestamp: String = formatTimestamp(POST_CREATED)
-) = PostView(id, authorName, title, text, score, commentCount, subreddit, timestamp)
+    timestamp: String = formatTimestamp(POST_CREATED),
+    subredditId: String = SUBREDDIT_ID,
+    subreddit: String = SUBREDDIT_NAME,
+    subredditColor: String = SUBREDDIT_PRIMARY_COLOR,
+    subredditIcon: SubredditIcon = SubredditIcon.Custom(SUBREDDIT_ICON_URL)
+) = FeedPostDto(
+    id,
+    authorName,
+    title,
+    text,
+    score,
+    commentCount,
+    timestamp,
+    subredditId,
+    "r/$subreddit",
+    subredditColor,
+    subredditIcon
+)
 //endregion
 
 //region comment

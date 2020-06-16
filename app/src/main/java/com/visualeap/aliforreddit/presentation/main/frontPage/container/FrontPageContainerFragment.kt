@@ -67,15 +67,15 @@ class FrontPageContainerFragment : Fragment(), FrontPageContainerView, BackButto
         mViewPager.adapter = SectionsPagerAdapter(
             childFragmentManager,
             loginFragment!!,
-            FrontPageFragment.newInstance(DefaultFeed.Popular)
+            FrontPageFragment.newInstance(DefaultFeed.Popular.name)
         )
     }
 
     override fun showHomeScreen() {
         mViewPager.adapter = SectionsPagerAdapter(
             childFragmentManager,
-            FrontPageFragment.newInstance(DefaultFeed.Home),
-            FrontPageFragment.newInstance(DefaultFeed.Popular)
+            FrontPageFragment.newInstance(DefaultFeed.Home.name),
+            FrontPageFragment.newInstance(DefaultFeed.Popular.name)
         )
     }
 
