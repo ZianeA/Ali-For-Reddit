@@ -323,18 +323,6 @@ internal class FetchFeedPostsTest {
     }
 
     @Test
-    fun `when the end of the remote items is reached, after key should be end`() {
-        //Act
-        fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 2)
-            .test()
-            .assertNoErrors()
-
-        afterKeyRepository.getAfterKey(FEED_NAME, SortType.Best)
-            .test()
-            .assertValue(match { assertThat(it).isEqualTo(AfterKey.End) })
-    }
-
-    @Test
     fun `return posts by feed`() {
         //Arrange
         postService.addPosts(FEED_NAME, listOf(createPost(id = "1"), createPost(id = "2")))

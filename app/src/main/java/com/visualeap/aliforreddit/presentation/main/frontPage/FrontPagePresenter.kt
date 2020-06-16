@@ -41,7 +41,7 @@ class FrontPagePresenter @Inject constructor(
                     .map<FrontPageViewState> { listing ->
                         lastOffset = listing.offset
                         FrontPageViewState.Success(
-                            listing.reachedTheEnd,
+                            !listing.reachedTheEnd,
                             listing.items.map { (s, p) -> formatPost(s, p) })
                     }
                     .onErrorReturn { FrontPageViewState.Failure }

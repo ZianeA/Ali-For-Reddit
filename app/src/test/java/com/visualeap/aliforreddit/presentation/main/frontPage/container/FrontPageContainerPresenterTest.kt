@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage.container
 
-import com.visualeap.aliforreddit.SyncSchedulerProvider
+import com.visualeap.aliforreddit.util.TrampolineSchedulerProvider
 import com.visualeap.aliforreddit.domain.usecase.IsUserLoggedIn
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
@@ -16,7 +16,9 @@ internal class FrontPageContainerPresenterTest {
     private val view: FrontPageContainerView = mockk(relaxed = true)
     private val isUserLoggedIn: IsUserLoggedIn = mockk()
     private val presenter =
-        FrontPageContainerPresenter(view, isUserLoggedIn, SyncSchedulerProvider())
+        FrontPageContainerPresenter(view, isUserLoggedIn,
+            TrampolineSchedulerProvider()
+        )
 
     @BeforeEach
     internal fun setUp() {

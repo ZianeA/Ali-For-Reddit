@@ -1,14 +1,11 @@
 package com.visualeap.aliforreddit.presentation.main
 
-import com.visualeap.aliforreddit.SyncSchedulerProvider
+import com.visualeap.aliforreddit.util.TrampolineSchedulerProvider
 import com.visualeap.aliforreddit.domain.repository.RedditorRepository
 import com.visualeap.aliforreddit.domain.usecase.IsUserLoggedIn
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Single
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.Assertions.*
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -21,7 +18,9 @@ internal class MainPresenterTest {
     private val repository: RedditorRepository = mockk()
     private val view: MainView = mockk(relaxed = true)
     private val isUserLoggedIn: IsUserLoggedIn = mockk()
-    private val presenter = MainPresenter(view, repository, isUserLoggedIn, SyncSchedulerProvider())
+    private val presenter = MainPresenter(view, repository, isUserLoggedIn,
+        TrampolineSchedulerProvider()
+    )
 
     @BeforeEach
     internal fun setUp() {

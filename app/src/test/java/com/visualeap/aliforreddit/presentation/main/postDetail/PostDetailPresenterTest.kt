@@ -1,13 +1,12 @@
 package com.visualeap.aliforreddit.presentation.main.postDetail
 
-import com.visualeap.aliforreddit.SyncSchedulerProvider
+import com.visualeap.aliforreddit.util.TrampolineSchedulerProvider
 import com.visualeap.aliforreddit.domain.model.Comment
 import com.visualeap.aliforreddit.domain.repository.CommentRepository
 import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.presentation.model.CommentView
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
-import io.reactivex.Single
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -22,7 +21,8 @@ internal class PostDetailPresenterTest {
     private val commentRepository: CommentRepository = mockk()
     private val commentViewMapper: Mapper<List<CommentView>, List<Comment>> = mockk()
     private val presenter =
-        PostDetailPresenter(view, commentRepository, SyncSchedulerProvider(), commentViewMapper)
+        PostDetailPresenter(view, commentRepository,
+            TrampolineSchedulerProvider(), commentViewMapper)
 
     @BeforeEach
     internal fun setUp() {

@@ -1,7 +1,7 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.visualeap.aliforreddit.SyncSchedulerProvider
+import com.visualeap.aliforreddit.util.TrampolineSchedulerProvider
 import com.visualeap.aliforreddit.data.database.RedditDatabase
 import com.visualeap.aliforreddit.data.repository.afterkey.DbAfterKeyRepository
 import com.visualeap.aliforreddit.data.repository.feed.DbFeedRepository
@@ -9,6 +9,7 @@ import com.visualeap.aliforreddit.data.repository.post.DbPostRepository
 import com.visualeap.aliforreddit.data.repository.subreddit.DbSubredditRepository
 import com.visualeap.aliforreddit.domain.model.feed.SortType
 import com.visualeap.aliforreddit.domain.usecase.FetchFeedPosts
+import com.visualeap.aliforreddit.util.TestSchedulerProvider
 import com.visualeap.aliforreddit.util.fake.FakePostWebService
 import com.visualeap.aliforreddit.util.fake.FakeSubredditWebService
 import org.assertj.core.api.Assertions.*
@@ -74,7 +75,7 @@ class FrontPagePresenterTest {
             feedRepository
         )
 
-        presenter = FrontPagePresenter(view, fetchFeedPosts, SyncSchedulerProvider())
+        presenter = FrontPagePresenter(view, fetchFeedPosts, TrampolineSchedulerProvider())
     }
 
     @After
@@ -104,6 +105,27 @@ class FrontPagePresenterTest {
             FeedPostDto::subredditId.name
         )
     }
+
+    @Test
+    fun `when end is not reached should display loading`() {
+        //Act
+        presenter.start("Feed1")
+
+        //Assert
+        assertThat(view.isLoading).isEqualTo(true)
+    }
+
+    /*@Test
+    fun `when end is reached should hide loading`() {
+        //Arrange
+        db.clearAllTables()
+
+        //Act
+        presenter.start("Feed1")
+
+        //Assert
+        assertThat(view.isLoading).isEqualTo(false)
+    }*/
 
     @Test
     fun `when near the end should load more`() {
@@ -139,12 +161,16 @@ class FrontPagePresenterTest {
 
     class FakeFrontPageView : FrontPageView {
         var posts: List<FeedPostDto> = listOf()
+        var isLoading = false
 
         override fun render(viewState: FrontPageViewState) {
             when (viewState) {
                 FrontPageViewState.Loading -> ""
                 FrontPageViewState.Failure -> ""
-                is FrontPageViewState.Success -> posts = viewState.posts
+                is FrontPageViewState.Success -> {
+                    posts = viewState.posts
+                    isLoading = viewState.isLoading
+                }
             }
         }
     }

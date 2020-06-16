@@ -8,7 +8,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
 @Reusable
-class IoSchedulerProvider @Inject constructor() : SchedulerProvider {
-    override val worker: Scheduler = Schedulers.io()
-    override val main: Scheduler = AndroidSchedulers.mainThread()
+class AsyncSchedulerProvider @Inject constructor() : SchedulerProvider {
+    override val io: Scheduler = Schedulers.io()
+    override val computation: Scheduler = Schedulers.computation()
+    override val ui: Scheduler = AndroidSchedulers.mainThread()
 }

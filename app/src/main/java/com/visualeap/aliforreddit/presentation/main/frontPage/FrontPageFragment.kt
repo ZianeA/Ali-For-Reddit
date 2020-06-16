@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.domain.model.feed.DefaultFeed
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.presentation.main.postDetail.PostDetailFragment
@@ -84,6 +83,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
                 if (recyclerView.adapter == null) {
                     recyclerView.setController(epoxyController)
                 }
+                epoxyController.isLoading = viewState.isLoading
                 epoxyController.posts = viewState.posts
                 epoxyController.requestModelBuild()
             }

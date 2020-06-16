@@ -3,6 +3,7 @@ package com.visualeap.aliforreddit.domain.util.scheduler
 import io.reactivex.Scheduler
 
 interface SchedulerProvider {
-    val worker: Scheduler
-    val main: Scheduler
+    val io: Scheduler
+    val computation: Scheduler
+    val ui: Scheduler
 }

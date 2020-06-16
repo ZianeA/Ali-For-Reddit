@@ -1,18 +1,14 @@
 package com.visualeap.aliforreddit.presentation.login
 
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.SyncSchedulerProvider
+import com.visualeap.aliforreddit.util.TrampolineSchedulerProvider
 import com.visualeap.aliforreddit.domain.usecase.*
-import com.visualeap.aliforreddit.domain.util.UniqueStringGenerator
 import com.visualeap.aliforreddit.presentation.common.ResourceProvider
 import com.visualeap.aliforreddit.presentation.main.login.LoginPresenter
 import com.visualeap.aliforreddit.presentation.main.login.LoginView
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable
-import okhttp3.HttpUrl
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -37,7 +33,7 @@ class LoginPresenterTest {
         buildAuthUrl,
         authenticateUser,
         resourceProvider,
-        SyncSchedulerProvider()
+        TrampolineSchedulerProvider()
     )
 
     @BeforeEach
