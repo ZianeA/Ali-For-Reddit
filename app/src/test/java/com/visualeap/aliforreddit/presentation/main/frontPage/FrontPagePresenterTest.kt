@@ -1,6 +1,8 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage
 
+import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.core.app.ApplicationProvider
 import com.visualeap.aliforreddit.util.TrampolineSchedulerProvider
 import com.visualeap.aliforreddit.data.database.RedditDatabase
 import com.visualeap.aliforreddit.data.repository.afterkey.DbAfterKeyRepository
@@ -9,7 +11,7 @@ import com.visualeap.aliforreddit.data.repository.post.DbPostRepository
 import com.visualeap.aliforreddit.data.repository.subreddit.DbSubredditRepository
 import com.visualeap.aliforreddit.domain.model.feed.SortType
 import com.visualeap.aliforreddit.domain.usecase.FetchFeedPosts
-import com.visualeap.aliforreddit.util.TestSchedulerProvider
+import com.visualeap.aliforreddit.presentation.util.ResourceProvider
 import com.visualeap.aliforreddit.util.fake.FakePostWebService
 import com.visualeap.aliforreddit.util.fake.FakeSubredditWebService
 import org.assertj.core.api.Assertions.*
@@ -75,7 +77,13 @@ class FrontPagePresenterTest {
             feedRepository
         )
 
-        presenter = FrontPagePresenter(view, fetchFeedPosts, TrampolineSchedulerProvider())
+        val context = ApplicationProvider.getApplicationContext<Application>()
+        presenter = FrontPagePresenter(
+            view,
+            fetchFeedPosts,
+            ResourceProvider(context),
+            TrampolineSchedulerProvider()
+        )
     }
 
     @After
@@ -131,7 +139,7 @@ class FrontPagePresenterTest {
     fun `when near the end should load more`() {
         //Act
         presenter.start("Feed1")
-        presenter.onScroll(Int.MAX_VALUE, PAGE_SIZE)
+        presenter.onPostBound(PAGE_SIZE * 3 / 4 + 1)
 
         //Assert
         assertThat(view.posts)
@@ -144,8 +152,8 @@ class FrontPagePresenterTest {
     fun `when near the top should load more`() {
         //Act
         presenter.start("Feed1")
-        presenter.onScroll(Int.MAX_VALUE, PAGE_SIZE)
-        presenter.onScroll(0, Int.MAX_VALUE)
+        presenter.onPostBound(PAGE_SIZE)
+        presenter.onPostBound(0)
 
         //Assert
         assertThat(view.posts)
@@ -156,7 +164,12 @@ class FrontPagePresenterTest {
 
     /*@Test
     fun `display error when fetching posts fails`() {
+        //Arrange
 
+        //Act
+        presenter.start("Feed")
+
+        //Assert
     }*/
 
     class FakeFrontPageView : FrontPageView {
@@ -166,7 +179,7 @@ class FrontPagePresenterTest {
         override fun render(viewState: FrontPageViewState) {
             when (viewState) {
                 FrontPageViewState.Loading -> ""
-                FrontPageViewState.Failure -> ""
+                is FrontPageViewState.Failure -> ""
                 is FrontPageViewState.Success -> {
                     posts = viewState.posts
                     isLoading = viewState.isLoading

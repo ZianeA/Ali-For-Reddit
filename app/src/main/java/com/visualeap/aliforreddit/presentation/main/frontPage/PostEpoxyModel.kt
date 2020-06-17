@@ -20,12 +20,17 @@ abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
     lateinit var post: FeedPostDto
 
     @EpoxyAttribute
+    lateinit var bindListener: () -> Unit
+
+    @EpoxyAttribute
     lateinit var clickListener: View.OnClickListener
 
     @EpoxyAttribute
     var maxLines: Int = 0
 
     override fun bind(holder: PostHolder) {
+        bindListener()
+
         holder.apply {
             postTitle.text = post.title
             postText.maxLines = maxLines
@@ -75,13 +80,10 @@ abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
 
 class PostHolder : KotlinEpoxyHolder() {
     lateinit var view: View
-    lateinit var defaultSubredditIcon: Drawable
 
     override fun bindView(itemView: View) {
         super.bindView(itemView)
         view = itemView
-        defaultSubredditIcon =
-            ContextCompat.getDrawable(view.context, R.drawable.ic_subreddit_default)!!
     }
 
     val postTitle by bind<TextView>(R.id.postTitle)

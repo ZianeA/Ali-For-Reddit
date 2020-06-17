@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage
 
+import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Subreddit
 import com.visualeap.aliforreddit.domain.model.feed.DefaultFeed.*
@@ -8,6 +9,7 @@ import com.visualeap.aliforreddit.presentation.di.FragmentScope
 import com.visualeap.aliforreddit.domain.usecase.FetchFeedPosts
 import com.visualeap.aliforreddit.domain.util.applySchedulers
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
+import com.visualeap.aliforreddit.presentation.util.ResourceProvider
 import com.visualeap.aliforreddit.presentation.util.SubredditFormatter
 import com.visualeap.aliforreddit.presentation.util.formatCount
 import com.visualeap.aliforreddit.presentation.util.formatTimestamp
@@ -15,11 +17,13 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.BehaviorProcessor
 import javax.inject.Inject
 import kotlin.math.max
+import kotlin.math.min
 
 @FragmentScope
 class FrontPagePresenter @Inject constructor(
     private val view: FrontPageView,
     private val fetchFeedPosts: FetchFeedPosts,
+    private val resourceProvider: ResourceProvider,
     private val schedulerProvider: SchedulerProvider
 ) {
     companion object {
@@ -44,7 +48,7 @@ class FrontPagePresenter @Inject constructor(
                             !listing.reachedTheEnd,
                             listing.items.map { (s, p) -> formatPost(s, p) })
                     }
-                    .onErrorReturn { FrontPageViewState.Failure }
+                    .onErrorReturn { FrontPageViewState.Failure(resourceProvider.getString(R.string.error_server)) }
                     .applySchedulers(schedulerProvider)
                     .startWith(FrontPageViewState.Loading)
             }
@@ -53,12 +57,12 @@ class FrontPagePresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    fun onScroll(firstVisiblePostPosition: Int, lastVisiblePostPosition: Int) {
-        if (addItemsAtTop(firstVisiblePostPosition)) {
+    fun onPostBound(position: Int) {
+        if (addItemsAtTop(position)) {
             // Keep the offset above zero.
-            val nextOffset = max(0, lastOffset - PAGINATION_STEP)
+            val nextOffset = min(0, lastOffset - PAGINATION_STEP)
             offsetProcessor.offer(nextOffset)
-        } else if (addItemsAtBottom(lastVisiblePostPosition)) {
+        } else if (addItemsAtBottom(position)) {
             offsetProcessor.offer(lastOffset + PAGINATION_STEP)
         }
     }
@@ -67,9 +71,9 @@ class FrontPagePresenter @Inject constructor(
         disposables.clear()
     }
 
-    private fun addItemsAtTop(position: Int) = position < PAGE_SIZE / 4
+    private fun addItemsAtTop(position: Int) = position == PAGE_SIZE / 4 - 1
 
-    private fun addItemsAtBottom(position: Int) = position > PAGE_SIZE * 3 / 4
+    private fun addItemsAtBottom(position: Int) = position == PAGE_SIZE * 3 / 4 + 1
 
     private fun formatPost(subreddit: Subreddit, post: Post): FeedPostDto {
         return FeedPostDto(

@@ -25,4 +25,5 @@ Varius duis at consectetur lorem donec. Hac habitasse platea dictumst vestibulum
     <string name="title_activity_login">LoginActivity</string>
 
     <string name="post_posted_by_and_at">Posted by %1$s • %2$s</string>
+    <string name="error_server">Sorry, can\'t reach Reddit</string>
 </resources>

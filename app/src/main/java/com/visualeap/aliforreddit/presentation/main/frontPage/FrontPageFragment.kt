@@ -10,6 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.ncapdevi.fragnav.FragNavController
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Post
@@ -40,22 +41,12 @@ class FrontPageFragment : Fragment(), FrontPageView {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_home, container, false)
 
-        epoxyController = FrontPageEpoxyController {
+        epoxyController = FrontPageEpoxyController(presenter::onPostBound) {
             fragNavController.pushFragment(PostDetailFragment.newInstance(/*it*/))
         }
 
         recyclerView = rootView.frontPageRecyclerView
         recyclerView.setItemSpacingDp(8) //TODO Make this a constant
-        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                presenter.onScroll(
-                    layoutManager.findFirstVisibleItemPosition(),
-                    layoutManager.findLastVisibleItemPosition()
-                )
-            }
-        })
 
         return rootView
     }
@@ -78,7 +69,11 @@ class FrontPageFragment : Fragment(), FrontPageView {
     override fun render(viewState: FrontPageViewState) {
         when (viewState) {
             FrontPageViewState.Loading -> ""
-            FrontPageViewState.Failure -> ""
+            is FrontPageViewState.Failure -> {
+                epoxyController.isLoading = false
+                epoxyController.requestModelBuild()
+                Snackbar.make(recyclerView, viewState.error, Snackbar.LENGTH_SHORT).show()
+            }
             is FrontPageViewState.Success -> {
                 if (recyclerView.adapter == null) {
                     recyclerView.setController(epoxyController)
