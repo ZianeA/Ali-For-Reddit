@@ -11,9 +11,11 @@ import com.visualeap.aliforreddit.data.repository.post.DbPostRepository
 import com.visualeap.aliforreddit.data.repository.subreddit.DbSubredditRepository
 import com.visualeap.aliforreddit.domain.model.feed.SortType
 import com.visualeap.aliforreddit.domain.usecase.FetchFeedPosts
+import com.visualeap.aliforreddit.presentation.main.frontPage.FrontPageViewState.*
 import com.visualeap.aliforreddit.presentation.util.ResourceProvider
 import com.visualeap.aliforreddit.util.fake.FakePostWebService
 import com.visualeap.aliforreddit.util.fake.FakeSubredditWebService
+import io.mockk.clearAllMocks
 import org.assertj.core.api.Assertions.*
 import org.junit.After
 import org.junit.Before
@@ -21,10 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import util.domain.createDatabase
-import util.domain.createFeedPostDto
-import util.domain.createPost
-import util.domain.createSubreddit
+import util.domain.*
 
 @RunWith(RobolectricTestRunner::class)
 class FrontPagePresenterTest {
@@ -34,11 +33,13 @@ class FrontPagePresenterTest {
     companion object {
         private const val PAGE_SIZE = 25
         private const val PAGINATION_STEP: Int = PAGE_SIZE / 4
+        private const val DATABASE_POST_COUNT = 50
     }
 
-    private val view = FakeFrontPageView()
+    private val launcher = FakeFrontPageLauncher()
     private lateinit var db: RedditDatabase
     private lateinit var fetchFeedPosts: FetchFeedPosts
+    private val postService = FakePostWebService()
     private lateinit var presenter: FrontPagePresenter
 
     @Before
@@ -57,9 +58,10 @@ class FrontPagePresenterTest {
         }
 
         val postRepository = DbPostRepository(db, db.postDao(), db.postFeedDao())
-        for (i in 0..50) {
+        for (i in 1..DATABASE_POST_COUNT + 1) {
             feeds.forEach { feed ->
-                val postId = "${feed}Post${i + 1}"
+                // example: feed1Post1
+                val postId = "${feed}Post$i"
 
                 postRepository.addPosts(
                     listOf(createPost(id = postId, subredditId = "Subreddit1")), feed, SortType.Hot
@@ -71,7 +73,7 @@ class FrontPagePresenterTest {
         fetchFeedPosts = FetchFeedPosts(
             postRepository,
             subredditRepository,
-            FakePostWebService(),
+            postService,
             FakeSubredditWebService(),
             DbAfterKeyRepository(db.feedAfterKeyDao()),
             feedRepository
@@ -79,7 +81,8 @@ class FrontPagePresenterTest {
 
         val context = ApplicationProvider.getApplicationContext<Application>()
         presenter = FrontPagePresenter(
-            view,
+            launcher,
+            "Feed1",
             fetchFeedPosts,
             ResourceProvider(context),
             TrampolineSchedulerProvider()
@@ -92,99 +95,94 @@ class FrontPagePresenterTest {
     }
 
     @Test
-    fun `display posts by feed`() {
-        //Act
-        presenter.start("Feed2")
-
-        //Assert
-        assertThat(view.posts).extracting<String> { it.id }
-            .allSatisfy { id -> id.contains("Feed2") }
+    fun `display posts`() {
+        //Act and assert
+        presenter.start()
+            .test()
+            .assertValueAt(1, match { frontPageViewState ->
+                assertThat(frontPageViewState).isInstanceOf(Success::class.java)
+                    .extracting { (it as Success).posts }.asList()
+                    .hasSize(PAGE_SIZE)
+            })
     }
 
     @Test
     fun `format post`() {
-        //Act
-        presenter.start("Feed1")
-
-        //Assert
-        assertThat(view.posts).first().isEqualToIgnoringGivenFields(
-            createFeedPostDto(),
-            FeedPostDto::id.name,
-            FeedPostDto::subredditId.name
-        )
+        //Act and assert
+        presenter.start()
+            .test()
+            .assertValueAt(1, match {
+                val firstPost = (it as Success).posts.first()
+                assertThat(firstPost).isEqualToIgnoringGivenFields(
+                    createFeedPostDto(), FeedPostDto::id.name, FeedPostDto::subredditId.name
+                )
+            })
     }
 
     @Test
     fun `when end is not reached should display loading`() {
-        //Act
-        presenter.start("Feed1")
-
-        //Assert
-        assertThat(view.isLoading).isEqualTo(true)
+        //Act and assert
+        presenter.start()
+            .test()
+            .assertValueAt(1, match { assertThat((it as Success).isLoading).isEqualTo(true) })
     }
 
-    /*@Test
+    @Test
     fun `when end is reached should hide loading`() {
         //Arrange
-        db.clearAllTables()
+        db.postDao().deleteAll().blockingAwait()
 
-        //Act
-        presenter.start("Feed1")
-
-        //Assert
-        assertThat(view.isLoading).isEqualTo(false)
-    }*/
+        //Act and assert
+        presenter.start()
+            .test()
+            .assertValueAt(2, match { assertThat((it as Success).isLoading).isEqualTo(false) })
+    }
 
     @Test
     fun `when near the end should load more`() {
-        //Act
-        presenter.start("Feed1")
-        presenter.onPostBound(PAGE_SIZE * 3 / 4 + 1)
+        //Arrange
+        val paginationPoint = PAGE_SIZE * 3 / 4 + 1
+        presenter.onPostBound(paginationPoint)
 
-        //Assert
-        assertThat(view.posts)
-            .first()
-            .extracting { it.id }
-            .isEqualTo("Feed1Post${PAGINATION_STEP + 1}")
+        //Act and assert
+        presenter.start()
+            .test()
+            .assertValueAt(1, match { viewState ->
+                val firstPost = (viewState as Success).posts.first()
+                assertThat(firstPost)
+                    .extracting { it.id }
+                    .isEqualTo("Feed1Post${PAGINATION_STEP + 1}")
+            })
     }
 
     @Test
     fun `when near the top should load more`() {
-        //Act
-        presenter.start("Feed1")
+        //Arrange
         presenter.onPostBound(PAGE_SIZE)
         presenter.onPostBound(0)
 
-        //Assert
-        assertThat(view.posts)
-            .first()
-            .extracting { it.id }
-            .isEqualTo("Feed1Post1")
+        //Act and assert
+        presenter.start()
+            .test()
+            .assertValueAt(1, match { viewState ->
+                val firstPost = (viewState as Success).posts.first()
+                assertThat(firstPost)
+                    .extracting { it.id }
+                    .isEqualTo("Feed1Post1")
+            })
     }
 
-    /*@Test
+    @Test
     fun `display error when fetching posts fails`() {
         //Arrange
+        db.postDao().deleteAll().blockingAwait()
+        postService.simulateError()
 
-        //Act
-        presenter.start("Feed")
-
-        //Assert
-    }*/
-
-    class FakeFrontPageView : FrontPageView {
-        var posts: List<FeedPostDto> = listOf()
-        var isLoading = false
-
-        override fun render(viewState: FrontPageViewState) {
-            when (viewState) {
-                FrontPageViewState.Loading -> ""
-                is FrontPageViewState.Failure -> ""
-                is FrontPageViewState.Success -> {
-                    posts = viewState.posts
-                    isLoading = viewState.isLoading
-                }
-            }
-        }
+        //Act and assert
+        presenter.start()
+            .test()
+            .assertValueAt(2, match { assertThat(it).isInstanceOf(Failure::class.java) })
     }
+
+    class FakeFrontPageLauncher : FrontPageLauncher
 }

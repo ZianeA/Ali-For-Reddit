@@ -17,3 +17,7 @@ fun Completable.applySchedulers(provider: SchedulerProvider): Completable =
 
 fun <T> Maybe<T>.applySchedulers(provider: SchedulerProvider): Maybe<T> =
     subscribeOn(provider.io).observeOn(provider.ui)
+
+fun <T> Observable<T>.autoReplay(): Observable<T> = replay(1).autoConnect()
+
+fun <T> Flowable<T>.autoReplay(): Flowable<T> = replay(1).autoConnect()

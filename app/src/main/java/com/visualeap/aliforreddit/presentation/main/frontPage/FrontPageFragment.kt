@@ -2,26 +2,26 @@ package com.visualeap.aliforreddit.presentation.main.frontPage
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.Fragment
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.ncapdevi.fragnav.FragNavController
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
+import com.uber.autodispose.autoDispose
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.util.Mapper
 import com.visualeap.aliforreddit.presentation.main.postDetail.PostDetailFragment
 import com.visualeap.aliforreddit.presentation.model.PostView
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_home.view.frontPageRecyclerView
+import kotlinx.android.synthetic.main.fragment_home.view.*
 import javax.inject.Inject
 
-class FrontPageFragment : Fragment(), FrontPageView {
+class FrontPageFragment : Fragment(), FrontPageLauncher {
     @Inject
     lateinit var presenter: FrontPagePresenter
 
@@ -33,6 +33,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
 
     private lateinit var epoxyController: FrontPageEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
+    private val scopeProvider by lazy { AndroidLifecycleScopeProvider.from(this) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,7 +54,9 @@ class FrontPageFragment : Fragment(), FrontPageView {
 
     override fun onStart() {
         super.onStart()
-        presenter.start(feed)
+        presenter.start()
+            .autoDispose(scopeProvider)
+            .subscribe(::render)
     }
 
     override fun onAttach(context: Context) {
@@ -61,12 +64,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
         super.onAttach(context)
     }
 
-    override fun onStop() {
-        super.onStop()
-        presenter.stop()
-    }
-
-    override fun render(viewState: FrontPageViewState) {
+    private fun render(viewState: FrontPageViewState) {
         when (viewState) {
             FrontPageViewState.Loading -> ""
             is FrontPageViewState.Failure -> {
@@ -85,7 +83,7 @@ class FrontPageFragment : Fragment(), FrontPageView {
         }
     }
 
-    private val feed: String
+    val feed: String
         get() = arguments?.getString(ARG_FEED)
             ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
 

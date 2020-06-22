@@ -8,20 +8,21 @@ import com.visualeap.aliforreddit.domain.model.feed.SortType
 import com.visualeap.aliforreddit.presentation.di.FragmentScope
 import com.visualeap.aliforreddit.domain.usecase.FetchFeedPosts
 import com.visualeap.aliforreddit.domain.util.applySchedulers
+import com.visualeap.aliforreddit.domain.util.autoReplay
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import com.visualeap.aliforreddit.presentation.util.ResourceProvider
 import com.visualeap.aliforreddit.presentation.util.SubredditFormatter
 import com.visualeap.aliforreddit.presentation.util.formatCount
 import com.visualeap.aliforreddit.presentation.util.formatTimestamp
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.Flowable
 import io.reactivex.processors.BehaviorProcessor
 import javax.inject.Inject
-import kotlin.math.max
 import kotlin.math.min
 
 @FragmentScope
 class FrontPagePresenter @Inject constructor(
-    private val view: FrontPageView,
+    private val launcher: FrontPageLauncher,
+    @Feed private val feed: String,
     private val fetchFeedPosts: FetchFeedPosts,
     private val resourceProvider: ResourceProvider,
     private val schedulerProvider: SchedulerProvider
@@ -31,30 +32,27 @@ class FrontPagePresenter @Inject constructor(
         private const val PAGINATION_STEP: Int = PAGE_SIZE / 4
     }
 
-    private val disposables = CompositeDisposable()
     private var lastOffset = 0
     private val offsetProcessor = BehaviorProcessor.createDefault(lastOffset)
-
-    fun start(feed: String) {
-        val disposable = offsetProcessor.distinctUntilChanged()
-            .switchMap { offset ->
-                when (feed) {
-                    Home.name -> TODO("Not implemented")
-                    else -> fetchFeedPosts.execute(feed, SortType.Hot, offset, PAGE_SIZE)
-                }
-                    .map<FrontPageViewState> { listing ->
-                        lastOffset = listing.offset
-                        FrontPageViewState.Success(
-                            !listing.reachedTheEnd,
-                            listing.items.map { (s, p) -> formatPost(s, p) })
-                    }
-                    .onErrorReturn { FrontPageViewState.Failure(resourceProvider.getString(R.string.error_server)) }
-                    .applySchedulers(schedulerProvider)
-                    .startWith(FrontPageViewState.Loading)
+    private val posts = offsetProcessor.distinctUntilChanged()
+        .switchMap { offset ->
+            when (feed) {
+                Home.name -> TODO("Not implemented")
+                else -> fetchFeedPosts.execute(feed, SortType.Hot, offset, PAGE_SIZE)
             }
-            .subscribe(view::render)
+                .map<FrontPageViewState> { listing ->
+                    lastOffset = listing.offset
+                    FrontPageViewState.Success(
+                        !listing.reachedTheEnd,
+                        listing.items.map { (s, p) -> formatPost(s, p) })
+                }
+                .onErrorReturn { FrontPageViewState.Failure(resourceProvider.getString(R.string.error_server)) }
+                .applySchedulers(schedulerProvider)
+                .startWith(FrontPageViewState.Loading)
+        }.autoReplay()
 
-        disposables.add(disposable)
+    fun start(): Flowable<FrontPageViewState> {
+        return posts
     }
 
     fun onPostBound(position: Int) {
@@ -65,10 +63,6 @@ class FrontPagePresenter @Inject constructor(
         } else if (addItemsAtBottom(position)) {
             offsetProcessor.offer(lastOffset + PAGINATION_STEP)
         }
-    }
-
-    fun stop() {
-        disposables.clear()
     }
 
     private fun addItemsAtTop(position: Int) = position == PAGE_SIZE / 4 - 1

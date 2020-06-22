@@ -59,6 +59,7 @@ class FetchFeedPosts @Inject constructor(
                                     correctedPageSize, pageSize, correctedOffset, offset
                                 )
                                 if (endOfCache && !endOfRemote) {
+                                    // TODO return cache only if it's not empty
                                     // Return cached items first (first observable) while fetching remote items (second observable)
                                     Flowable.merge(
                                         loadFromCache(cachedPosts, endOfRemote, correctedOffset),

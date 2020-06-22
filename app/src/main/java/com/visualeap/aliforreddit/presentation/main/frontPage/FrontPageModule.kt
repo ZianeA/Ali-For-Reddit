@@ -1,11 +1,17 @@
 package com.visualeap.aliforreddit.presentation.main.frontPage
 
-import com.visualeap.aliforreddit.presentation.di.FragmentScope
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 
 @Module
-abstract class FrontPageModule {
-    @Binds
-    abstract fun provideFrontPageView(frontPageFragment: FrontPageFragment): FrontPageView
+class FrontPageModule {
+    @Provides
+    fun provideFrontPageView(frontPageFragment: FrontPageFragment): FrontPageLauncher {
+        return frontPageFragment
+    }
+
+    @Provides
+    @Feed
+    fun provideFeed(frontPageFragment: FrontPageFragment): String = frontPageFragment.feed
 }

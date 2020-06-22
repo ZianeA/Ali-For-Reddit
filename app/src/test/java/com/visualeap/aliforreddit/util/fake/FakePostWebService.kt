@@ -5,11 +5,15 @@ import com.visualeap.aliforreddit.data.repository.post.PostResponse.Data.PostHol
 import com.visualeap.aliforreddit.data.repository.post.PostWebService
 import com.visualeap.aliforreddit.domain.model.Post
 import io.reactivex.Single
+import retrofit2.HttpException
+import java.io.IOException
+import java.util.concurrent.TimeoutException
 import kotlin.math.min
 import com.visualeap.aliforreddit.data.repository.post.PostResponse.Data.PostHolder.Post as PostDto
 
 class FakePostWebService : PostWebService {
     private val subredditToPosts = mutableMapOf<String, MutableList<PostDto>>()
+    private var error = false
 
     fun addPosts(subredditName: String, posts: List<Post>) {
         this.subredditToPosts.getOrPut(subredditName) { mutableListOf() }
@@ -29,11 +33,17 @@ class FakePostWebService : PostWebService {
 
     fun addPost(SubredditName: String, post: Post) = addPosts(SubredditName, listOf(post))
 
+    fun simulateError() {
+        error = true
+    }
+
     override fun getPostsBySubreddit(
         subredditName: String,
         limit: Int,
         after: String?
     ): Single<PostResponse> {
+        if (error) return Single.error(IOException())
+
         return Single.fromCallable {
             val posts = subredditToPosts.getOrPut(subredditName) { mutableListOf() }
             val fromIndex = after?.toIntOrNull() ?: 0
