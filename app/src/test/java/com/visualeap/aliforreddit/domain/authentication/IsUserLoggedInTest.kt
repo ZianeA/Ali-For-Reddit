@@ -1,7 +1,5 @@
-package com.visualeap.aliforreddit.domain.usecase
+package com.visualeap.aliforreddit.domain.authentication
 
-import com.visualeap.aliforreddit.domain.authentication.IsUserLoggedIn
-import com.visualeap.aliforreddit.domain.authentication.TokenRepository
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk

@@ -10,12 +10,14 @@ import androidx.test.core.app.ApplicationProvider
 import com.visualeap.aliforreddit.data.database.RedditDatabase
 import com.visualeap.aliforreddit.domain.feed.SortType
 import io.reactivex.functions.Predicate
+import io.reactivex.observers.TestObserver
 
 fun <T> match(matcher: (T) -> Unit): Predicate<T> {
-    return Predicate {
-        matcher.invoke(it)
-        true
-    }
+    return Predicate { matcher.invoke(it); true }
+}
+
+fun <T> TestObserver<T>.assertLastValue(predicate: (T) -> Unit) {
+    assertValueAt(valueCount() - 1) { predicate.invoke(it); true }
 }
 
 fun createDatabase(): RedditDatabase {

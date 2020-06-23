@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.presentation.frontPage
 
-data class FeedPostDto(
+data class PostDto(
     val id: String,
     val authorName: String,
     val title: String,

@@ -9,6 +9,7 @@ import com.visualeap.aliforreddit.domain.post.FetchFeedPosts
 import com.visualeap.aliforreddit.domain.util.applySchedulers
 import com.visualeap.aliforreddit.domain.util.autoReplay
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
+import com.visualeap.aliforreddit.presentation.common.formatter.PostFormatter
 import com.visualeap.aliforreddit.presentation.common.util.ResourceProvider
 import com.visualeap.aliforreddit.presentation.common.formatter.SubredditFormatter
 import com.visualeap.aliforreddit.presentation.common.formatter.formatCount
@@ -40,7 +41,7 @@ class FrontPagePresenter @Inject constructor(
                     lastOffset = listing.offset
                     FrontPageViewState.Success(
                         !listing.reachedTheEnd,
-                        listing.items.map { (s, p) -> formatPost(s, p) })
+                        listing.items.map { (s, p) -> PostFormatter.formatPost(s, p) })
                 }
                 .onErrorReturn { FrontPageViewState.Failure(resourceProvider.getString(R.string.error_server)) }
                 .applySchedulers(schedulerProvider)
@@ -65,26 +66,4 @@ class FrontPagePresenter @Inject constructor(
     private fun addItemsAtTop(position: Int) = position == PAGE_SIZE / 4 - 1
 
     private fun addItemsAtBottom(position: Int) = position == PAGE_SIZE * 3 / 4 + 1
-
-    private fun formatPost(subreddit: Subreddit, post: Post): FeedPostDto {
-        return FeedPostDto(
-            post.id,
-            "u/${post.authorName}",
-            post.title,
-            post.text,
-            formatCount(
-                post.score
-            ),
-            formatCount(
-                post.commentCount
-            ),
-            formatTimestamp(
-                post.created
-            ),
-            subreddit.id,
-            "r/${subreddit.name}",
-            SubredditFormatter.formatColor(subreddit.primaryColor, subreddit.keyColor),
-            SubredditFormatter.formatIcon(subreddit.iconUrl)
-        )
-    }
 }

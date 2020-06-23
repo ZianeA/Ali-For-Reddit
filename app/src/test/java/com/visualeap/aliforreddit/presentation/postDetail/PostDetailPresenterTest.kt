@@ -1,35 +1,140 @@
 package com.visualeap.aliforreddit.presentation.postDetail
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.core.app.ApplicationProvider
+import com.visualeap.aliforreddit.domain.comment.GetCommentsByPost
+import com.visualeap.aliforreddit.domain.post.GetPostById
+import com.visualeap.aliforreddit.domain.util.Lce
+import com.visualeap.aliforreddit.presentation.common.util.ResourceProvider
 import com.visualeap.aliforreddit.util.TrampolineSchedulerProvider
-import com.visualeap.aliforreddit.domain.comment.Comment
-import com.visualeap.aliforreddit.domain.comment.CommentRepository
-import com.visualeap.aliforreddit.domain.util.Mapper
-import com.visualeap.aliforreddit.presentation.common.model.CommentView
 import io.mockk.*
-import io.mockk.junit5.MockKExtension
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.extension.ExtendWith
+import io.reactivex.Observable
+import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.InstanceOfAssertFactories
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import util.domain.*
+import java.io.IOException
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(MockKExtension::class)
+@RunWith(RobolectricTestRunner::class)
 internal class PostDetailPresenterTest {
-    private val view: PostDetailView = mockk()
-    private val commentRepository: CommentRepository = mockk()
-    private val commentViewMapper: Mapper<List<CommentView>, List<Comment>> = mockk()
-    private val presenter =
-        PostDetailPresenter(view, commentRepository,
-            TrampolineSchedulerProvider(), commentViewMapper)
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @BeforeEach
-    internal fun setUp() {
+    private val launcher: PostDetailLauncher = mockk(relaxed = true)
+    private val getPostById: GetPostById = mockk(relaxed = true)
+    private val getCommentsByPost: GetCommentsByPost = mockk(relaxed = true)
+    private val presenter = PostDetailPresenter(
+        launcher,
+        POST_ID,
+        SUBREDDIT_NAME,
+        getPostById,
+        getCommentsByPost,
+        ResourceProvider(ApplicationProvider.getApplicationContext()),
+        TrampolineSchedulerProvider()
+    )
+
+    @Before
+    internal fun setup() {
+        every { getPostById.execute(any()) } returns Observable.never()
+        every { getCommentsByPost.execute(any(), any()) } returns Observable.never()
+    }
+
+    @After
+    internal fun tearDown() {
         clearAllMocks()
     }
 
-    /*@Nested
+    @Test
+    fun `display progress bar when post is loading`() {
+        //Arrange
+        every { getPostById.execute(any()) } returns Observable.just(Lce.Loading())
+
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+
+        //Assert
+        testObserver.assertLastValue { assertThat(it.postLoading).isTrue() }
+    }
+
+    @Test
+    fun `display post detail when loaded`() {
+        //Arrange
+        every { getPostById.execute(any()) }
+            .returns(Observable.just(Lce.Content(createSubreddit() to createPost())))
+
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+
+        //Assert
+        testObserver.assertLastValue { assertThat(it.post).isEqualTo(createPostDto()) }
+    }
+
+    @Test
+    fun `display error when loading post fails`() {
+        //Arrange
+        every { getPostById.execute(any()) } returns Observable.just(Lce.Error(IOException()))
+
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+
+        //Assert
+        testObserver.assertLastValue { assertThat(it.postError).isNotBlank() }
+    }
+
+    @Test
+    fun `display progress bar when comments are loading`() {
+        //Arrange
+        every { getCommentsByPost.execute(any(), any()) } returns Observable.just(Lce.Loading())
+
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+
+        //Assert
+        testObserver.assertLastValue { assertThat(it.commentsLoading).isTrue() }
+    }
+
+    @Test
+    fun `display comments when loaded`() {
+        //Arrange
+        every { getCommentsByPost.execute(any(), any()) }
+            .returns(Observable.just(Lce.Content(listOf(createComment()))))
+
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+
+        // Assert
+        testObserver.assertLastValue { viewState ->
+            assertThat(viewState.comments).containsExactly(createCommentDto())
+        }
+    }
+
+    @Test
+    fun `display error when loading comments fails`() {
+        //Arrange
+        every { getCommentsByPost.execute(any(), any()) }
+            .returns(Observable.just(Lce.Error(IOException())))
+
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+
+        //Assert
+        testObserver.assertLastValue { assertThat(it.commentsError).isNotBlank() }
+    }
+
+    /*
+
+    *//*@Nested
     inner class Start {
         @Test
         fun `display post`() {
@@ -74,14 +179,14 @@ internal class PostDetailPresenterTest {
             //Assert
             verify { view.showComments(commentViews) }
         }
-    }*/
+    }*//*
 
     @Nested
     inner class OnCommentLongClicked {
         @Test
         fun `collapse comments when expanded`() {
             //Arrange
-            val commentView = createCommentView()
+            val commentView = createCommentDto()
             every { view.showComments(any()) } just runs
 
             //Act
@@ -94,21 +199,21 @@ internal class PostDetailPresenterTest {
         @Test
         fun `handle collapsing deeply nested comments`() {
             //Arrange
-            val clickedComment = createCommentView(
+            val clickedComment = createCommentDto(
                 id = "16",
                 parentId = "15",
                 replies = null
             )
             val allComments = listOf(
-                createCommentView(
+                createCommentDto(
                     id = "1", parentId = null, replies = listOf(
-                        createCommentView(
+                        createCommentDto(
                             id = "2", parentId = "1", replies = listOf(
-                                createCommentView(
+                                createCommentDto(
                                     id = "5", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "7", parentId = "5", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "8",
                                                     parentId = "7",
                                                     replies = null
@@ -117,11 +222,11 @@ internal class PostDetailPresenterTest {
                                         )
                                     )
                                 ),
-                                createCommentView(
+                                createCommentDto(
                                     id = "6", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "12", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "15", parentId = "12", replies = listOf(
                                                         clickedComment
                                                     )
@@ -142,15 +247,15 @@ internal class PostDetailPresenterTest {
 
             //Assert
             val expectedComments = listOf(
-                createCommentView(
+                createCommentDto(
                     id = "1", parentId = null, replies = listOf(
-                        createCommentView(
+                        createCommentDto(
                             id = "2", parentId = "1", replies = listOf(
-                                createCommentView(
+                                createCommentDto(
                                     id = "5", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "7", parentId = "5", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "8",
                                                     parentId = "7",
                                                     replies = null
@@ -159,11 +264,11 @@ internal class PostDetailPresenterTest {
                                         )
                                     )
                                 ),
-                                createCommentView(
+                                createCommentDto(
                                     id = "6", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "12", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "15", parentId = "12", replies = listOf(
                                                         clickedComment.copy(isCollapsed = true)
                                                     )
@@ -183,21 +288,21 @@ internal class PostDetailPresenterTest {
         @Test
         fun `handle collapsing deeply nested comments 2`() {
             //Arrange
-            val clickedComment = createCommentView(
+            val clickedComment = createCommentDto(
                 id = "17",
                 parentId = "14",
                 replies = null
             )
             val allComments = listOf(
-                createCommentView(
+                createCommentDto(
                     id = "1", parentId = null, replies = listOf(
-                        createCommentView(
+                        createCommentDto(
                             id = "2", parentId = "1", replies = listOf(
-                                createCommentView(
+                                createCommentDto(
                                     id = "5", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "7", parentId = "5", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "8",
                                                     parentId = "7",
                                                     replies = null
@@ -206,13 +311,13 @@ internal class PostDetailPresenterTest {
                                         )
                                     )
                                 ),
-                                createCommentView(
+                                createCommentDto(
                                     id = "6", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "12", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "15", parentId = "12", replies = listOf(
-                                                        createCommentView(
+                                                        createCommentDto(
                                                             id = "16",
                                                             parentId = "15",
                                                             replies = null
@@ -221,15 +326,15 @@ internal class PostDetailPresenterTest {
                                                 )
                                             )
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "13",
                                             parentId = "6",
                                             replies = null
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "14", parentId = "6", replies = listOf(
                                                 clickedComment,
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "18",
                                                     parentId = "14",
                                                     replies = null
@@ -250,15 +355,15 @@ internal class PostDetailPresenterTest {
 
             //Assert
             val expectedComments = listOf(
-                createCommentView(
+                createCommentDto(
                     id = "1", parentId = null, replies = listOf(
-                        createCommentView(
+                        createCommentDto(
                             id = "2", parentId = "1", replies = listOf(
-                                createCommentView(
+                                createCommentDto(
                                     id = "5", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "7", parentId = "5", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "8",
                                                     parentId = "7",
                                                     replies = null
@@ -267,13 +372,13 @@ internal class PostDetailPresenterTest {
                                         )
                                     )
                                 ),
-                                createCommentView(
+                                createCommentDto(
                                     id = "6", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "12", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "15", parentId = "12", replies = listOf(
-                                                        createCommentView(
+                                                        createCommentDto(
                                                             id = "16",
                                                             parentId = "15",
                                                             replies = null
@@ -282,15 +387,15 @@ internal class PostDetailPresenterTest {
                                                 )
                                             )
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "13",
                                             parentId = "6",
                                             replies = null
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "14", parentId = "6", replies = listOf(
                                                 clickedComment.copy(isCollapsed = true),
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "18",
                                                     parentId = "14",
                                                     replies = null
@@ -310,21 +415,21 @@ internal class PostDetailPresenterTest {
         @Test
         fun `handle collapsing other root comments`() {
             //Arrange
-            val clickedComment = createCommentView(
+            val clickedComment = createCommentDto(
                 id = "10", parentId = null, replies = listOf(
-                    createCommentView(id = "11", parentId = "10", replies = null)
+                    createCommentDto(id = "11", parentId = "10", replies = null)
                 )
             )
             val allComments = listOf(
-                createCommentView(
+                createCommentDto(
                     id = "1", parentId = null, replies = listOf(
-                        createCommentView(
+                        createCommentDto(
                             id = "2", parentId = "1", replies = listOf(
-                                createCommentView(
+                                createCommentDto(
                                     id = "5", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "7", parentId = "5", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "8",
                                                     parentId = "7",
                                                     replies = null
@@ -333,13 +438,13 @@ internal class PostDetailPresenterTest {
                                         )
                                     )
                                 ),
-                                createCommentView(
+                                createCommentDto(
                                     id = "6", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "12", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "15", parentId = "12", replies = listOf(
-                                                        createCommentView(
+                                                        createCommentDto(
                                                             id = "16",
                                                             parentId = "15",
                                                             replies = null
@@ -348,19 +453,19 @@ internal class PostDetailPresenterTest {
                                                 )
                                             )
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "13",
                                             parentId = "6",
                                             replies = null
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "14", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "17",
                                                     parentId = "14",
                                                     replies = null
                                                 ),
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "18",
                                                     parentId = "14",
                                                     replies = null
@@ -371,11 +476,11 @@ internal class PostDetailPresenterTest {
                                 )
                             )
                         ),
-                        createCommentView(id = "3", parentId = "1", replies = null),
-                        createCommentView(id = "4", parentId = "1", replies = null)
+                        createCommentDto(id = "3", parentId = "1", replies = null),
+                        createCommentDto(id = "4", parentId = "1", replies = null)
                     )
                 ),
-                createCommentView(id = "9", parentId = null, replies = null),
+                createCommentDto(id = "9", parentId = null, replies = null),
                 clickedComment
             )
             every { view.showComments(any()) } just runs
@@ -385,15 +490,15 @@ internal class PostDetailPresenterTest {
 
             //Assert
             val expectedComments = listOf(
-                createCommentView(
+                createCommentDto(
                     id = "1", parentId = null, replies = listOf(
-                        createCommentView(
+                        createCommentDto(
                             id = "2", parentId = "1", replies = listOf(
-                                createCommentView(
+                                createCommentDto(
                                     id = "5", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "7", parentId = "5", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "8",
                                                     parentId = "7",
                                                     replies = null
@@ -402,13 +507,13 @@ internal class PostDetailPresenterTest {
                                         )
                                     )
                                 ),
-                                createCommentView(
+                                createCommentDto(
                                     id = "6", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "12", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "15", parentId = "12", replies = listOf(
-                                                        createCommentView(
+                                                        createCommentDto(
                                                             id = "16",
                                                             parentId = "15",
                                                             replies = null
@@ -417,19 +522,19 @@ internal class PostDetailPresenterTest {
                                                 )
                                             )
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "13",
                                             parentId = "6",
                                             replies = null
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "14", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "17",
                                                     parentId = "14",
                                                     replies = null
                                                 ),
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "18",
                                                     parentId = "14",
                                                     replies = null
@@ -440,11 +545,11 @@ internal class PostDetailPresenterTest {
                                 )
                             )
                         ),
-                        createCommentView(id = "3", parentId = "1", replies = null),
-                        createCommentView(id = "4", parentId = "1", replies = null)
+                        createCommentDto(id = "3", parentId = "1", replies = null),
+                        createCommentDto(id = "4", parentId = "1", replies = null)
                     )
                 ),
-                createCommentView(id = "9", parentId = null, replies = null),
+                createCommentDto(id = "9", parentId = null, replies = null),
                 clickedComment.copy(isCollapsed = true)
             )
             verify { view.showComments(expectedComments) }
@@ -453,17 +558,17 @@ internal class PostDetailPresenterTest {
         @Test
         fun `handle collapsing nested comment of other root comments`() {
             //Arrange
-            val clickedComment = createCommentView(id = "11", parentId = "10", replies = null)
+            val clickedComment = createCommentDto(id = "11", parentId = "10", replies = null)
             val allComments = listOf(
-                createCommentView(
+                createCommentDto(
                     id = "1", parentId = null, replies = listOf(
-                        createCommentView(
+                        createCommentDto(
                             id = "2", parentId = "1", replies = listOf(
-                                createCommentView(
+                                createCommentDto(
                                     id = "5", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "7", parentId = "5", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "8",
                                                     parentId = "7",
                                                     replies = null
@@ -472,13 +577,13 @@ internal class PostDetailPresenterTest {
                                         )
                                     )
                                 ),
-                                createCommentView(
+                                createCommentDto(
                                     id = "6", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "12", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "15", parentId = "12", replies = listOf(
-                                                        createCommentView(
+                                                        createCommentDto(
                                                             id = "16",
                                                             parentId = "15",
                                                             replies = null
@@ -487,19 +592,19 @@ internal class PostDetailPresenterTest {
                                                 )
                                             )
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "13",
                                             parentId = "6",
                                             replies = null
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "14", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "17",
                                                     parentId = "14",
                                                     replies = null
                                                 ),
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "18",
                                                     parentId = "14",
                                                     replies = null
@@ -510,12 +615,12 @@ internal class PostDetailPresenterTest {
                                 )
                             )
                         ),
-                        createCommentView(id = "3", parentId = "1", replies = null),
-                        createCommentView(id = "4", parentId = "1", replies = null)
+                        createCommentDto(id = "3", parentId = "1", replies = null),
+                        createCommentDto(id = "4", parentId = "1", replies = null)
                     )
                 ),
-                createCommentView(id = "9", parentId = null, replies = null),
-                createCommentView(
+                createCommentDto(id = "9", parentId = null, replies = null),
+                createCommentDto(
                     id = "10", parentId = null, replies = listOf(clickedComment)
                 )
             )
@@ -526,15 +631,15 @@ internal class PostDetailPresenterTest {
 
             //Assert
             val expectedComment = listOf(
-                createCommentView(
+                createCommentDto(
                     id = "1", parentId = null, replies = listOf(
-                        createCommentView(
+                        createCommentDto(
                             id = "2", parentId = "1", replies = listOf(
-                                createCommentView(
+                                createCommentDto(
                                     id = "5", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "7", parentId = "5", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "8",
                                                     parentId = "7",
                                                     replies = null
@@ -543,13 +648,13 @@ internal class PostDetailPresenterTest {
                                         )
                                     )
                                 ),
-                                createCommentView(
+                                createCommentDto(
                                     id = "6", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "12", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "15", parentId = "12", replies = listOf(
-                                                        createCommentView(
+                                                        createCommentDto(
                                                             id = "16",
                                                             parentId = "15",
                                                             replies = null
@@ -558,19 +663,19 @@ internal class PostDetailPresenterTest {
                                                 )
                                             )
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "13",
                                             parentId = "6",
                                             replies = null
                                         ),
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "14", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "17",
                                                     parentId = "14",
                                                     replies = null
                                                 ),
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "18",
                                                     parentId = "14",
                                                     replies = null
@@ -581,12 +686,12 @@ internal class PostDetailPresenterTest {
                                 )
                             )
                         ),
-                        createCommentView(id = "3", parentId = "1", replies = null),
-                        createCommentView(id = "4", parentId = "1", replies = null)
+                        createCommentDto(id = "3", parentId = "1", replies = null),
+                        createCommentDto(id = "4", parentId = "1", replies = null)
                     )
                 ),
-                createCommentView(id = "9", parentId = null, replies = null),
-                createCommentView(
+                createCommentDto(id = "9", parentId = null, replies = null),
+                createCommentDto(
                     id = "10",
                     parentId = null,
                     replies = listOf(clickedComment.copy(isCollapsed = true))
@@ -598,7 +703,7 @@ internal class PostDetailPresenterTest {
         @Test
         fun `expand comments when collapsed`() {
             //Arrange
-            val commentView = createCommentView(isCollapsed = true)
+            val commentView = createCommentDto(isCollapsed = true)
             every { view.showComments(any()) } just runs
 
             //Act
@@ -611,22 +716,22 @@ internal class PostDetailPresenterTest {
         @Test
         fun `handle expanding deeply nested comments`() {
             //Arrange
-            val clickedComment = createCommentView(
+            val clickedComment = createCommentDto(
                 id = "16",
                 parentId = "15",
                 replies = null,
                 isCollapsed = true
             )
             val allComments = listOf(
-                createCommentView(
+                createCommentDto(
                     id = "1", parentId = null, replies = listOf(
-                        createCommentView(
+                        createCommentDto(
                             id = "2", parentId = "1", replies = listOf(
-                                createCommentView(
+                                createCommentDto(
                                     id = "5", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "7", parentId = "5", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "8",
                                                     parentId = "7",
                                                     replies = null
@@ -635,11 +740,11 @@ internal class PostDetailPresenterTest {
                                         )
                                     )
                                 ),
-                                createCommentView(
+                                createCommentDto(
                                     id = "6", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "12", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "15", parentId = "12", replies = listOf(
                                                         clickedComment
                                                     )
@@ -660,15 +765,15 @@ internal class PostDetailPresenterTest {
 
             //Assert
             val expectedComments = listOf(
-                createCommentView(
+                createCommentDto(
                     id = "1", parentId = null, replies = listOf(
-                        createCommentView(
+                        createCommentDto(
                             id = "2", parentId = "1", replies = listOf(
-                                createCommentView(
+                                createCommentDto(
                                     id = "5", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "7", parentId = "5", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "8",
                                                     parentId = "7",
                                                     replies = null
@@ -677,11 +782,11 @@ internal class PostDetailPresenterTest {
                                         )
                                     )
                                 ),
-                                createCommentView(
+                                createCommentDto(
                                     id = "6", parentId = "2", replies = listOf(
-                                        createCommentView(
+                                        createCommentDto(
                                             id = "12", parentId = "6", replies = listOf(
-                                                createCommentView(
+                                                createCommentDto(
                                                     id = "15", parentId = "12", replies = listOf(
                                                         clickedComment.copy(isCollapsed = false)
                                                     )
@@ -697,5 +802,5 @@ internal class PostDetailPresenterTest {
             )
             verify { view.showComments(expectedComments) }
         }
-    }
+    }*/
 }

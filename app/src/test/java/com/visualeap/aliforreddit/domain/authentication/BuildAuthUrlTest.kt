@@ -1,6 +1,5 @@
-package com.visualeap.aliforreddit.domain.usecase
+package com.visualeap.aliforreddit.domain.authentication
 
-import com.visualeap.aliforreddit.domain.authentication.BuildAuthUrl
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.assertj.core.api.Assertions.*

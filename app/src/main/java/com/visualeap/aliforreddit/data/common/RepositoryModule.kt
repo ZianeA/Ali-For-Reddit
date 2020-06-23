@@ -11,7 +11,6 @@ import com.visualeap.aliforreddit.data.token.*
 import com.visualeap.aliforreddit.domain.account.AccountRepository
 import com.visualeap.aliforreddit.domain.authentication.TokenRepository
 import com.visualeap.aliforreddit.domain.comment.CommentRepository
-import com.visualeap.aliforreddit.domain.comment.Comment
 import com.visualeap.aliforreddit.domain.post.Post
 import com.visualeap.aliforreddit.domain.redditor.Redditor
 import com.visualeap.aliforreddit.domain.subreddit.Subreddit
@@ -51,9 +50,6 @@ interface RepositoryModule {
     fun provideAfterKeyRepository(afterKeyRepo: AfterKeyRoomRepository): AfterKeyRepository
 
     @Binds
-    fun providePostWithSubredditResponseMapper(mapper: PostWithSubredditResponseMapper): Mapper<PostWithSubredditResponse, List<Post>>
-
-    @Binds
     fun provideRedditorEntityMapper(mapper: RedditorEntityMapper): Mapper<RedditorEntity, Redditor>
 
     @Binds
@@ -61,13 +57,4 @@ interface RepositoryModule {
 
     @Binds
     fun provideSubredditEntityMapper(mapper: SubredditEntityMapper): Mapper<SubredditEntity, Subreddit>
-
-    @Binds
-    fun provideSubredditResponseMapper(mapper: SubredditResponseMapper): Mapper<SubredditResponse, List<Subreddit>>
-
-    @Binds
-    fun provideCommentResponseMapper(mapper: CommentResponseMapper): Mapper<CommentResponse, List<Comment>>
-
-    @Binds
-    fun provideCommentEntityMapper(mapper: CommentEntityMapper): Mapper<List<CommentEntity>, List<Comment>>
 }

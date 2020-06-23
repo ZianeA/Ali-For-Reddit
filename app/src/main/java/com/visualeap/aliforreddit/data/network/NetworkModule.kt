@@ -1,6 +1,7 @@
 package com.visualeap.aliforreddit.data.network
 
 import com.squareup.moshi.Moshi
+import com.visualeap.aliforreddit.data.comment.CommentWebService
 import com.visualeap.aliforreddit.data.network.auth.TokenAuthenticator
 import com.visualeap.aliforreddit.data.network.auth.TokenInterceptor
 import com.visualeap.aliforreddit.data.comment.jsonparser.CommentJsonAdapterFactory
@@ -54,17 +55,22 @@ class NetworkModule {
     @Singleton
     @Provides
     fun provideRedditService(@Named("retrofit") retrofit: Retrofit): RedditService =
-        retrofit.create<RedditService>(RedditService::class.java)
+        retrofit.create(RedditService::class.java)
 
     @Singleton
     @Provides
     fun providePostService(@Named("retrofit") retrofit: Retrofit): PostWebService =
-        retrofit.create<PostWebService>(PostWebService::class.java)
+        retrofit.create(PostWebService::class.java)
 
     @Singleton
     @Provides
     fun provideSubredditService(@Named("retrofit") retrofit: Retrofit): SubredditWebService =
-        retrofit.create<SubredditWebService>(SubredditWebService::class.java)
+        retrofit.create(SubredditWebService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideCommentService(@Named("retrofit") retrofit: Retrofit): CommentWebService =
+        retrofit.create(CommentWebService::class.java)
 
     companion object {
         private const val BASE_URL = "https://oauth.reddit.com/"

@@ -24,7 +24,7 @@ class FakeSubredditWebService : SubredditWebService {
 
     fun addSubreddit(subreddit: Subreddit) = addSubreddits(listOf(subreddit))
 
-    override fun getSubreddits(subredditIds: String): Single<SubredditResponse> {
+    override fun getSubredditsByIds(subredditIds: String): Single<SubredditResponse> {
         return Single.fromCallable {
             val subredditHolders = subredditIds.split(", ")
                 .map { SubredditResponse.Data.SubredditHolder(subredditMap.getValue(it)) }

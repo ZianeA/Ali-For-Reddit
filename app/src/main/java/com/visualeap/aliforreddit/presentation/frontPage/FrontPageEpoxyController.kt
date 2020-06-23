@@ -2,13 +2,15 @@ package com.visualeap.aliforreddit.presentation.frontPage
 
 import com.airbnb.epoxy.AsyncEpoxyController
 import android.view.View
+import com.airbnb.epoxy.SimpleEpoxyModel
+import com.visualeap.aliforreddit.R
 
 
 class FrontPageEpoxyController(
     private val onBindPostListener: (position: Int) -> Unit,
-    private val onPostClickListener: ((clickedPost: FeedPostDto) -> Unit)
+    private val onPostClickListener: ((clickedPost: PostDto) -> Unit)
 ) : AsyncEpoxyController() {
-    var posts = listOf<FeedPostDto>()
+    var posts = listOf<PostDto>()
     var isLoading = false
 
     override fun buildModels() {
@@ -22,7 +24,9 @@ class FrontPageEpoxyController(
             }
         }
 
-        if (isLoading) { loadingPost { id("Loading Post") } }
+        SimpleEpoxyModel(R.layout.item_loading)
+            .id("Loading Post")
+            .addIf(isLoading, this)
     }
 
     companion object {

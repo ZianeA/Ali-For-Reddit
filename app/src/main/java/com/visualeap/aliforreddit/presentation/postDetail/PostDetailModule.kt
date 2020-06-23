@@ -1,10 +1,18 @@
 package com.visualeap.aliforreddit.presentation.postDetail
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 
 @Module
-interface PostDetailModule {
-    @Binds
-    fun providePostDetailView(fragment: PostDetailFragment): PostDetailView
+class PostDetailModule {
+    @Provides
+    fun providePostDetailView(fragment: PostDetailFragment): PostDetailLauncher = fragment
+
+    @Provides
+    @PostId
+    fun providePostId(fragment: PostDetailFragment): String = fragment.postId
+
+    @Provides
+    @Subreddit
+    fun provideSubredditId(fragment: PostDetailFragment): String = fragment.subreddit
 }

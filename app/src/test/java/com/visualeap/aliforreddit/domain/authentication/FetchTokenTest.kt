@@ -1,12 +1,10 @@
-package com.visualeap.aliforreddit.domain.usecase
+package com.visualeap.aliforreddit.domain.authentication
 
 import com.visualeap.aliforreddit.data.token.AuthService
 import com.visualeap.aliforreddit.data.token.TokenResponse
-import com.visualeap.aliforreddit.domain.authentication.FetchToken
 import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
 import com.visualeap.aliforreddit.domain.authentication.token.Token
 import com.visualeap.aliforreddit.domain.authentication.token.UserlessToken
-import com.visualeap.aliforreddit.domain.authentication.TokenRepository
 import io.mockk.*
 import io.reactivex.Completable
 import io.reactivex.Maybe

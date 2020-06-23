@@ -4,6 +4,8 @@ import com.visualeap.aliforreddit.domain.feed.SortType
 import io.reactivex.*
 
 interface PostRepository {
+    fun getPostById(id: String): Observable<Post>
+
     fun getPostsByFeed(
         feed: String,
         sortType: SortType,
@@ -12,6 +14,7 @@ interface PostRepository {
     ): Flowable<List<Post>>
 
     fun countPostsByFeed(feed: String, sortType: SortType): Single<Int>
-
+    fun addPost(post: Post, feed: String, sortType: SortType): Completable
     fun addPosts(posts: List<Post>, feed: String, sortType: SortType): Completable
+    fun updatePost(post: Post): Completable
 }

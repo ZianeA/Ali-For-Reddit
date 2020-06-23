@@ -8,6 +8,9 @@ import io.reactivex.Observable
 
 @Dao
 interface PostDao {
+    @Query("SELECT * FROM PostEntity WHERE id = :id")
+    fun getById(id: String): Observable<PostEntity>
+
     @Query("SELECT * FROM PostEntity")
     fun getAll(): Observable<List<PostEntity>>
 
@@ -36,6 +39,9 @@ interface PostDao {
     // TODO use upsert
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addAll(posts: List<PostEntity>)
+
+    @Update
+    fun update(post: PostEntity): Completable
 
     @Query("DELETE FROM PostEntity")
     fun deleteAll(): Completable

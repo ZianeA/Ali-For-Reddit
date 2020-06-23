@@ -113,7 +113,7 @@ class FrontPagePresenterTest {
             .assertValueAt(1, match {
                 val firstPost = (it as Success).posts.first()
                 assertThat(firstPost).isEqualToIgnoringGivenFields(
-                    createFeedPostDto(), FeedPostDto::id.name, FeedPostDto::subredditId.name
+                    createPostDto(), PostDto::id.name, PostDto::subredditId.name
                 )
             })
     }

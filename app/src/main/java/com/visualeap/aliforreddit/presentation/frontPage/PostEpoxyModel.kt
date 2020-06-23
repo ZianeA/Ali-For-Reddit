@@ -16,19 +16,20 @@ import com.visualeap.aliforreddit.presentation.common.util.KotlinEpoxyHolder
 @EpoxyModelClass(layout = R.layout.item_post)
 abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
     @EpoxyAttribute
-    lateinit var post: FeedPostDto
+    lateinit var post: PostDto
 
     @EpoxyAttribute
-    lateinit var bindListener: () -> Unit
+    var bindListener: (() -> Unit)? = null
 
     @EpoxyAttribute
     lateinit var clickListener: View.OnClickListener
 
+    // TODO find a better approach
     @EpoxyAttribute
     var maxLines: Int = 0
 
     override fun bind(holder: PostHolder) {
-        bindListener()
+        bindListener?.invoke()
 
         holder.apply {
             postTitle.text = post.title

@@ -20,9 +20,9 @@ import com.visualeap.aliforreddit.domain.comment.Comment
 import com.visualeap.aliforreddit.domain.post.Post
 import com.visualeap.aliforreddit.domain.redditor.Redditor
 import com.visualeap.aliforreddit.domain.subreddit.Subreddit
-import com.visualeap.aliforreddit.presentation.frontPage.FeedPostDto
+import com.visualeap.aliforreddit.presentation.frontPage.PostDto
 import com.visualeap.aliforreddit.presentation.frontPage.SubredditIcon
-import com.visualeap.aliforreddit.presentation.common.model.CommentView
+import com.visualeap.aliforreddit.presentation.common.model.CommentDto
 import com.visualeap.aliforreddit.presentation.common.model.SubredditView
 import com.visualeap.aliforreddit.presentation.common.formatter.formatCount
 import com.visualeap.aliforreddit.presentation.common.formatter.formatTimestamp
@@ -130,7 +130,7 @@ fun createAccount(
 //endregion
 
 //region Subreddit
-private const val SUBREDDIT_NAME = "FakeSubreddit"
+const val SUBREDDIT_NAME = "FakeSubreddit"
 private const val SUBREDDIT_ID = "FakeSubredditId"
 private const val SUBREDDIT_ICON_URL = "https://www.redditstatic.com/avatars/test.png"
 private const val SUBREDDIT_PRIMARY_COLOR = "#ffffff"
@@ -191,7 +191,7 @@ fun createSubredditView(
 //endregion
 
 //region Post
-private const val POST_ID = "FakePostId"
+const val POST_ID = "FakePostId"
 private const val POST_TITLE = "This is a fake post title"
 private const val POST_TEXT = "This is a fake post text."
 private const val POST_SCORE = 3000
@@ -259,7 +259,7 @@ fun createPostResponse(
     )
 )
 
-fun createFeedPostDto(
+fun createPostDto(
     id: String = POST_ID,
     authorName: String = "u/$REDDITOR_USERNAME",
     title: String = POST_TITLE,
@@ -277,7 +277,7 @@ fun createFeedPostDto(
     subreddit: String = SUBREDDIT_NAME,
     subredditColor: String = SUBREDDIT_PRIMARY_COLOR,
     subredditIcon: SubredditIcon = SubredditIcon.Custom(SUBREDDIT_ICON_URL)
-) = FeedPostDto(
+) = PostDto(
     id,
     authorName,
     title,
@@ -301,6 +301,9 @@ private const val COMMENT_CREATION_DATE: Long = 1569878021
 private const val COMMENT_DEPTH = 0
 const val NESTED_COMMENT_DEPTH = 1
 
+/**
+ * Create a comment without one reply
+ */
 fun createComment(
     id: String = COMMENT_ID,
     authorName: String = REDDITOR_USERNAME,
@@ -313,6 +316,7 @@ fun createComment(
     replies: List<Comment>? = listOf(
         createComment(
             id = NESTED_COMMENT_ID,
+            postId = postId,
             parentId = COMMENT_ID,
             depth = NESTED_COMMENT_DEPTH,
             replies = null
@@ -330,6 +334,22 @@ fun createComment(
     replies
 )
 
+/**
+ * Create a comment without replies
+ */
+fun createCommentB(
+    id: String = COMMENT_ID,
+    authorName: String = REDDITOR_USERNAME,
+    text: String = COMMENT_TEXT,
+    score: Int = COMMENT_SCORE,
+    creationDate: Long = COMMENT_CREATION_DATE,
+    depth: Int = COMMENT_DEPTH,
+    postId: String = POST_ID,
+    parentId: String? = null,
+    replies: List<Comment>? = null
+) =
+    Comment(id, authorName, text, score, creationDate, depth, postId, parentId, replies)
+
 fun createCommentResponse(
     id: String = COMMENT_ID,
     authorName: String = REDDITOR_USERNAME,
@@ -341,6 +361,7 @@ fun createCommentResponse(
     parentId: String = POST_ID,
     replies: List<CommentResponse.Comment>? = createCommentResponse(
         id = NESTED_COMMENT_ID,
+        postId = postId,
         parentId = COMMENT_ID,
         depth = NESTED_COMMENT_DEPTH,
         replies = null
@@ -364,7 +385,7 @@ fun createCommentEntity(
     parentId: String? = null
 ) = CommentEntity(id, authorName, text, score, creationDate, depth, postId, parentId)
 
-fun createCommentView(
+fun createCommentDto(
     id: String = COMMENT_ID,
     authorName: String = REDDITOR_USERNAME,
     text: String = COMMENT_TEXT,
@@ -377,9 +398,10 @@ fun createCommentView(
     depth: Int = COMMENT_DEPTH,
     postId: String = POST_ID,
     parentId: String? = null,
-    replies: List<CommentView>? = listOf(
-        createCommentView(
+    replies: List<CommentDto>? = listOf(
+        createCommentDto(
             id = NESTED_COMMENT_ID,
+            postId = postId,
             parentId = COMMENT_ID,
             depth = NESTED_COMMENT_DEPTH,
             isLastReply = true,
@@ -388,7 +410,7 @@ fun createCommentView(
     ),
     isCollapsed: Boolean = false,
     isLastReply: Boolean = false
-) = CommentView(
+) = CommentDto(
     id,
     authorName,
     text,

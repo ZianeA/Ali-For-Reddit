@@ -6,5 +6,5 @@ import retrofit2.http.Query
 
 interface SubredditWebService {
     @GET("/api/info")
-    fun getSubreddits(@Query("id") subredditIds: String): Single<SubredditResponse>
+    fun getSubredditsByIds(@Query("id") subredditIds: String): Single<SubredditResponse>
 }

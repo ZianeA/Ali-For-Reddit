@@ -1,6 +1,6 @@
 package com.visualeap.aliforreddit.presentation.common.model
 
-data class CommentView(
+data class CommentDto(
     val id: String,
     val authorName: String,
     val text: String,
@@ -9,7 +9,7 @@ data class CommentView(
     val depth: Int,
     val postId: String,
     val parentId: String?,
-    val replies: List<CommentView>?,
+    val replies: List<CommentDto>?,
     val isCollapsed: Boolean,
     val isLastReply: Boolean
 )

@@ -13,8 +13,8 @@ class FakePostWebService : PostWebService {
     private val subredditToPosts = mutableMapOf<String, MutableList<PostDto>>()
     private var error = false
 
-    fun addPosts(subredditName: String, posts: List<Post>) {
-        this.subredditToPosts.getOrPut(subredditName) { mutableListOf() }
+    fun addPosts(subreddit: String, posts: List<Post>) {
+        this.subredditToPosts.getOrPut(subreddit) { mutableListOf() }
             .addAll(posts.map {
                 PostDto(
                     it.id,
@@ -33,6 +33,21 @@ class FakePostWebService : PostWebService {
 
     fun simulateError() {
         error = true
+    }
+
+    override fun getPostsByIds(postId: String): Single<PostResponse> {
+        if (error) return Single.error(IOException())
+
+        return Single.fromCallable {
+            val postHolders = postId.split(", ")
+                .map { id ->
+                    PostResponse.Data.PostHolder(
+                        subredditToPosts.values.flatten().find { it.id == id }!!
+                    )
+                }
+
+            PostResponse(PostResponse.Data(null, postHolders))
+        }
     }
 
     override fun getPostsBySubreddit(

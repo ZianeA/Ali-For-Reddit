@@ -5,6 +5,8 @@ import com.visualeap.aliforreddit.domain.subreddit.SubredditRepository
 import dagger.Reusable
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Observable
+import io.reactivex.Single
 import javax.inject.Inject
 
 @Reusable
@@ -20,6 +22,14 @@ class SubredditRoomRepository @Inject constructor(private val subredditDao: Subr
 
     override fun getSubredditsByIds(ids: List<String>): Flowable<List<Subreddit>> {
         return subredditDao.getByIds(ids).map { subredditList -> subredditList.map(::toDomain) }
+    }
+
+    override fun getSubredditByPost(postId: String): Observable<Subreddit> {
+        return subredditDao.getByPost(postId).map(::toDomain)
+    }
+
+    override fun updateSubreddit(subreddit: Subreddit): Completable {
+        return subredditDao.update(toEntity(subreddit))
     }
 
     private fun toEntity(subreddit: Subreddit): SubredditEntity {

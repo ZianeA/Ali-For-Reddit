@@ -13,6 +13,7 @@ import com.ncapdevi.fragnav.FragNavController
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
 import com.uber.autodispose.autoDispose
 import com.visualeap.aliforreddit.R
+import com.visualeap.aliforreddit.presentation.common.util.exhaustive
 import com.visualeap.aliforreddit.presentation.postDetail.PostDetailFragment
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_home.view.*
@@ -27,7 +28,6 @@ class FrontPageFragment : Fragment(), FrontPageLauncher {
 
     private lateinit var epoxyController: FrontPageEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
-    private val scopeProvider by lazy { AndroidLifecycleScopeProvider.from(this) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +37,7 @@ class FrontPageFragment : Fragment(), FrontPageLauncher {
         val rootView = inflater.inflate(R.layout.fragment_home, container, false)
 
         epoxyController = FrontPageEpoxyController(presenter::onPostBound) {
-            fragNavController.pushFragment(PostDetailFragment.newInstance(/*it*/))
+            fragNavController.pushFragment(PostDetailFragment.newInstance(it.id, it.subreddit))
         }
 
         recyclerView = rootView.frontPageRecyclerView
@@ -49,7 +49,7 @@ class FrontPageFragment : Fragment(), FrontPageLauncher {
     override fun onStart() {
         super.onStart()
         presenter.start()
-            .autoDispose(scopeProvider)
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
             .subscribe(::render)
     }
 
@@ -58,6 +58,7 @@ class FrontPageFragment : Fragment(), FrontPageLauncher {
         super.onAttach(context)
     }
 
+    @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun render(viewState: FrontPageViewState) {
         when (viewState) {
             FrontPageViewState.Loading -> ""
@@ -74,7 +75,7 @@ class FrontPageFragment : Fragment(), FrontPageLauncher {
                 epoxyController.posts = viewState.posts
                 epoxyController.requestModelBuild()
             }
-        }
+        }.exhaustive
     }
 
     val feed: String

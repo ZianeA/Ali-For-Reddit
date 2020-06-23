@@ -6,15 +6,15 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.presentation.common.model.CommentView
+import com.visualeap.aliforreddit.presentation.common.model.CommentDto
 import com.visualeap.aliforreddit.presentation.common.util.KotlinEpoxyHolder
 
 abstract class CommentEpoxyModel<T : CommentHolder> : EpoxyModelWithHolder<T>() {
     @EpoxyAttribute
-    lateinit var comment: CommentView
+    lateinit var comment: CommentDto
 
     @EpoxyAttribute
-    lateinit var longClickListener: View.OnLongClickListener
+    var longClickListener: View.OnLongClickListener? = null
 
     override fun bind(holder: T) {
         super.bind(holder)

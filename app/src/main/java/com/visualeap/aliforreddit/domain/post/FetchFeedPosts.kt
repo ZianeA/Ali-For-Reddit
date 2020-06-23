@@ -1,8 +1,10 @@
 package com.visualeap.aliforreddit.domain.post
 
 import com.visualeap.aliforreddit.data.post.PostResponse
+import com.visualeap.aliforreddit.data.post.PostResponseMapper
 import com.visualeap.aliforreddit.data.post.PostWebService
 import com.visualeap.aliforreddit.data.subreddit.SubredditResponse
+import com.visualeap.aliforreddit.data.subreddit.SubredditResponseMapper
 import com.visualeap.aliforreddit.data.subreddit.SubredditWebService
 import com.visualeap.aliforreddit.domain.subreddit.Subreddit
 import com.visualeap.aliforreddit.domain.feed.DefaultFeed
@@ -86,6 +88,7 @@ class FetchFeedPosts @Inject constructor(
         correctedOffset: Int
     ): Flowable<Listing<Pair<Subreddit, Post>>> {
         val subredditIds = cachedPosts.map { it.subredditId }
+        // TODO get subreddits by post id for better performance
         return subredditRepository.getSubredditsByIds(subredditIds)
             .distinct()
             // Transform the list of subreddits into a map (id -> Subreddit) for faster lookups
@@ -112,7 +115,7 @@ class FetchFeedPosts @Inject constructor(
     ): Flowable<Listing<Pair<Subreddit, Post>>> {
         return feedRepository.addFeed(feed)
             .andThen(getPostsByFeed(feed, pageSize, afterKey))
-            .map { postResponse -> postResponse.getAfterKey() to postResponse.toDomain() }
+            .map { postResponse -> postResponse.getAfterKey() to PostResponseMapper.map(postResponse) }
             .flatMapCompletable { (afterKey, remotePost) ->
                 afterKeyRepository.setAfterKey(feed, sortType, afterKey)
                     .andThen(savePost(remotePost, feed, sortType))
@@ -140,45 +143,14 @@ class FetchFeedPosts @Inject constructor(
         return if (remotePost.isNotEmpty()) {
             // For each post, fetch the subreddit it belongs to
             val subredditIds = remotePost.joinToString { it.subredditId }
-            subredditService.getSubreddits(subredditIds)
-                .map { subredditResponse -> subredditResponse.toDomain() }
+            subredditService.getSubredditsByIds(subredditIds)
+                .map(SubredditResponseMapper::map)
                 .flatMapCompletable { remoteSubreddits ->
                     // The subreddit must be added first because of the foreign key constraint
                     subredditRepository.addSubreddits(remoteSubreddits)
                         .andThen(postRepository.addPosts(remotePost, feed, sortType))
                 }
         } else Completable.complete()
-    }
-
-    private fun PostResponse.toDomain(): List<Post> {
-        return this.data.postHolders.map { holder ->
-            holder.post.run {
-                Post(
-                    id,
-                    authorName,
-                    title,
-                    text,
-                    score,
-                    commentCount,
-                    subredditId,
-                    created
-                )
-            }
-        }
-    }
-
-    private fun SubredditResponse.toDomain(): List<Subreddit> {
-        return this.data.subredditHolders.map { holder ->
-            holder.subreddit.run {
-                Subreddit(
-                    id,
-                    name,
-                    iconUrl,
-                    primaryColor,
-                    keyColor
-                )
-            }
-        }
     }
 
     private fun PostResponse.getAfterKey(): AfterKey {

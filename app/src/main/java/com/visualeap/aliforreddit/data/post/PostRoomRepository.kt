@@ -17,6 +17,8 @@ class PostRoomRepository @Inject constructor(
     private val postFeedDao: PostFeedDao
 ) : PostRepository {
 
+    override fun getPostById(id: String): Observable<Post> = postDao.getById(id).map(::toDomain)
+
     override fun getPostsByFeed(
         feed: String,
         sortType: SortType,
@@ -29,6 +31,10 @@ class PostRoomRepository @Inject constructor(
 
     override fun countPostsByFeed(feed: String, sortType: SortType): Single<Int> {
         return Single.fromCallable { postFeedDao.countPostsByFeed(feed, sortType) }
+    }
+
+    override fun addPost(post: Post, feed: String, sortType: SortType): Completable {
+        return addPosts(listOf(post), feed, sortType)
     }
 
     override fun addPosts(posts: List<Post>, feed: String, sortType: SortType): Completable {
@@ -45,6 +51,10 @@ class PostRoomRepository @Inject constructor(
         }
     }
 
+    override fun updatePost(post: Post): Completable {
+        return postDao.update(toEntity(post))
+    }
+
     private fun toEntity(post: Post): PostEntity {
         return post.run {
             PostEntity(id, authorName, title, text, score, commentCount, subredditId, created)
@@ -53,16 +63,7 @@ class PostRoomRepository @Inject constructor(
 
     private fun toDomain(post: PostEntity): Post {
         return post.run {
-            Post(
-                id,
-                authorName,
-                title,
-                text,
-                score,
-                commentCount,
-                subredditId,
-                created
-            )
+            Post(id, authorName, title, text, score, commentCount, subredditId, created)
         }
     }
 }

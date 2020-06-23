@@ -1,27 +1,18 @@
 package com.visualeap.aliforreddit.presentation.common.formatter
 
 import com.visualeap.aliforreddit.domain.comment.Comment
-import com.visualeap.aliforreddit.domain.util.Mapper
-import com.visualeap.aliforreddit.presentation.common.model.CommentView
-import dagger.Reusable
-import javax.inject.Inject
+import com.visualeap.aliforreddit.presentation.common.model.CommentDto
 
-@Reusable
-class CommentViewMapper @Inject constructor() :
-    Mapper<List<@JvmSuppressWildcards CommentView>, List<@JvmSuppressWildcards Comment>> {
-    override fun map(model: List<CommentView>): List<Comment> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun mapReverse(model: List<Comment>): List<CommentView> {
-        return reverseMapCommentTree(model)
+object CommentFormatter {
+    fun format(comments: List<Comment>): List<CommentDto> {
+        return reverseMapCommentTree(comments)
     }
 
     private fun reverseMapCommentTree(
         comments: List<Comment>,
         isParentLastReply: Boolean? = null
-    ): List<CommentView> {
-        val commentViews = mutableListOf<CommentView>()
+    ): List<CommentDto> {
+        val commentViews = mutableListOf<CommentDto>()
         comments.forEachIndexed { i, it ->
             var isLastReply = true
             if (isParentLastReply != null && (!isParentLastReply || i != comments.lastIndex)) {
@@ -38,8 +29,8 @@ class CommentViewMapper @Inject constructor() :
         return commentViews
     }
 
-    private fun Comment.toView(replies: List<CommentView>?, isLastReply: Boolean): CommentView {
-        return CommentView(
+    private fun Comment.toView(replies: List<CommentDto>?, isLastReply: Boolean): CommentDto {
+        return CommentDto(
             id,
             authorName,
             text,

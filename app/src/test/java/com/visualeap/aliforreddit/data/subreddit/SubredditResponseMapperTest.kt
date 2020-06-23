@@ -8,24 +8,12 @@ import util.domain.createSubredditResponse
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SubredditResponseMapperTest {
-    private val mapper = SubredditResponseMapper()
-
     @Test
     fun `map SubredditResponse to Subreddit`() {
         //Act
-        val mappedSubredditList = mapper.map(createSubredditResponse())
+        val mappedSubredditList = SubredditResponseMapper.map(createSubredditResponse())
 
         //Assert
         assertThat(mappedSubredditList).isEqualTo(listOf(createSubreddit()))
     }
-
-    //Not needed
-    /*@Test
-    fun `map Subreddit to SubreddtiResponse`() {
-        //Act
-        val subredditResponse = mapper.mapReverse(listOf(createSubreddit()))
-
-        //Assert
-        assertThat(subredditResponse).isEqualTo(createSubredditResponse())
-    }*/
 }

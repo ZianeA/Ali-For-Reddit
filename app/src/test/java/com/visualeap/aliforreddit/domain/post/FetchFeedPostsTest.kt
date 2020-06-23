@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.domain.usecase
+package com.visualeap.aliforreddit.domain.post
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.visualeap.aliforreddit.data.database.RedditDatabase
@@ -6,13 +6,8 @@ import com.visualeap.aliforreddit.data.afterkey.AfterKeyRoomRepository
 import com.visualeap.aliforreddit.data.feed.FeedRoomRepository
 import com.visualeap.aliforreddit.data.post.PostRoomRepository
 import com.visualeap.aliforreddit.data.subreddit.SubredditRoomRepository
-import com.visualeap.aliforreddit.domain.post.AfterKey
-import com.visualeap.aliforreddit.domain.post.Post
 import com.visualeap.aliforreddit.domain.feed.SortType
-import com.visualeap.aliforreddit.domain.post.AfterKeyRepository
 import com.visualeap.aliforreddit.domain.feed.FeedRepository
-import com.visualeap.aliforreddit.domain.post.FetchFeedPosts
-import com.visualeap.aliforreddit.domain.post.PostRepository
 import com.visualeap.aliforreddit.domain.subreddit.SubredditRepository
 import com.visualeap.aliforreddit.util.fake.FakePostWebService
 import com.visualeap.aliforreddit.util.fake.FakeSubredditWebService
@@ -35,8 +30,8 @@ internal class FetchFeedPostsTest {
     private lateinit var subredditRepository: SubredditRepository
     private lateinit var afterKeyRepository: AfterKeyRepository
     private lateinit var feedRepository: FeedRepository
-    private val postService = FakePostWebService()
-    private val subredditService = FakeSubredditWebService()
+    private lateinit var postService: FakePostWebService
+    private lateinit var subredditService: FakeSubredditWebService
     private lateinit var fetchFeedPosts: FetchFeedPosts
 
     @Before
@@ -46,13 +41,15 @@ internal class FetchFeedPostsTest {
         postRepository = PostRoomRepository(db, db.postDao(), db.postFeedDao())
         afterKeyRepository = AfterKeyRoomRepository(db.feedAfterKeyDao())
         feedRepository = FeedRoomRepository(db.feedDao())
+        postService = FakePostWebService()
+        subredditService = FakeSubredditWebService()
 
         // Add subreddit to database to satisfy Post foreign key constraint
         val subreddit = createSubreddit()
         subredditRepository.addSubreddit(subreddit).blockingAwait()
         subredditService.addSubreddit(subreddit)
         // Add a record to the feed table
-        db.feedDao().add(createFeedEntity()).blockingAwait()
+        feedRepository.addFeed(FEED_NAME).blockingAwait()
 
         fetchFeedPosts =
             FetchFeedPosts(

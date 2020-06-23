@@ -8,8 +8,6 @@ import util.domain.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class CommentEntityMapperTest {
-    private val mapper = CommentEntityMapper()
-
     @Nested
     inner class Map {
         @Test
@@ -25,7 +23,7 @@ internal class CommentEntityMapperTest {
             )
 
             //Act
-            val mappedComment = mapper.map(commentEntityList)
+            val mappedComment = CommentEntityMapper.mapToDomain(commentEntityList)
 
             //Assert
             assertThat(mappedComment).isEqualTo(listOf(createComment()))
@@ -56,7 +54,7 @@ internal class CommentEntityMapperTest {
             )
 
             //Act
-            val mappedCommentList = mapper.map(commentEntityList)
+            val mappedCommentList = CommentEntityMapper.mapToDomain(commentEntityList)
 
             //Assert
             val expectedCommentList = listOf(
@@ -131,7 +129,7 @@ internal class CommentEntityMapperTest {
         @Test
         fun `map a list of Comment to a list of CommentEntity`() {
             //Act
-            val mappedCommentEntityList = mapper.mapReverse(listOf(createComment()))
+            val mappedCommentEntityList = CommentEntityMapper.mapToEntity(listOf(createComment()))
 
             //Assert
             val expectedCommentEntityList = listOf(
@@ -213,7 +211,7 @@ internal class CommentEntityMapperTest {
             )
 
             //Act
-            val mappedCommentEntityList = mapper.mapReverse(deeplyNestedCommentList)
+            val mappedCommentEntityList = CommentEntityMapper.mapToEntity(deeplyNestedCommentList)
 
             //Assert
             val expectedCommentEntityList = listOf(

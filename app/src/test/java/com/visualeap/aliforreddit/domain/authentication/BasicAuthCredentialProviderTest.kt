@@ -1,4 +1,4 @@
-package com.visualeap.aliforreddit.domain.usecase
+package com.visualeap.aliforreddit.domain.authentication
 
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
