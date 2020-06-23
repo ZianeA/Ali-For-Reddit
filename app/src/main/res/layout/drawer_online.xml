@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.visualeap.aliforreddit.presentation.util.RoundedImageView
+    <com.visualeap.aliforreddit.presentation.common.view.RoundedImageView
         android:id="@+id/profileImage"
         android:layout_width="72dp"
         android:layout_height="72dp"
@@ -140,7 +140,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/karmaTitle" />
 
-    <com.visualeap.aliforreddit.presentation.main.DrawerItem
+    <com.visualeap.aliforreddit.presentation.common.view.drawer.DrawerItem
         android:id="@+id/navProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -149,7 +149,7 @@
         app:item_title="My profile"
         app:layout_constraintTop_toBottomOf="@+id/horizontalLine" />
 
-    <com.visualeap.aliforreddit.presentation.main.DrawerItem
+    <com.visualeap.aliforreddit.presentation.common.view.drawer.DrawerItem
         android:id="@+id/navCoins"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -158,7 +158,7 @@
         app:item_title="Reddit Coins"
         app:layout_constraintTop_toBottomOf="@+id/navProfile" />
 
-    <com.visualeap.aliforreddit.presentation.main.DrawerItem
+    <com.visualeap.aliforreddit.presentation.common.view.drawer.DrawerItem
         android:id="@+id/navPremium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -167,7 +167,7 @@
         app:item_title="Reddit Premium"
         app:layout_constraintTop_toBottomOf="@+id/navCoins" />
 
-    <com.visualeap.aliforreddit.presentation.main.DrawerItem
+    <com.visualeap.aliforreddit.presentation.common.view.drawer.DrawerItem
         android:id="@+id/navSaved"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -175,7 +175,7 @@
         app:item_title="Saved"
         app:layout_constraintTop_toBottomOf="@+id/navPremium" />
 
-    <com.visualeap.aliforreddit.presentation.main.DrawerItem
+    <com.visualeap.aliforreddit.presentation.common.view.drawer.DrawerItem
         android:id="@+id/navHistory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -183,7 +183,7 @@
         app:item_title="History"
         app:layout_constraintTop_toBottomOf="@+id/navSaved" />
 
-    <com.visualeap.aliforreddit.presentation.main.DrawerItem
+    <com.visualeap.aliforreddit.presentation.common.view.drawer.DrawerItem
         android:id="@+id/navSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

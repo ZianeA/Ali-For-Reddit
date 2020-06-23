@@ -1,11 +1,10 @@
 package com.visualeap.aliforreddit.presentation.login
 
 import com.visualeap.aliforreddit.R
+import com.visualeap.aliforreddit.domain.authentication.AuthenticateUser
+import com.visualeap.aliforreddit.domain.authentication.BuildAuthUrl
 import com.visualeap.aliforreddit.util.TrampolineSchedulerProvider
-import com.visualeap.aliforreddit.domain.usecase.*
-import com.visualeap.aliforreddit.presentation.common.ResourceProvider
-import com.visualeap.aliforreddit.presentation.main.login.LoginPresenter
-import com.visualeap.aliforreddit.presentation.main.login.LoginView
+import com.visualeap.aliforreddit.presentation.common.util.ResourceProvider
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable

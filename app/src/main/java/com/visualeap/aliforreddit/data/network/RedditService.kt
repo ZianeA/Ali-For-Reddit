@@ -1,9 +1,9 @@
 package com.visualeap.aliforreddit.data.network
 
-import com.visualeap.aliforreddit.data.repository.comment.CommentResponse
-import com.visualeap.aliforreddit.data.repository.post.PostResponse
-import com.visualeap.aliforreddit.data.repository.redditor.RedditorResponse
-import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
+import com.visualeap.aliforreddit.data.comment.CommentResponse
+import com.visualeap.aliforreddit.data.post.PostResponse
+import com.visualeap.aliforreddit.data.redditor.RedditorResponse
+import com.visualeap.aliforreddit.data.subreddit.SubredditResponse
 import io.reactivex.Single
 import retrofit2.http.*
 

@@ -1,15 +1,13 @@
 package com.visualeap.aliforreddit.util.fake
 
-import com.visualeap.aliforreddit.data.repository.post.PostResponse
-import com.visualeap.aliforreddit.data.repository.post.PostResponse.Data.PostHolder.*
-import com.visualeap.aliforreddit.data.repository.post.PostWebService
-import com.visualeap.aliforreddit.domain.model.Post
+import com.visualeap.aliforreddit.data.post.PostResponse
+import com.visualeap.aliforreddit.data.post.PostResponse.Data.PostHolder.*
+import com.visualeap.aliforreddit.data.post.PostWebService
+import com.visualeap.aliforreddit.domain.post.Post
 import io.reactivex.Single
-import retrofit2.HttpException
 import java.io.IOException
-import java.util.concurrent.TimeoutException
 import kotlin.math.min
-import com.visualeap.aliforreddit.data.repository.post.PostResponse.Data.PostHolder.Post as PostDto
+import com.visualeap.aliforreddit.data.post.PostResponse.Data.PostHolder.Post as PostDto
 
 class FakePostWebService : PostWebService {
     private val subredditToPosts = mutableMapOf<String, MutableList<PostDto>>()

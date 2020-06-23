@@ -1,9 +1,10 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.data.network.auth.AuthService
+import com.visualeap.aliforreddit.data.token.AuthService
+import com.visualeap.aliforreddit.domain.authentication.AuthenticateUser
 import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
-import com.visualeap.aliforreddit.domain.model.token.UserToken
-import com.visualeap.aliforreddit.domain.repository.TokenRepository
+import com.visualeap.aliforreddit.domain.authentication.token.UserToken
+import com.visualeap.aliforreddit.domain.authentication.TokenRepository
 import com.visualeap.aliforreddit.domain.util.OAuthException
 import com.visualeap.aliforreddit.domain.util.TokenResponseMapper
 import io.mockk.*

@@ -1,8 +1,5 @@
 package com.visualeap.aliforreddit.data.database
 
-import androidx.room.TypeConverter
-import com.visualeap.aliforreddit.domain.util.Optional
-
 // TODO delete
 /*
 class OptionalTypeConverter {

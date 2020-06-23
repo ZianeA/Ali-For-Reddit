@@ -1,7 +1,7 @@
 package com.visualeap.aliforreddit.domain.util
 
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.presentation.common.ResourceProvider
+import com.visualeap.aliforreddit.presentation.common.util.ResourceProvider
 import dagger.Reusable
 import okhttp3.Credentials
 import javax.inject.Inject

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.visualeap.aliforreddit.presentation.util.RoundedImageView
+    <com.visualeap.aliforreddit.presentation.common.view.RoundedImageView
         android:id="@+id/profileImage"
         android:layout_width="72dp"
         android:layout_height="72dp"
@@ -47,7 +47,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/username" />
 
-    <com.visualeap.aliforreddit.presentation.main.DrawerItem
+    <com.visualeap.aliforreddit.presentation.common.view.drawer.DrawerItem
         android:id="@+id/navSignUp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
         app:item_title="Sign up / Log in"
         app:layout_constraintTop_toBottomOf="@+id/horizontalLine" />
 
-    <com.visualeap.aliforreddit.presentation.main.DrawerItem
+    <com.visualeap.aliforreddit.presentation.common.view.drawer.DrawerItem
         android:id="@+id/navSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -6,8 +6,6 @@ import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class UniqueStringGeneratorTest {
-    private val uniqueStringGenerator = UniqueStringGenerator()
-
     @Test
     fun `should return a unique string every time`() {
         //Arrange
@@ -15,7 +13,7 @@ internal class UniqueStringGeneratorTest {
 
         //Act
         repeat(10) {
-            values.add(uniqueStringGenerator.generate())
+            values.add(UniqueStringGenerator.generate())
         }
 
         //Assert

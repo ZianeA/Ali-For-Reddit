@@ -1,11 +1,12 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.data.network.auth.AuthService
-import com.visualeap.aliforreddit.data.repository.token.TokenResponse
+import com.visualeap.aliforreddit.data.token.AuthService
+import com.visualeap.aliforreddit.data.token.TokenResponse
+import com.visualeap.aliforreddit.domain.authentication.FetchToken
 import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
-import com.visualeap.aliforreddit.domain.model.token.Token
-import com.visualeap.aliforreddit.domain.model.token.UserlessToken
-import com.visualeap.aliforreddit.domain.repository.TokenRepository
+import com.visualeap.aliforreddit.domain.authentication.token.Token
+import com.visualeap.aliforreddit.domain.authentication.token.UserlessToken
+import com.visualeap.aliforreddit.domain.authentication.TokenRepository
 import io.mockk.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -23,7 +24,12 @@ class FetchTokenTest {
     private val authService: AuthService = mockk()
     private val tokenRepository: TokenRepository = mockk()
     private val authCredentialProvider: BasicAuthCredentialProvider = mockk(relaxed = true)
-    private val getToken = FetchToken(authService, tokenRepository, authCredentialProvider)
+    private val getToken =
+        FetchToken(
+            authService,
+            tokenRepository,
+            authCredentialProvider
+        )
 
     companion object {
         private const val GRANT_TYPE =

@@ -1,29 +1,31 @@
 package util.domain
 
-import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity
-import com.visualeap.aliforreddit.data.repository.token.CurrentTokenEntity.*
-import com.visualeap.aliforreddit.data.repository.token.TokenResponse
-import com.visualeap.aliforreddit.data.repository.comment.CommentEntity
-import com.visualeap.aliforreddit.data.repository.comment.CommentResponse
-import com.visualeap.aliforreddit.data.repository.feed.FeedEntity
-import com.visualeap.aliforreddit.data.repository.redditor.RedditorEntity
-import com.visualeap.aliforreddit.data.repository.post.PostEntity
-import com.visualeap.aliforreddit.data.repository.post.PostResponse
-import com.visualeap.aliforreddit.data.repository.post.PostWithSubredditResponse
-import com.visualeap.aliforreddit.data.repository.redditor.RedditorResponse
-import com.visualeap.aliforreddit.data.repository.subreddit.SubredditEntity
-import com.visualeap.aliforreddit.data.repository.subreddit.SubredditResponse
-import com.visualeap.aliforreddit.domain.model.*
-import com.visualeap.aliforreddit.domain.model.token.Token
-import com.visualeap.aliforreddit.domain.model.token.UserToken
-import com.visualeap.aliforreddit.domain.model.token.UserlessToken
-import com.visualeap.aliforreddit.presentation.main.frontPage.FeedPostDto
-import com.visualeap.aliforreddit.presentation.main.frontPage.SubredditIcon
-import com.visualeap.aliforreddit.presentation.model.CommentView
-import com.visualeap.aliforreddit.presentation.model.PostView
-import com.visualeap.aliforreddit.presentation.model.SubredditView
-import com.visualeap.aliforreddit.presentation.util.formatCount
-import com.visualeap.aliforreddit.presentation.util.formatTimestamp
+import com.visualeap.aliforreddit.data.token.CurrentTokenEntity
+import com.visualeap.aliforreddit.data.token.CurrentTokenEntity.*
+import com.visualeap.aliforreddit.data.token.TokenResponse
+import com.visualeap.aliforreddit.data.comment.CommentEntity
+import com.visualeap.aliforreddit.data.comment.CommentResponse
+import com.visualeap.aliforreddit.data.feed.FeedEntity
+import com.visualeap.aliforreddit.data.redditor.RedditorEntity
+import com.visualeap.aliforreddit.data.post.PostEntity
+import com.visualeap.aliforreddit.data.post.PostResponse
+import com.visualeap.aliforreddit.data.redditor.RedditorResponse
+import com.visualeap.aliforreddit.data.subreddit.SubredditEntity
+import com.visualeap.aliforreddit.data.subreddit.SubredditResponse
+import com.visualeap.aliforreddit.domain.account.Account
+import com.visualeap.aliforreddit.domain.authentication.token.Token
+import com.visualeap.aliforreddit.domain.authentication.token.UserToken
+import com.visualeap.aliforreddit.domain.authentication.token.UserlessToken
+import com.visualeap.aliforreddit.domain.comment.Comment
+import com.visualeap.aliforreddit.domain.post.Post
+import com.visualeap.aliforreddit.domain.redditor.Redditor
+import com.visualeap.aliforreddit.domain.subreddit.Subreddit
+import com.visualeap.aliforreddit.presentation.frontPage.FeedPostDto
+import com.visualeap.aliforreddit.presentation.frontPage.SubredditIcon
+import com.visualeap.aliforreddit.presentation.common.model.CommentView
+import com.visualeap.aliforreddit.presentation.common.model.SubredditView
+import com.visualeap.aliforreddit.presentation.common.formatter.formatCount
+import com.visualeap.aliforreddit.presentation.common.formatter.formatTimestamp
 import kotlin.random.Random
 
 const val ACCESS_TOKEN = "ACCESS TOKEN"
@@ -88,7 +90,15 @@ fun createRedditor(
     iconUrl: String = REDDITOR_ICON_URL,
     coins: Int = REDDITOR_COINS
 ) =
-    Redditor(id, username, creationDate, linkKarma, commentKarma, iconUrl, coins)
+    Redditor(
+        id,
+        username,
+        creationDate,
+        linkKarma,
+        commentKarma,
+        iconUrl,
+        coins
+    )
 
 fun createRedditorEntity(
     id: String = REDDITOR_ID,
@@ -133,7 +143,13 @@ fun createSubreddit(
     primaryColor: String? = SUBREDDIT_PRIMARY_COLOR,
     keyColor: String? = SUBREDDIT_KEY_COLOR
 ) =
-    Subreddit(id, name, iconUrl, primaryColor, keyColor)
+    Subreddit(
+        id,
+        name,
+        iconUrl,
+        primaryColor,
+        keyColor
+    )
 
 fun createSubredditEntity(
     id: String = SUBREDDIT_ID,
@@ -191,7 +207,16 @@ fun createPost(
     commentCount: Int = POST_COMMENT_COUNT,
     subredditId: String = SUBREDDIT_ID,
     created: Long = POST_CREATED
-) = Post(id, authorName, title, text, score, commentCount, subredditId, created)
+) = Post(
+    id,
+    authorName,
+    title,
+    text,
+    score,
+    commentCount,
+    subredditId,
+    created
+)
 
 fun createPostEntity(
     id: String = POST_ID,
@@ -239,9 +264,15 @@ fun createFeedPostDto(
     authorName: String = "u/$REDDITOR_USERNAME",
     title: String = POST_TITLE,
     text: String = POST_TEXT,
-    score: String = formatCount(POST_SCORE),
-    commentCount: String = formatCount(POST_COMMENT_COUNT),
-    timestamp: String = formatTimestamp(POST_CREATED),
+    score: String = formatCount(
+        POST_SCORE
+    ),
+    commentCount: String = formatCount(
+        POST_COMMENT_COUNT
+    ),
+    timestamp: String = formatTimestamp(
+        POST_CREATED
+    ),
     subredditId: String = SUBREDDIT_ID,
     subreddit: String = SUBREDDIT_NAME,
     subredditColor: String = SUBREDDIT_PRIMARY_COLOR,
@@ -287,7 +318,17 @@ fun createComment(
             replies = null
         )
     )
-) = Comment(id, authorName, text, score, creationDate, depth, postId, parentId, replies)
+) = Comment(
+    id,
+    authorName,
+    text,
+    score,
+    creationDate,
+    depth,
+    postId,
+    parentId,
+    replies
+)
 
 fun createCommentResponse(
     id: String = COMMENT_ID,
@@ -327,8 +368,12 @@ fun createCommentView(
     id: String = COMMENT_ID,
     authorName: String = REDDITOR_USERNAME,
     text: String = COMMENT_TEXT,
-    score: String = formatCount(COMMENT_SCORE),
-    timestamp: String = formatTimestamp(COMMENT_CREATION_DATE),
+    score: String = formatCount(
+        COMMENT_SCORE
+    ),
+    timestamp: String = formatTimestamp(
+        COMMENT_CREATION_DATE
+    ),
     depth: Int = COMMENT_DEPTH,
     postId: String = POST_ID,
     parentId: String? = null,

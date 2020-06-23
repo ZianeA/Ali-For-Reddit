@@ -2,7 +2,7 @@ package com.visualeap.aliforreddit.domain.usecase
 
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
-import com.visualeap.aliforreddit.presentation.common.ResourceProvider
+import com.visualeap.aliforreddit.presentation.common.util.ResourceProvider
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk

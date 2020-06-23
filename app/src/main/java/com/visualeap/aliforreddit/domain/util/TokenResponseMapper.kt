@@ -1,8 +1,8 @@
 package com.visualeap.aliforreddit.domain.util
 
-import com.visualeap.aliforreddit.data.repository.token.TokenResponse
-import com.visualeap.aliforreddit.domain.model.token.UserToken
-import com.visualeap.aliforreddit.domain.model.token.UserlessToken
+import com.visualeap.aliforreddit.data.token.TokenResponse
+import com.visualeap.aliforreddit.domain.authentication.token.UserToken
+import com.visualeap.aliforreddit.domain.authentication.token.UserlessToken
 import dagger.Reusable
 import javax.inject.Inject
 

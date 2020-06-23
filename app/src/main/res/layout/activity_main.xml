@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".presentation.main.MainActivity"
+    tools:context=".presentation.common.main.MainActivity"
     tools:openDrawer="start">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,12 +31,12 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.visualeap.aliforreddit.presentation.main.RedditDrawer
+    <com.visualeap.aliforreddit.presentation.common.view.drawer.RedditDrawer
         android:id="@+id/redditDrawer"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="false">
-    </com.visualeap.aliforreddit.presentation.main.RedditDrawer>
+    </com.visualeap.aliforreddit.presentation.common.view.drawer.RedditDrawer>
 
 </androidx.drawerlayout.widget.DrawerLayout>

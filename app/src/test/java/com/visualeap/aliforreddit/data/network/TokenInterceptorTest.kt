@@ -1,18 +1,13 @@
 package com.visualeap.aliforreddit.data.network
 
-import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.data.network.auth.TokenInterceptor
-import com.visualeap.aliforreddit.domain.usecase.FetchToken
+import com.visualeap.aliforreddit.domain.authentication.FetchToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
-import com.visualeap.aliforreddit.presentation.common.ResourceProvider
 import com.visualeap.aliforreddit.util.createMockChain
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import io.reactivex.Single
-import okhttp3.Interceptor
-import okhttp3.Request
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested

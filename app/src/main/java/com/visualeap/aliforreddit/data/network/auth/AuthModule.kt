@@ -2,6 +2,7 @@ package com.visualeap.aliforreddit.data.network.auth
 
 import com.squareup.moshi.Moshi
 import com.visualeap.aliforreddit.data.network.ApplicationJsonAdapterFactory
+import com.visualeap.aliforreddit.data.token.AuthService
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -48,7 +49,8 @@ class AuthModule {
     @Singleton
     @Provides
     fun provideAuthService(@Named("authRetrofit") authRetrofit: Retrofit): AuthService =
-        authRetrofit.create<AuthService>(AuthService::class.java)
+        authRetrofit.create<AuthService>(
+            AuthService::class.java)
 
     companion object {
         private const val BASE_URL = "https://www.reddit.com/"

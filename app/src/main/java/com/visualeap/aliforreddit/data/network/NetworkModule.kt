@@ -3,9 +3,9 @@ package com.visualeap.aliforreddit.data.network
 import com.squareup.moshi.Moshi
 import com.visualeap.aliforreddit.data.network.auth.TokenAuthenticator
 import com.visualeap.aliforreddit.data.network.auth.TokenInterceptor
-import com.visualeap.aliforreddit.data.repository.comment.jsonparser.CommentJsonAdapterFactory
-import com.visualeap.aliforreddit.data.repository.post.PostWebService
-import com.visualeap.aliforreddit.data.repository.subreddit.SubredditWebService
+import com.visualeap.aliforreddit.data.comment.jsonparser.CommentJsonAdapterFactory
+import com.visualeap.aliforreddit.data.post.PostWebService
+import com.visualeap.aliforreddit.data.subreddit.SubredditWebService
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient

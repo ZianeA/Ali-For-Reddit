@@ -1,8 +1,10 @@
 package com.visualeap.aliforreddit.presentation.main
 
 import com.visualeap.aliforreddit.util.TrampolineSchedulerProvider
-import com.visualeap.aliforreddit.domain.repository.RedditorRepository
-import com.visualeap.aliforreddit.domain.usecase.IsUserLoggedIn
+import com.visualeap.aliforreddit.domain.redditor.RedditorRepository
+import com.visualeap.aliforreddit.domain.authentication.IsUserLoggedIn
+import com.visualeap.aliforreddit.presentation.common.main.MainPresenter
+import com.visualeap.aliforreddit.presentation.common.main.MainView
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Single
@@ -18,9 +20,11 @@ internal class MainPresenterTest {
     private val repository: RedditorRepository = mockk()
     private val view: MainView = mockk(relaxed = true)
     private val isUserLoggedIn: IsUserLoggedIn = mockk()
-    private val presenter = MainPresenter(view, repository, isUserLoggedIn,
-        TrampolineSchedulerProvider()
-    )
+    private val presenter =
+        MainPresenter(
+            view, repository, isUserLoggedIn,
+            TrampolineSchedulerProvider()
+        )
 
     @BeforeEach
     internal fun setUp() {

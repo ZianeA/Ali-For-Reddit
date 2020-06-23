@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="8dp">
 
-        <com.visualeap.aliforreddit.presentation.util.RoundedImageView
+        <com.visualeap.aliforreddit.presentation.common.view.RoundedImageView
             android:id="@+id/subredditImage"
             android:layout_width="40dp"
             android:layout_height="40dp"

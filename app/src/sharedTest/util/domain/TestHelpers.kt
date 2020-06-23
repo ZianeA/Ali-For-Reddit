@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.test.core.app.ApplicationProvider
 import com.visualeap.aliforreddit.data.database.RedditDatabase
-import com.visualeap.aliforreddit.domain.model.feed.SortType
+import com.visualeap.aliforreddit.domain.feed.SortType
 import io.reactivex.functions.Predicate
 
 fun <T> match(matcher: (T) -> Unit): Predicate<T> {

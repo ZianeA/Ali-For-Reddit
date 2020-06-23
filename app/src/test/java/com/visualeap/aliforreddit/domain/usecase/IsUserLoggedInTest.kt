@@ -1,13 +1,11 @@
 package com.visualeap.aliforreddit.domain.usecase
 
-import com.visualeap.aliforreddit.domain.repository.TokenRepository
+import com.visualeap.aliforreddit.domain.authentication.IsUserLoggedIn
+import com.visualeap.aliforreddit.domain.authentication.TokenRepository
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.reactivex.Maybe
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.Assertions.*
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -17,7 +15,10 @@ import util.domain.createUserlessToken
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class IsUserLoggedInTest {
     private val tokenRepository: TokenRepository = mockk()
-    private val isUserLoggedIn = IsUserLoggedIn(tokenRepository)
+    private val isUserLoggedIn =
+        IsUserLoggedIn(
+            tokenRepository
+        )
 
     @BeforeEach
     internal fun setUp() {

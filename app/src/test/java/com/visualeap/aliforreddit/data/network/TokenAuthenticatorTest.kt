@@ -1,15 +1,12 @@
 package com.visualeap.aliforreddit.data.network
 
-import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.data.network.auth.TokenAuthenticator
-import com.visualeap.aliforreddit.domain.usecase.RefreshToken
+import com.visualeap.aliforreddit.domain.authentication.RefreshToken
 import com.visualeap.aliforreddit.domain.util.HttpHeaders
-import com.visualeap.aliforreddit.presentation.common.ResourceProvider
 import com.visualeap.aliforreddit.util.createResponse
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import io.reactivex.Single
 import okhttp3.Request
 import org.assertj.core.api.Assertions.*
