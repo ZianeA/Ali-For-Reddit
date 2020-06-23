@@ -8,6 +8,7 @@ import com.visualeap.aliforreddit.domain.model.AfterKey
 import com.visualeap.aliforreddit.domain.model.Listing
 import com.visualeap.aliforreddit.domain.model.Post
 import com.visualeap.aliforreddit.domain.model.Subreddit
+import com.visualeap.aliforreddit.domain.model.feed.DefaultFeed
 import com.visualeap.aliforreddit.domain.model.feed.SortType
 import com.visualeap.aliforreddit.domain.repository.AfterKeyRepository
 import com.visualeap.aliforreddit.domain.repository.FeedRepository
@@ -16,6 +17,7 @@ import com.visualeap.aliforreddit.domain.repository.SubredditRepository
 import dagger.Reusable
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.internal.operators.completable.CompletableDefer
 import javax.inject.Inject
 import kotlin.math.min
@@ -59,10 +61,12 @@ class FetchFeedPosts @Inject constructor(
                                     correctedPageSize, pageSize, correctedOffset, offset
                                 )
                                 if (endOfCache && !endOfRemote) {
-                                    // TODO return cache only if it's not empty
-                                    // Return cached items first (first observable) while fetching remote items (second observable)
+                                    // Return the cached items first (first observable)
+                                    // while fetching remote items (second observable)
+                                    // The cache is only returned if it's not empty.
                                     Flowable.merge(
-                                        loadFromCache(cachedPosts, endOfRemote, correctedOffset),
+                                        loadFromCache(cachedPosts, endOfRemote, correctedOffset)
+                                            .filter { it.items.isNotEmpty() },
                                         loadFromNetwork(feed, pageSize, sortType, afterKey, offset)
                                     )
                                 } else {
@@ -107,13 +111,25 @@ class FetchFeedPosts @Inject constructor(
         offset: Int
     ): Flowable<Listing<Pair<Subreddit, Post>>> {
         return feedRepository.addFeed(feed)
-            .andThen(postService.getPostsBySubreddit(feed, pageSize, afterKey.toStringOrNull()))
+            .andThen(getPostsByFeed(feed, pageSize, afterKey))
             .map { postResponse -> postResponse.getAfterKey() to postResponse.toDomain() }
             .flatMapCompletable { (afterKey, remotePost) ->
                 afterKeyRepository.setAfterKey(feed, sortType, afterKey)
                     .andThen(savePost(remotePost, feed, sortType))
             }
             .andThen(execute(feed, sortType, offset, pageSize))
+    }
+
+    private fun getPostsByFeed(
+        feed: String,
+        pageSize: Int,
+        afterKey: AfterKey
+    ): Single<PostResponse> {
+        return if (feed == DefaultFeed.Home.name) {
+            postService.getHomePosts(pageSize, afterKey.toStringOrNull())
+        } else {
+            postService.getPostsBySubreddit(feed, pageSize, afterKey.toStringOrNull())
+        }
     }
 
     private fun savePost(

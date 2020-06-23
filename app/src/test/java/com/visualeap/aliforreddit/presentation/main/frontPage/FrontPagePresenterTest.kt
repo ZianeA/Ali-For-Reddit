@@ -135,7 +135,7 @@ class FrontPagePresenterTest {
         //Act and assert
         presenter.start()
             .test()
-            .assertValueAt(2, match { assertThat((it as Success).isLoading).isEqualTo(false) })
+            .assertValueAt(1, match { assertThat((it as Success).isLoading).isEqualTo(false) })
     }
 
     @Test
@@ -181,7 +181,7 @@ class FrontPagePresenterTest {
         //Act and assert
         presenter.start()
             .test()
-            .assertValueAt(2, match { assertThat(it).isInstanceOf(Failure::class.java) })
+            .assertValueAt(1, match { assertThat(it).isInstanceOf(Failure::class.java) })
     }
 
     class FakeFrontPageLauncher : FrontPageLauncher

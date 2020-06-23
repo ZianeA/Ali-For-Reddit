@@ -36,10 +36,7 @@ class FrontPagePresenter @Inject constructor(
     private val offsetProcessor = BehaviorProcessor.createDefault(lastOffset)
     private val posts = offsetProcessor.distinctUntilChanged()
         .switchMap { offset ->
-            when (feed) {
-                Home.name -> TODO("Not implemented")
-                else -> fetchFeedPosts.execute(feed, SortType.Hot, offset, PAGE_SIZE)
-            }
+            fetchFeedPosts.execute(feed, SortType.Hot, offset, PAGE_SIZE)
                 .map<FrontPageViewState> { listing ->
                     lastOffset = listing.offset
                     FrontPageViewState.Success(
@@ -49,7 +46,8 @@ class FrontPagePresenter @Inject constructor(
                 .onErrorReturn { FrontPageViewState.Failure(resourceProvider.getString(R.string.error_server)) }
                 .applySchedulers(schedulerProvider)
                 .startWith(FrontPageViewState.Loading)
-        }.autoReplay()
+        }
+        .autoReplay()
 
     fun start(): Flowable<FrontPageViewState> {
         return posts

@@ -48,10 +48,10 @@ internal class FetchFeedPostsTest {
 
         // Add subreddit to database to satisfy Post foreign key constraint
         val subreddit = createSubreddit()
-        subredditRepository.addSubreddit(subreddit).blockingGet()
+        subredditRepository.addSubreddit(subreddit).blockingAwait()
         subredditService.addSubreddit(subreddit)
         // Add a record to the feed table
-        db.feedDao().add(createFeedEntity()).blockingGet()
+        db.feedDao().add(createFeedEntity()).blockingAwait()
 
         fetchFeedPosts =
             FetchFeedPosts(
@@ -74,14 +74,14 @@ internal class FetchFeedPostsTest {
         //Arrange
         val subreddits =
             listOf(createSubreddit(id = "FakeSubreddit1"), createSubreddit(id = "FakeSubreddit2"))
-        subredditRepository.addSubreddits(subreddits).blockingGet()
+        subredditRepository.addSubreddits(subreddits).blockingAwait()
 
         val posts = listOf(
             createPost(id = "1", subredditId = "FakeSubreddit1"),
             createPost(id = "2", subredditId = "FakeSubreddit1"),
             createPost(id = "3", subredditId = "FakeSubreddit2")
         )
-        postRepository.addPosts(posts, FEED_NAME, SortType.Best).blockingGet()
+        postRepository.addPosts(posts, FEED_NAME, SortType.Best).blockingAwait()
 
         //Act
         val actual = fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 10).blockingFirst()
@@ -94,17 +94,17 @@ internal class FetchFeedPostsTest {
         )
     }
 
-    // TODO Remote
+    // TODO Test with remote data
     @Test
     fun `return feed posts by sort type`() {
         //Arrange
         postRepository.addPosts(
             listOf(createPost(id = "1"), createPost(id = "2")), FEED_NAME, SortType.Best
         )
-            .blockingGet()
+            .blockingAwait()
 
         val posts = listOf(createPost(id = "3"), createPost(id = "4"))
-        postRepository.addPosts(posts, FEED_NAME, SortType.Rising).blockingGet()
+        postRepository.addPosts(posts, FEED_NAME, SortType.Rising).blockingAwait()
 
         //Act
         val actual =
@@ -120,7 +120,7 @@ internal class FetchFeedPostsTest {
         //Arrange
         val post = createPost(id = "2")
         postRepository.addPosts(listOf(createPost(id = "1"), post), FEED_NAME, SortType.Best)
-            .blockingGet()
+            .blockingAwait()
 
         //Act
         val actual =
@@ -139,7 +139,7 @@ internal class FetchFeedPostsTest {
             FEED_NAME,
             SortType.Best
         )
-            .blockingGet()
+            .blockingAwait()
 
         //Act
         val actual =
@@ -158,7 +158,7 @@ internal class FetchFeedPostsTest {
             FEED_NAME,
             SortType.Best
         )
-            .blockingGet()
+            .blockingAwait()
 
         //Act
         val actual =
@@ -178,7 +178,7 @@ internal class FetchFeedPostsTest {
             FEED_NAME,
             SortType.Best
         )
-            .blockingGet()
+            .blockingAwait()
 
         //Act
         val actual =
@@ -198,7 +198,7 @@ internal class FetchFeedPostsTest {
             FEED_NAME,
             SortType.Best
         )
-            .blockingGet()
+            .blockingAwait()
 
         //Act
         val actual =
@@ -217,7 +217,7 @@ internal class FetchFeedPostsTest {
             FEED_NAME,
             SortType.Best
         )
-            .blockingGet()
+            .blockingAwait()
 
         //Act
         val actual = fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 1).blockingFirst()
@@ -237,14 +237,14 @@ internal class FetchFeedPostsTest {
         //Act, assert
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 1)
             .test()
-            .assertValueAt(1, match { assertThat(it.items).containsExactly(subreddit to post) })
+            .assertValueAt(0, match { assertThat(it.items).containsExactly(subreddit to post) })
     }
 
     @Test
     fun `when the requested page size is greater than the number of cached items, should load more`() {
         //Arrange
         val localPost = createPost(id = "1", title = "Local Post")
-        postRepository.addPosts(listOf(localPost), FEED_NAME, SortType.Best).blockingGet()
+        postRepository.addPosts(listOf(localPost), FEED_NAME, SortType.Best).blockingAwait()
 
         val remotePost = createPost(id = "2", title = "Remote Post")
         postService.addPost(FEED_NAME, remotePost)
@@ -262,7 +262,7 @@ internal class FetchFeedPostsTest {
     fun `return cached items while loading more`() {
         //Arrange
         val localPost = createPost(id = "1", title = "Local Post")
-        postRepository.addPosts(listOf(localPost), FEED_NAME, SortType.Best).blockingGet()
+        postRepository.addPosts(listOf(localPost), FEED_NAME, SortType.Best).blockingAwait()
 
         val remotePost = createPost(id = "2", title = "Remote Post")
         postService.addPost(FEED_NAME, remotePost)
@@ -281,9 +281,21 @@ internal class FetchFeedPostsTest {
     }
 
     @Test
+    fun `do not return cache while loading if it is empty`() {
+        //Arrange
+        val remotePost = createPost(id = "2", title = "Remote Post")
+        postService.addPost(FEED_NAME, remotePost)
+
+        //Act and assert
+        fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 2)
+            .test()
+            .assertValueAt(0, match { listing -> assertThat(listing.items).isNotEmpty })
+    }
+
+    @Test
     fun `when the end of the cached items is reached, should load more`() {
         //Arrange
-        afterKeyRepository.setAfterKey(FEED_NAME, SortType.Best, AfterKey.Next("1")).blockingGet()
+        afterKeyRepository.setAfterKey(FEED_NAME, SortType.Best, AfterKey.Next("1")).blockingAwait()
 
         val remotePost = createPost(id = "2", title = "Next Remote Post")
         postService.addPosts(
@@ -292,7 +304,7 @@ internal class FetchFeedPostsTest {
         )
 
         postRepository.addPosts(listOf(createPost(id = "1")), FEED_NAME, SortType.Best)
-            .blockingGet()
+            .blockingAwait()
 
         //Act and assert
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 1, 1)
@@ -311,7 +323,7 @@ internal class FetchFeedPostsTest {
         //Act
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 1)
             .test()
-            .assertValueAt(1, match { listing -> assertThat(listing.reachedTheEnd).isFalse() })
+            .assertValueAt(0, match { listing -> assertThat(listing.reachedTheEnd).isFalse() })
     }
 
     @Test
@@ -319,7 +331,7 @@ internal class FetchFeedPostsTest {
         //Act
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 2)
             .test()
-            .assertValueAt(1, match { listing -> assertThat(listing.reachedTheEnd).isTrue() })
+            .assertValueAt(0, match { listing -> assertThat(listing.reachedTheEnd).isTrue() })
     }
 
     @Test
@@ -333,7 +345,7 @@ internal class FetchFeedPostsTest {
         //Act and assert
         fetchFeedPosts.execute("FakeFeed2", SortType.Best, 0, 2)
             .test()
-            .assertValueAt(1, match {
+            .assertValueAt(0, match {
                 assertThat(it.items).extracting<Post> { it.second }
                     .containsExactlyElementsOf(feedPosts)
             })
