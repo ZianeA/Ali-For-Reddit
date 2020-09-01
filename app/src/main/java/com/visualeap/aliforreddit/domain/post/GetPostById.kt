@@ -26,7 +26,12 @@ class GetPostById @Inject constructor(
                     .toLce()
                     .startWith(Lce.Error(t))
             }
-            .startWith(loadFromCache(postId).take(1).toLce())
+            .startWith(
+                loadFromCache(postId)
+                    .take(1)
+                    .toLce()
+                    .startWith(Lce.Loading())
+            )
             .distinctUntilChanged()
     }
 

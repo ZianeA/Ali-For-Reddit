@@ -37,7 +37,9 @@ class FrontPageFragment : Fragment(), FrontPageLauncher {
         val rootView = inflater.inflate(R.layout.fragment_home, container, false)
 
         epoxyController = FrontPageEpoxyController(presenter::onPostBound) {
-            fragNavController.pushFragment(PostDetailFragment.newInstance(it.id, it.subreddit))
+            fragNavController.pushFragment(
+                PostDetailFragment.newInstance(it.id, it.subreddit.removePrefix("r/"))
+            )
         }
 
         recyclerView = rootView.frontPageRecyclerView

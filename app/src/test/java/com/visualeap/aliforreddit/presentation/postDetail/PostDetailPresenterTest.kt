@@ -73,7 +73,10 @@ internal class PostDetailPresenterTest {
         presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
 
         //Assert
-        testObserver.assertLastValue { assertThat(it.post).isEqualTo(createPostDto()) }
+        testObserver.assertLastValue {
+            assertThat(it.post).isEqualTo(createPostDto())
+            assertThat(it.postLoading).isFalse()
+        }
     }
 
     @Test
@@ -86,7 +89,10 @@ internal class PostDetailPresenterTest {
         presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
 
         //Assert
-        testObserver.assertLastValue { assertThat(it.postError).isNotBlank() }
+        testObserver.assertLastValue {
+            assertThat(it.postError).isNotBlank()
+            assertThat(it.postLoading).isFalse()
+        }
     }
 
     @Test
@@ -113,8 +119,9 @@ internal class PostDetailPresenterTest {
         presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
 
         // Assert
-        testObserver.assertLastValue { viewState ->
-            assertThat(viewState.comments).containsExactly(createCommentDto())
+        testObserver.assertLastValue {
+            assertThat(it.comments).containsExactly(createCommentDto())
+            assertThat(it.commentsLoading).isFalse()
         }
     }
 
@@ -129,7 +136,10 @@ internal class PostDetailPresenterTest {
         presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
 
         //Assert
-        testObserver.assertLastValue { assertThat(it.commentsError).isNotBlank() }
+        testObserver.assertLastValue {
+            assertThat(it.commentsError).isNotBlank()
+            assertThat(it.commentsLoading).isFalse()
+        }
     }
 
     /*

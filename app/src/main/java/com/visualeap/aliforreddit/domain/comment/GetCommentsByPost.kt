@@ -28,12 +28,13 @@ class GetCommentsByPost @Inject constructor(
                     .take(1)
                     .filter { it.isNotEmpty() }
                     .toLce()
+                    .startWith(Lce.Loading())
             )
             .distinctUntilChanged()
     }
 
     private fun refreshCache(subreddit: String, postId: String): Completable {
-        return commentService.getCommentsByPost(subreddit, postId)
+        return commentService.getCommentsByPost(subreddit, postId.removePrefix("t3_"))
             .flatMapCompletable { response ->
                 commentRepository.addComments(CommentResponseMapper.map(response))
             }

@@ -68,6 +68,16 @@ class GetCommentsByPostTest {
     }
 
     @Test
+    fun `return loading`() {
+        //Act and assert
+        getCommentsByPost.execute("Post2", "Subreddit2")
+            .test()
+            .assertValueAt(0, match { lce ->
+                assertThat(lce).isInstanceOf(Lce.Loading::class.java)
+            })
+    }
+
+    @Test
     fun `return comments by post`() {
         //Act and assert
         getCommentsByPost.execute("Post2", "Subreddit2")
@@ -86,6 +96,7 @@ class GetCommentsByPostTest {
     fun `return cached comments first`() {
         //Act
         getCommentsByPost.execute("Post1", "Subreddit1")
+            .filter { it is Lce.Content }
             .test()
             .assertValueAt(0, match { lce ->
                 assertThat(lce).extractingComments()
@@ -116,6 +127,7 @@ class GetCommentsByPostTest {
 
         //Act
         getCommentsByPost.execute("Post1", "Subreddit1")
+            .filter { it is Lce.Content }
             .test()
             .assertValueCount(1)
     }
@@ -128,9 +140,7 @@ class GetCommentsByPostTest {
         //Act
         getCommentsByPost.execute("Post1", "Subreddit1")
             .test()
-            .assertValueAt(0, match { lce ->
-                assertThat(lce).extractingComments().hasSizeGreaterThan(0)
-            })
+            .assertLastValue { lce -> assertThat(lce).extractingComments().hasSizeGreaterThan(0) }
     }
 
     @Test
@@ -153,10 +163,9 @@ class GetCommentsByPostTest {
 
         //Act
         getCommentsByPost.execute("Post1", "Subreddit1")
+            .filter { it is Lce.Content }
             .test()
-            .assertValueAt(0, match { lce ->
-                assertThat(lce).extractingComments().isEmpty()
-            })
+            .assertLastValue { lce -> assertThat(lce).extractingComments().isEmpty() }
     }
 
     private fun clearCache() = db.commentDao().deleteAll().blockingAwait()

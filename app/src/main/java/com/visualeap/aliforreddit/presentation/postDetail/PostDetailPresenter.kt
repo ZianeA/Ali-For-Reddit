@@ -86,12 +86,19 @@ class PostDetailPresenter @Inject constructor(
         return scan(PostDetailViewState()) { vs, result ->
             when (result) {
                 is ScreenLoadResult -> when (result) {
-                    is ScreenLoadResult.PostContent -> vs.copy(post = result.post)
-                    is ScreenLoadResult.PostError -> vs.copy(postError = result.error)
                     ScreenLoadResult.PostLoading -> vs.copy(postLoading = true)
-
-                    is ScreenLoadResult.CommentsContent -> vs.copy(comments = result.comments)
-                    is ScreenLoadResult.CommentsError -> vs.copy(commentsError = result.error)
+                    is ScreenLoadResult.PostContent -> {
+                        vs.copy(post = result.post, postLoading = false)
+                    }
+                    is ScreenLoadResult.PostError -> {
+                        vs.copy(postError = result.error, postLoading = false)
+                    }
+                    is ScreenLoadResult.CommentsContent -> {
+                        vs.copy(comments = result.comments, commentsLoading = false)
+                    }
+                    is ScreenLoadResult.CommentsError -> {
+                        vs.copy(commentsError = result.error, commentsLoading = false)
+                    }
                     ScreenLoadResult.CommentsLoading -> vs.copy(commentsLoading = true)
                 }
                 is CollapseCommentResult -> vs.copy()

@@ -72,6 +72,16 @@ internal class GetPostByIdTest {
     }
 
     @Test
+    fun `return loading`() {
+        //Act and assert
+        getPostById.execute("Subreddit2Post2")
+            .test()
+            .assertValueAt(0, match { lce ->
+                assertThat(lce).isInstanceOf(Lce.Loading::class.java)
+            })
+    }
+
+    @Test
     fun `return post by id`() {
         //Act and assert
         getPostById.execute("Subreddit2Post2")
@@ -89,6 +99,7 @@ internal class GetPostByIdTest {
     fun `return cached post first`() {
         //Act and assert
         getPostById.execute("Subreddit1Post1")
+            .filter { it is Lce.Content }
             .test()
             .assertValueAt(
                 0,
@@ -102,6 +113,7 @@ internal class GetPostByIdTest {
     fun `return remote post second`() {
         //Act and assert
         getPostById.execute("Subreddit1Post1")
+            .filter { it is Lce.Content }
             .test()
             .assertValueAt(
                 1,
@@ -119,6 +131,7 @@ internal class GetPostByIdTest {
 
         //Act
         getPostById.execute("Subreddit1Post1")
+            .filter { it is Lce.Content }
             .test()
             .assertValueCount(1)
     }
