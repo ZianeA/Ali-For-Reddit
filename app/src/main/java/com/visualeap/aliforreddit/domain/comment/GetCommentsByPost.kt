@@ -7,6 +7,7 @@ import com.visualeap.aliforreddit.domain.util.toLce
 import dagger.Reusable
 import io.reactivex.Completable
 import io.reactivex.Observable
+import timber.log.Timber
 import javax.inject.Inject
 
 @Reusable
@@ -18,14 +19,18 @@ class GetCommentsByPost @Inject constructor(
         return refreshCache(subreddit, postId)
             .andThen(commentRepository.getCommentsByPost(postId).toLce())
             .onErrorResumeNext { t: Throwable ->
+                // In case refresh fails
                 commentRepository.getCommentsByPost(postId)
+                    // Skip the first value because it has already been emitted in "startWith"
                     .skip(1)
                     .toLce()
                     .startWith(Lce.Error(t))
             }
             .startWith(
+                // Start with cache
                 commentRepository.getCommentsByPost(postId)
                     .take(1)
+                    // Prevent triggering empty state
                     .filter { it.isNotEmpty() }
                     .toLce()
                     .startWith(Lce.Loading())

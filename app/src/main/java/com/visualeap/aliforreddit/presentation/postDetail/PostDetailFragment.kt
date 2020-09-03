@@ -47,13 +47,21 @@ class PostDetailFragment : Fragment(), PostDetailLauncher {
             .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
             .subscribe(::render)
 
-        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+        presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
 
         epoxyController = PostDetailEpoxyController()
+        epoxyController.onCommentLongClickListener = { longClickedComment, allComments ->
+            presenter.passEvent(
+                PostDetailEvent.CommentLongClickEvent(longClickedComment, allComments)
+            )
+            true
+        }
         postDetailRecyclerView.apply {
             setController(epoxyController)
             addItemDecoration(
-                CommentItemDecoration(resources.getDimension(R.dimen.comment_spacing).toInt())
+                CommentItemDecoration(
+                    resources.getDimension(R.dimen.comment_spacing).toInt()
+                )
             )
         }
     }

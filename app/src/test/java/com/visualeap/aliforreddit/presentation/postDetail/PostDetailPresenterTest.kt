@@ -10,7 +10,6 @@ import com.visualeap.aliforreddit.util.TrampolineSchedulerProvider
 import io.mockk.*
 import io.reactivex.Observable
 import org.assertj.core.api.Assertions.*
-import org.assertj.core.api.InstanceOfAssertFactories
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -56,7 +55,7 @@ internal class PostDetailPresenterTest {
 
         //Act
         val testObserver = presenter.viewState.test()
-        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+        presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
 
         //Assert
         testObserver.assertLastValue { assertThat(it.postLoading).isTrue() }
@@ -70,7 +69,7 @@ internal class PostDetailPresenterTest {
 
         //Act
         val testObserver = presenter.viewState.test()
-        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+        presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
 
         //Assert
         testObserver.assertLastValue {
@@ -86,7 +85,7 @@ internal class PostDetailPresenterTest {
 
         //Act
         val testObserver = presenter.viewState.test()
-        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+        presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
 
         //Assert
         testObserver.assertLastValue {
@@ -102,7 +101,7 @@ internal class PostDetailPresenterTest {
 
         //Act
         val testObserver = presenter.viewState.test()
-        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+        presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
 
         //Assert
         testObserver.assertLastValue { assertThat(it.commentsLoading).isTrue() }
@@ -116,7 +115,7 @@ internal class PostDetailPresenterTest {
 
         //Act
         val testObserver = presenter.viewState.test()
-        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+        presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
 
         // Assert
         testObserver.assertLastValue {
@@ -133,7 +132,7 @@ internal class PostDetailPresenterTest {
 
         //Act
         val testObserver = presenter.viewState.test()
-        presenter.passEvents(PostDetailEvent.ScreenLoadEvent)
+        presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
 
         //Assert
         testObserver.assertLastValue {
@@ -142,104 +141,50 @@ internal class PostDetailPresenterTest {
         }
     }
 
-    /*
+    @Test
+    fun `collapse comments when expanded`() {
+        //Arrange
+        val comment = createCommentDto()
 
-    *//*@Nested
-    inner class Start {
-        @Test
-        fun `display post`() {
-            //Arrange
-            val post = createPostView()
-            every { view.showPost(any()) } just runs
-            every {
-                commentRepository.getCommentsByPost(
-                    any(),
-                    any(),
-                    any(),
-                    any()
-                )
-            } returns Single.just(
-                emptyList()
-            )
-            every { view.showComments(any()) } just runs
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvent(PostDetailEvent.CommentLongClickEvent(comment, listOf(comment)))
 
-            //Act
-            presenter.start(post)
-
-            //Assert
-            verify { view.showPost(post) }
+        //Assert
+        testObserver.assertLastValue {
+            assertThat(it.comments).containsExactly(comment.copy(isCollapsed = true))
         }
+    }
 
-        @Test
-        fun `pass selected post's comments to view`() {
-            //Arrange
-            val post = createPostView()
-            val comments = listOf(createComment())
-            val commentViews = listOf(createCommentView())
-            every {
-                commentRepository.getCommentsByPost(post.subreddit.name, post.id, any(), any())
-            } returns Single.just(comments)
-            every { commentViewMapper.mapReverse(comments) } returns commentViews
-            every { view.showPost(any()) } just runs
-            every { view.showComments(any()) } just runs
-
-            //Act
-            presenter.start(post)
-
-            //Assert
-            verify { view.showComments(commentViews) }
-        }
-    }*//*
-
-    @Nested
-    inner class OnCommentLongClicked {
-        @Test
-        fun `collapse comments when expanded`() {
-            //Arrange
-            val commentView = createCommentDto()
-            every { view.showComments(any()) } just runs
-
-            //Act
-            presenter.onCommentLongClicked(commentView, listOf(commentView))
-
-            //Assert
-            verify { view.showComments(listOf(commentView.copy(isCollapsed = true))) }
-        }
-
-        @Test
-        fun `handle collapsing deeply nested comments`() {
-            //Arrange
-            val clickedComment = createCommentDto(
-                id = "16",
-                parentId = "15",
-                replies = null
-            )
-            val allComments = listOf(
-                createCommentDto(
-                    id = "1", parentId = null, replies = listOf(
-                        createCommentDto(
-                            id = "2", parentId = "1", replies = listOf(
-                                createCommentDto(
-                                    id = "5", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "7", parentId = "5", replies = listOf(
-                                                createCommentDto(
-                                                    id = "8",
-                                                    parentId = "7",
-                                                    replies = null
-                                                )
+    @Test
+    fun `handle collapsing deeply nested comments`() {
+        //Arrange
+        val clickedComment = createCommentDto(id = "16", parentId = "15", replies = null)
+        val allComments = listOf(
+            createCommentDto(
+                id = "1", parentId = null, replies = listOf(
+                    createCommentDto(
+                        id = "2", parentId = "1", replies = listOf(
+                            createCommentDto(
+                                id = "5", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "7", parentId = "5", replies = listOf(
+                                            createCommentDto(
+                                                id = "8",
+                                                parentId = "7",
+                                                replies = null
                                             )
                                         )
                                     )
-                                ),
-                                createCommentDto(
-                                    id = "6", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "12", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "15", parentId = "12", replies = listOf(
-                                                        clickedComment
-                                                    )
+                                )
+                            ),
+                            createCommentDto(
+                                id = "6", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "12", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "15", parentId = "12", replies = listOf(
+                                                    clickedComment
                                                 )
                                             )
                                         )
@@ -250,38 +195,38 @@ internal class PostDetailPresenterTest {
                     )
                 )
             )
-            every { view.showComments(any()) } just runs
+        )
 
-            //Act
-            presenter.onCommentLongClicked(clickedComment, allComments)
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvent(PostDetailEvent.CommentLongClickEvent(clickedComment, allComments))
 
-            //Assert
-            val expectedComments = listOf(
-                createCommentDto(
-                    id = "1", parentId = null, replies = listOf(
-                        createCommentDto(
-                            id = "2", parentId = "1", replies = listOf(
-                                createCommentDto(
-                                    id = "5", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "7", parentId = "5", replies = listOf(
-                                                createCommentDto(
-                                                    id = "8",
-                                                    parentId = "7",
-                                                    replies = null
-                                                )
+        //Assert
+        val expectedComments = listOf(
+            createCommentDto(
+                id = "1", parentId = null, replies = listOf(
+                    createCommentDto(
+                        id = "2", parentId = "1", replies = listOf(
+                            createCommentDto(
+                                id = "5", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "7", parentId = "5", replies = listOf(
+                                            createCommentDto(
+                                                id = "8",
+                                                parentId = "7",
+                                                replies = null
                                             )
                                         )
                                     )
-                                ),
-                                createCommentDto(
-                                    id = "6", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "12", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "15", parentId = "12", replies = listOf(
-                                                        clickedComment.copy(isCollapsed = true)
-                                                    )
+                                )
+                            ),
+                            createCommentDto(
+                                id = "6", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "12", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "15", parentId = "12", replies = listOf(
+                                                    clickedComment.copy(isCollapsed = true)
                                                 )
                                             )
                                         )
@@ -292,62 +237,470 @@ internal class PostDetailPresenterTest {
                     )
                 )
             )
-            verify { view.showComments(expectedComments) }
-        }
+        )
+        testObserver.assertLastValue { assertThat(it.comments).containsAll(expectedComments) }
+    }
 
-        @Test
-        fun `handle collapsing deeply nested comments 2`() {
-            //Arrange
-            val clickedComment = createCommentDto(
-                id = "17",
-                parentId = "14",
-                replies = null
-            )
-            val allComments = listOf(
-                createCommentDto(
-                    id = "1", parentId = null, replies = listOf(
-                        createCommentDto(
-                            id = "2", parentId = "1", replies = listOf(
-                                createCommentDto(
-                                    id = "5", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "7", parentId = "5", replies = listOf(
-                                                createCommentDto(
-                                                    id = "8",
-                                                    parentId = "7",
-                                                    replies = null
-                                                )
+    @Test
+    fun `handle collapsing deeply nested comments 2`() {
+        //Arrange
+        val clickedComment = createCommentDto(id = "17", parentId = "14", replies = null)
+        val allComments = listOf(
+            createCommentDto(
+                id = "1", parentId = null, replies = listOf(
+                    createCommentDto(
+                        id = "2", parentId = "1", replies = listOf(
+                            createCommentDto(
+                                id = "5", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "7", parentId = "5", replies = listOf(
+                                            createCommentDto(
+                                                id = "8",
+                                                parentId = "7",
+                                                replies = null
                                             )
                                         )
                                     )
-                                ),
-                                createCommentDto(
-                                    id = "6", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "12", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "15", parentId = "12", replies = listOf(
-                                                        createCommentDto(
-                                                            id = "16",
-                                                            parentId = "15",
-                                                            replies = null
-                                                        )
+                                )
+                            ),
+                            createCommentDto(
+                                id = "6", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "12", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "15", parentId = "12", replies = listOf(
+                                                    createCommentDto(
+                                                        id = "16",
+                                                        parentId = "15",
+                                                        replies = null
                                                     )
                                                 )
                                             )
-                                        ),
-                                        createCommentDto(
-                                            id = "13",
-                                            parentId = "6",
-                                            replies = null
-                                        ),
-                                        createCommentDto(
-                                            id = "14", parentId = "6", replies = listOf(
-                                                clickedComment,
-                                                createCommentDto(
-                                                    id = "18",
-                                                    parentId = "14",
-                                                    replies = null
+                                        )
+                                    ),
+                                    createCommentDto(
+                                        id = "13",
+                                        parentId = "6",
+                                        replies = null
+                                    ),
+                                    createCommentDto(
+                                        id = "14", parentId = "6", replies = listOf(
+                                            clickedComment,
+                                            createCommentDto(
+                                                id = "18",
+                                                parentId = "14",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvent(PostDetailEvent.CommentLongClickEvent(clickedComment, allComments))
+
+        //Assert
+        val expectedComments = listOf(
+            createCommentDto(
+                id = "1", parentId = null, replies = listOf(
+                    createCommentDto(
+                        id = "2", parentId = "1", replies = listOf(
+                            createCommentDto(
+                                id = "5", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "7", parentId = "5", replies = listOf(
+                                            createCommentDto(
+                                                id = "8",
+                                                parentId = "7",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            createCommentDto(
+                                id = "6", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "12", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "15", parentId = "12", replies = listOf(
+                                                    createCommentDto(
+                                                        id = "16",
+                                                        parentId = "15",
+                                                        replies = null
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    ),
+                                    createCommentDto(
+                                        id = "13",
+                                        parentId = "6",
+                                        replies = null
+                                    ),
+                                    createCommentDto(
+                                        id = "14", parentId = "6", replies = listOf(
+                                            clickedComment.copy(isCollapsed = true),
+                                            createCommentDto(
+                                                id = "18",
+                                                parentId = "14",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+        testObserver.assertLastValue { assertThat(it.comments).containsAll(expectedComments) }
+    }
+
+    @Test
+    fun `handle collapsing other root comments`() {
+        //Arrange
+        val clickedComment = createCommentDto(
+            id = "10", parentId = null, replies = listOf(
+                createCommentDto(id = "11", parentId = "10", replies = null)
+            )
+        )
+        val allComments = listOf(
+            createCommentDto(
+                id = "1", parentId = null, replies = listOf(
+                    createCommentDto(
+                        id = "2", parentId = "1", replies = listOf(
+                            createCommentDto(
+                                id = "5", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "7", parentId = "5", replies = listOf(
+                                            createCommentDto(
+                                                id = "8",
+                                                parentId = "7",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            createCommentDto(
+                                id = "6", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "12", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "15", parentId = "12", replies = listOf(
+                                                    createCommentDto(
+                                                        id = "16",
+                                                        parentId = "15",
+                                                        replies = null
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    ),
+                                    createCommentDto(
+                                        id = "13",
+                                        parentId = "6",
+                                        replies = null
+                                    ),
+                                    createCommentDto(
+                                        id = "14", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "17",
+                                                parentId = "14",
+                                                replies = null
+                                            ),
+                                            createCommentDto(
+                                                id = "18",
+                                                parentId = "14",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    createCommentDto(id = "3", parentId = "1", replies = null),
+                    createCommentDto(id = "4", parentId = "1", replies = null)
+                )
+            ),
+            createCommentDto(id = "9", parentId = null, replies = null),
+            clickedComment
+        )
+
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvent(PostDetailEvent.CommentLongClickEvent(clickedComment, allComments))
+
+        //Assert
+        val expectedComments = listOf(
+            createCommentDto(
+                id = "1", parentId = null, replies = listOf(
+                    createCommentDto(
+                        id = "2", parentId = "1", replies = listOf(
+                            createCommentDto(
+                                id = "5", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "7", parentId = "5", replies = listOf(
+                                            createCommentDto(
+                                                id = "8",
+                                                parentId = "7",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            createCommentDto(
+                                id = "6", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "12", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "15", parentId = "12", replies = listOf(
+                                                    createCommentDto(
+                                                        id = "16",
+                                                        parentId = "15",
+                                                        replies = null
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    ),
+                                    createCommentDto(
+                                        id = "13",
+                                        parentId = "6",
+                                        replies = null
+                                    ),
+                                    createCommentDto(
+                                        id = "14", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "17",
+                                                parentId = "14",
+                                                replies = null
+                                            ),
+                                            createCommentDto(
+                                                id = "18",
+                                                parentId = "14",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    createCommentDto(id = "3", parentId = "1", replies = null),
+                    createCommentDto(id = "4", parentId = "1", replies = null)
+                )
+            ),
+            createCommentDto(id = "9", parentId = null, replies = null),
+            clickedComment.copy(isCollapsed = true)
+        )
+        testObserver.assertLastValue { assertThat(it.comments).containsAll(expectedComments) }
+    }
+
+    @Test
+    fun `handle collapsing nested comment of other root comments`() {
+        //Arrange
+        val clickedComment = createCommentDto(id = "11", parentId = "10", replies = null)
+        val allComments = listOf(
+            createCommentDto(
+                id = "1", parentId = null, replies = listOf(
+                    createCommentDto(
+                        id = "2", parentId = "1", replies = listOf(
+                            createCommentDto(
+                                id = "5", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "7", parentId = "5", replies = listOf(
+                                            createCommentDto(
+                                                id = "8",
+                                                parentId = "7",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            createCommentDto(
+                                id = "6", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "12", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "15", parentId = "12", replies = listOf(
+                                                    createCommentDto(
+                                                        id = "16",
+                                                        parentId = "15",
+                                                        replies = null
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    ),
+                                    createCommentDto(
+                                        id = "13",
+                                        parentId = "6",
+                                        replies = null
+                                    ),
+                                    createCommentDto(
+                                        id = "14", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "17",
+                                                parentId = "14",
+                                                replies = null
+                                            ),
+                                            createCommentDto(
+                                                id = "18",
+                                                parentId = "14",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    createCommentDto(id = "3", parentId = "1", replies = null),
+                    createCommentDto(id = "4", parentId = "1", replies = null)
+                )
+            ),
+            createCommentDto(id = "9", parentId = null, replies = null),
+            createCommentDto(
+                id = "10", parentId = null, replies = listOf(clickedComment)
+            )
+        )
+
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvent(PostDetailEvent.CommentLongClickEvent(clickedComment, allComments))
+
+        //Assert
+        val expectedComments = listOf(
+            createCommentDto(
+                id = "1", parentId = null, replies = listOf(
+                    createCommentDto(
+                        id = "2", parentId = "1", replies = listOf(
+                            createCommentDto(
+                                id = "5", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "7", parentId = "5", replies = listOf(
+                                            createCommentDto(
+                                                id = "8",
+                                                parentId = "7",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            createCommentDto(
+                                id = "6", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "12", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "15", parentId = "12", replies = listOf(
+                                                    createCommentDto(
+                                                        id = "16",
+                                                        parentId = "15",
+                                                        replies = null
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    ),
+                                    createCommentDto(
+                                        id = "13",
+                                        parentId = "6",
+                                        replies = null
+                                    ),
+                                    createCommentDto(
+                                        id = "14", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "17",
+                                                parentId = "14",
+                                                replies = null
+                                            ),
+                                            createCommentDto(
+                                                id = "18",
+                                                parentId = "14",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    createCommentDto(id = "3", parentId = "1", replies = null),
+                    createCommentDto(id = "4", parentId = "1", replies = null)
+                )
+            ),
+            createCommentDto(id = "9", parentId = null, replies = null),
+            createCommentDto(
+                id = "10",
+                parentId = null,
+                replies = listOf(clickedComment.copy(isCollapsed = true))
+            )
+        )
+        testObserver.assertLastValue { assertThat(it.comments).containsAll(expectedComments) }
+    }
+
+    @Test
+    fun `expand comments when collapsed`() {
+        //Arrange
+        val comment = createCommentDto(isCollapsed = true)
+
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvent(PostDetailEvent.CommentLongClickEvent(comment, listOf(comment)))
+
+        //Assert
+        testObserver.assertLastValue {
+            assertThat(it.comments).containsExactly(comment.copy(isCollapsed = false))
+        }
+    }
+
+    @Test
+    fun `handle expanding deeply nested comments`() {
+        //Arrange
+        val clickedComment = createCommentDto(
+            id = "16",
+            parentId = "15",
+            replies = null,
+            isCollapsed = true
+        )
+        val allComments = listOf(
+            createCommentDto(
+                id = "1", parentId = null, replies = listOf(
+                    createCommentDto(
+                        id = "2", parentId = "1", replies = listOf(
+                            createCommentDto(
+                                id = "5", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "7", parentId = "5", replies = listOf(
+                                            createCommentDto(
+                                                id = "8",
+                                                parentId = "7",
+                                                replies = null
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            createCommentDto(
+                                id = "6", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "12", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "15", parentId = "12", replies = listOf(
+                                                    clickedComment
                                                 )
                                             )
                                         )
@@ -358,57 +711,38 @@ internal class PostDetailPresenterTest {
                     )
                 )
             )
-            every { view.showComments(any()) } just runs
+        )
 
-            //Act
-            presenter.onCommentLongClicked(clickedComment, allComments)
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvent(PostDetailEvent.CommentLongClickEvent(clickedComment, allComments))
 
-            //Assert
-            val expectedComments = listOf(
-                createCommentDto(
-                    id = "1", parentId = null, replies = listOf(
-                        createCommentDto(
-                            id = "2", parentId = "1", replies = listOf(
-                                createCommentDto(
-                                    id = "5", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "7", parentId = "5", replies = listOf(
-                                                createCommentDto(
-                                                    id = "8",
-                                                    parentId = "7",
-                                                    replies = null
-                                                )
+        //Assert
+        val expectedComments = listOf(
+            createCommentDto(
+                id = "1", parentId = null, replies = listOf(
+                    createCommentDto(
+                        id = "2", parentId = "1", replies = listOf(
+                            createCommentDto(
+                                id = "5", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "7", parentId = "5", replies = listOf(
+                                            createCommentDto(
+                                                id = "8",
+                                                parentId = "7",
+                                                replies = null
                                             )
                                         )
                                     )
-                                ),
-                                createCommentDto(
-                                    id = "6", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "12", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "15", parentId = "12", replies = listOf(
-                                                        createCommentDto(
-                                                            id = "16",
-                                                            parentId = "15",
-                                                            replies = null
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        ),
-                                        createCommentDto(
-                                            id = "13",
-                                            parentId = "6",
-                                            replies = null
-                                        ),
-                                        createCommentDto(
-                                            id = "14", parentId = "6", replies = listOf(
-                                                clickedComment.copy(isCollapsed = true),
-                                                createCommentDto(
-                                                    id = "18",
-                                                    parentId = "14",
-                                                    replies = null
+                                )
+                            ),
+                            createCommentDto(
+                                id = "6", parentId = "2", replies = listOf(
+                                    createCommentDto(
+                                        id = "12", parentId = "6", replies = listOf(
+                                            createCommentDto(
+                                                id = "15", parentId = "12", replies = listOf(
+                                                    clickedComment.copy(isCollapsed = false)
                                                 )
                                             )
                                         )
@@ -419,398 +753,8 @@ internal class PostDetailPresenterTest {
                     )
                 )
             )
-            verify { view.showComments(expectedComments) }
-        }
+        )
+        testObserver.assertLastValue { assertThat(it.comments).containsAll(expectedComments) }
+    }
 
-        @Test
-        fun `handle collapsing other root comments`() {
-            //Arrange
-            val clickedComment = createCommentDto(
-                id = "10", parentId = null, replies = listOf(
-                    createCommentDto(id = "11", parentId = "10", replies = null)
-                )
-            )
-            val allComments = listOf(
-                createCommentDto(
-                    id = "1", parentId = null, replies = listOf(
-                        createCommentDto(
-                            id = "2", parentId = "1", replies = listOf(
-                                createCommentDto(
-                                    id = "5", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "7", parentId = "5", replies = listOf(
-                                                createCommentDto(
-                                                    id = "8",
-                                                    parentId = "7",
-                                                    replies = null
-                                                )
-                                            )
-                                        )
-                                    )
-                                ),
-                                createCommentDto(
-                                    id = "6", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "12", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "15", parentId = "12", replies = listOf(
-                                                        createCommentDto(
-                                                            id = "16",
-                                                            parentId = "15",
-                                                            replies = null
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        ),
-                                        createCommentDto(
-                                            id = "13",
-                                            parentId = "6",
-                                            replies = null
-                                        ),
-                                        createCommentDto(
-                                            id = "14", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "17",
-                                                    parentId = "14",
-                                                    replies = null
-                                                ),
-                                                createCommentDto(
-                                                    id = "18",
-                                                    parentId = "14",
-                                                    replies = null
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        ),
-                        createCommentDto(id = "3", parentId = "1", replies = null),
-                        createCommentDto(id = "4", parentId = "1", replies = null)
-                    )
-                ),
-                createCommentDto(id = "9", parentId = null, replies = null),
-                clickedComment
-            )
-            every { view.showComments(any()) } just runs
-
-            //Act
-            presenter.onCommentLongClicked(clickedComment, allComments)
-
-            //Assert
-            val expectedComments = listOf(
-                createCommentDto(
-                    id = "1", parentId = null, replies = listOf(
-                        createCommentDto(
-                            id = "2", parentId = "1", replies = listOf(
-                                createCommentDto(
-                                    id = "5", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "7", parentId = "5", replies = listOf(
-                                                createCommentDto(
-                                                    id = "8",
-                                                    parentId = "7",
-                                                    replies = null
-                                                )
-                                            )
-                                        )
-                                    )
-                                ),
-                                createCommentDto(
-                                    id = "6", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "12", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "15", parentId = "12", replies = listOf(
-                                                        createCommentDto(
-                                                            id = "16",
-                                                            parentId = "15",
-                                                            replies = null
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        ),
-                                        createCommentDto(
-                                            id = "13",
-                                            parentId = "6",
-                                            replies = null
-                                        ),
-                                        createCommentDto(
-                                            id = "14", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "17",
-                                                    parentId = "14",
-                                                    replies = null
-                                                ),
-                                                createCommentDto(
-                                                    id = "18",
-                                                    parentId = "14",
-                                                    replies = null
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        ),
-                        createCommentDto(id = "3", parentId = "1", replies = null),
-                        createCommentDto(id = "4", parentId = "1", replies = null)
-                    )
-                ),
-                createCommentDto(id = "9", parentId = null, replies = null),
-                clickedComment.copy(isCollapsed = true)
-            )
-            verify { view.showComments(expectedComments) }
-        }
-
-        @Test
-        fun `handle collapsing nested comment of other root comments`() {
-            //Arrange
-            val clickedComment = createCommentDto(id = "11", parentId = "10", replies = null)
-            val allComments = listOf(
-                createCommentDto(
-                    id = "1", parentId = null, replies = listOf(
-                        createCommentDto(
-                            id = "2", parentId = "1", replies = listOf(
-                                createCommentDto(
-                                    id = "5", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "7", parentId = "5", replies = listOf(
-                                                createCommentDto(
-                                                    id = "8",
-                                                    parentId = "7",
-                                                    replies = null
-                                                )
-                                            )
-                                        )
-                                    )
-                                ),
-                                createCommentDto(
-                                    id = "6", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "12", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "15", parentId = "12", replies = listOf(
-                                                        createCommentDto(
-                                                            id = "16",
-                                                            parentId = "15",
-                                                            replies = null
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        ),
-                                        createCommentDto(
-                                            id = "13",
-                                            parentId = "6",
-                                            replies = null
-                                        ),
-                                        createCommentDto(
-                                            id = "14", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "17",
-                                                    parentId = "14",
-                                                    replies = null
-                                                ),
-                                                createCommentDto(
-                                                    id = "18",
-                                                    parentId = "14",
-                                                    replies = null
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        ),
-                        createCommentDto(id = "3", parentId = "1", replies = null),
-                        createCommentDto(id = "4", parentId = "1", replies = null)
-                    )
-                ),
-                createCommentDto(id = "9", parentId = null, replies = null),
-                createCommentDto(
-                    id = "10", parentId = null, replies = listOf(clickedComment)
-                )
-            )
-            every { view.showComments(any()) } just runs
-
-            //Act
-            presenter.onCommentLongClicked(clickedComment, allComments)
-
-            //Assert
-            val expectedComment = listOf(
-                createCommentDto(
-                    id = "1", parentId = null, replies = listOf(
-                        createCommentDto(
-                            id = "2", parentId = "1", replies = listOf(
-                                createCommentDto(
-                                    id = "5", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "7", parentId = "5", replies = listOf(
-                                                createCommentDto(
-                                                    id = "8",
-                                                    parentId = "7",
-                                                    replies = null
-                                                )
-                                            )
-                                        )
-                                    )
-                                ),
-                                createCommentDto(
-                                    id = "6", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "12", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "15", parentId = "12", replies = listOf(
-                                                        createCommentDto(
-                                                            id = "16",
-                                                            parentId = "15",
-                                                            replies = null
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        ),
-                                        createCommentDto(
-                                            id = "13",
-                                            parentId = "6",
-                                            replies = null
-                                        ),
-                                        createCommentDto(
-                                            id = "14", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "17",
-                                                    parentId = "14",
-                                                    replies = null
-                                                ),
-                                                createCommentDto(
-                                                    id = "18",
-                                                    parentId = "14",
-                                                    replies = null
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        ),
-                        createCommentDto(id = "3", parentId = "1", replies = null),
-                        createCommentDto(id = "4", parentId = "1", replies = null)
-                    )
-                ),
-                createCommentDto(id = "9", parentId = null, replies = null),
-                createCommentDto(
-                    id = "10",
-                    parentId = null,
-                    replies = listOf(clickedComment.copy(isCollapsed = true))
-                )
-            )
-            verify { view.showComments(expectedComment) }
-        }
-
-        @Test
-        fun `expand comments when collapsed`() {
-            //Arrange
-            val commentView = createCommentDto(isCollapsed = true)
-            every { view.showComments(any()) } just runs
-
-            //Act
-            presenter.onCommentLongClicked(commentView, listOf(commentView))
-
-            //Assert
-            verify { view.showComments(listOf(commentView.copy(isCollapsed = false))) }
-        }
-
-        @Test
-        fun `handle expanding deeply nested comments`() {
-            //Arrange
-            val clickedComment = createCommentDto(
-                id = "16",
-                parentId = "15",
-                replies = null,
-                isCollapsed = true
-            )
-            val allComments = listOf(
-                createCommentDto(
-                    id = "1", parentId = null, replies = listOf(
-                        createCommentDto(
-                            id = "2", parentId = "1", replies = listOf(
-                                createCommentDto(
-                                    id = "5", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "7", parentId = "5", replies = listOf(
-                                                createCommentDto(
-                                                    id = "8",
-                                                    parentId = "7",
-                                                    replies = null
-                                                )
-                                            )
-                                        )
-                                    )
-                                ),
-                                createCommentDto(
-                                    id = "6", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "12", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "15", parentId = "12", replies = listOf(
-                                                        clickedComment
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-            every { view.showComments(any()) } just runs
-
-            //Act
-            presenter.onCommentLongClicked(clickedComment, allComments)
-
-            //Assert
-            val expectedComments = listOf(
-                createCommentDto(
-                    id = "1", parentId = null, replies = listOf(
-                        createCommentDto(
-                            id = "2", parentId = "1", replies = listOf(
-                                createCommentDto(
-                                    id = "5", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "7", parentId = "5", replies = listOf(
-                                                createCommentDto(
-                                                    id = "8",
-                                                    parentId = "7",
-                                                    replies = null
-                                                )
-                                            )
-                                        )
-                                    )
-                                ),
-                                createCommentDto(
-                                    id = "6", parentId = "2", replies = listOf(
-                                        createCommentDto(
-                                            id = "12", parentId = "6", replies = listOf(
-                                                createCommentDto(
-                                                    id = "15", parentId = "12", replies = listOf(
-                                                        clickedComment.copy(isCollapsed = false)
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-            verify { view.showComments(expectedComments) }
-        }
-    }*/
 }

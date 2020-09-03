@@ -14,7 +14,6 @@ interface CommentDao {
     @Query("SELECT * FROM CommentEntity")
     fun getAll(): Observable<List<CommentEntity>>
 
-    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAll(comments: List<CommentEntity>): Completable
 

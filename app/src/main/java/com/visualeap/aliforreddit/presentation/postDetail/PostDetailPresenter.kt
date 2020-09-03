@@ -15,6 +15,7 @@ import com.visualeap.aliforreddit.presentation.postDetail.PostDetailEvent.*
 import com.visualeap.aliforreddit.presentation.postDetail.PostDetailResult.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import timber.log.Timber
 import javax.inject.Inject
 
 @FragmentScope
@@ -30,17 +31,21 @@ class PostDetailPresenter @Inject constructor(
     private val events: PublishSubject<PostDetailEvent> = PublishSubject.create()
 
     val viewState: Observable<PostDetailViewState> by lazy {
-        events.publish { event ->
-            Observable.merge(
-                event.ofType(ScreenLoadEvent::class.java).take(1).handleScreenLoad(),
-                event.ofType(CollapseCommentEvent::class.java).handleCollapseComment()
-            )
-        }
+        events
+            .doOnNext { Timber.d("----- event $it") }
+            .publish { event ->
+                Observable.merge(
+                    event.ofType(ScreenLoadEvent::class.java).take(1).handleScreenLoad(),
+                    event.ofType(CommentLongClickEvent::class.java).handleCommentLongCLick()
+                )
+            }
+            .doOnNext { Timber.d("----- result $it") }
             .resultToViewState()
+            .doOnNext { Timber.d("----- viewstate $it") }
             .autoReplay()
     }
 
-    fun passEvents(event: PostDetailEvent) = events.onNext(event)
+    fun passEvent(event: PostDetailEvent) = events.onNext(event)
 
     private fun Observable<ScreenLoadEvent>.handleScreenLoad(): Observable<ScreenLoadResult> {
         return publish { screenLoadEvent ->
@@ -78,8 +83,12 @@ class PostDetailPresenter @Inject constructor(
             }
     }
 
-    private fun Observable<CollapseCommentEvent>.handleCollapseComment(): Observable<CollapseCommentResult> {
-        return Observable.just(CollapseCommentResult)
+    private fun Observable<CommentLongClickEvent>.handleCommentLongCLick(): Observable<CommentLongClickResult> {
+        return map { event ->
+            val comments = collapseOrExpandComment(event.allComments, event.clickedComment.id)
+            CommentLongClickResult(comments)
+        }
+            .subscribeOn(schedulerProvider.io)
     }
 
     private fun Observable<PostDetailResult>.resultToViewState(): Observable<PostDetailViewState> {
@@ -101,44 +110,22 @@ class PostDetailPresenter @Inject constructor(
                     }
                     ScreenLoadResult.CommentsLoading -> vs.copy(commentsLoading = true)
                 }
-                is CollapseCommentResult -> vs.copy()
+                is CommentLongClickResult -> vs.copy(comments = result.comments)
             }
         }
             .distinctUntilChanged()
-    }
-
-    /*fun onCommentLongClicked(clickedComment: CommentDto, allComments: List<CommentDto>): Boolean {
-        val comments = collapseOrExpandComment(allComments, clickedComment.id)
-        launcher.showComments(comments)
-        return true
-    }*/
-
-    private fun getComments(): Observable<PostDetailViewState> {
-        /*return getCommentsByPost.execute(postId, subreddit)
-            .map<PostDetailViewState> { CommentSuccess(CommentFormatter.format(it), null) }
-            .startWith(Loading)*/
-        TODO("Not implemented")
-    }
-
-    private fun getPost(): Observable<PostDetailViewState> {
-        /*return getPostById.execute(postId)
-            .map<PostDetailViewState> { (subreddit, post) ->
-                PostSuccess(PostFormatter.formatPost(subreddit, post), null)
-            }
-            .startWith(Loading)*/
-        TODO("Not implemented")
     }
 
     private fun collapseOrExpandComment(
         comments: List<CommentDto>,
         commentId: String
     ): List<CommentDto> {
-        var foundCollapsedOrExpandedComment = false
+        var foundClickedComment = false
         return comments.map {
             if (it.id == commentId) {
-                foundCollapsedOrExpandedComment = true
+                foundClickedComment = true
                 it.copy(isCollapsed = !it.isCollapsed)
-            } else if (!foundCollapsedOrExpandedComment && it.replies != null) {
+            } else if (!foundClickedComment && it.replies != null) {
                 val replies = collapseOrExpandComment(it.replies, commentId)
                 it.copy(replies = replies)
             } else it

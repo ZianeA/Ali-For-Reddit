@@ -14,7 +14,10 @@ data class PostDetailViewState(
 
 sealed class PostDetailEvent {
     object ScreenLoadEvent : PostDetailEvent()
-    object CollapseCommentEvent : PostDetailEvent()
+    data class CommentLongClickEvent(
+        val clickedComment: CommentDto,
+        val allComments: List<CommentDto>
+    ) : PostDetailEvent()
 }
 
 sealed class PostDetailResult {
@@ -27,7 +30,7 @@ sealed class PostDetailResult {
         object CommentsLoading : ScreenLoadResult()
     }
 
-    object CollapseCommentResult : PostDetailResult()
+    data class CommentLongClickResult(val comments: List<CommentDto>) : PostDetailResult()
 }
 /*{
     object Loading : PostDetailViewState()
