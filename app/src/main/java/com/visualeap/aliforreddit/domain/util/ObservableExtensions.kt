@@ -2,6 +2,7 @@ package com.visualeap.aliforreddit.domain.util
 
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import io.reactivex.*
+import io.reactivex.disposables.Disposable
 
 fun <T> Observable<T>.applySchedulers(provider: SchedulerProvider): Observable<T> =
     subscribeOn(provider.io).observeOn(provider.ui)
@@ -18,6 +19,8 @@ fun Completable.applySchedulers(provider: SchedulerProvider): Completable =
 fun <T> Maybe<T>.applySchedulers(provider: SchedulerProvider): Maybe<T> =
     subscribeOn(provider.io).observeOn(provider.ui)
 
-fun <T> Observable<T>.autoReplay(): Observable<T> = replay(1).autoConnect()
+fun <T> Observable<T>.autoReplay(connection: (t: Disposable) -> Unit): Observable<T> =
+    replay(1).autoConnect(1, connection)
 
-fun <T> Flowable<T>.autoReplay(): Flowable<T> = replay(1).autoConnect()
+fun <T> Flowable<T>.autoReplay(connection: (t: Disposable) -> Unit): Flowable<T> =
+    replay(1).autoConnect(1, connection)

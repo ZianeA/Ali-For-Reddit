@@ -55,11 +55,6 @@ class FrontPageFragment : Fragment(), FrontPageLauncher {
             .subscribe(::render)
     }
 
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
-
     @Suppress("IMPLICIT_CAST_TO_ANY")
     private fun render(viewState: FrontPageViewState) {
         when (viewState) {
@@ -78,6 +73,16 @@ class FrontPageFragment : Fragment(), FrontPageLauncher {
                 epoxyController.requestModelBuild()
             }
         }.exhaustive
+    }
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.onCleared()
     }
 
     val feed: String

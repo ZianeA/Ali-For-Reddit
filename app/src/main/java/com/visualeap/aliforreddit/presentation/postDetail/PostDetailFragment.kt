@@ -74,11 +74,6 @@ class PostDetailFragment : Fragment(), PostDetailLauncher {
         return inflater.inflate(R.layout.fragment_post_detail, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
-
     private fun render(viewState: PostDetailViewState) {
         //Display post
         epoxyController.postLoading = viewState.postLoading
@@ -92,6 +87,16 @@ class PostDetailFragment : Fragment(), PostDetailLauncher {
         epoxyController.commentsLoading = viewState.commentsLoading
         viewState.comments?.let { epoxyController.comments = it }
         viewState.commentsError?.let { epoxyController.commentsError = true }
+    }
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.onCleared()
     }
 
     val postId: String

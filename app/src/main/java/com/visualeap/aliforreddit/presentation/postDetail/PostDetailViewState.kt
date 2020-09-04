@@ -32,15 +32,3 @@ sealed class PostDetailResult {
 
     data class CommentLongClickResult(val comments: List<CommentDto>) : PostDetailResult()
 }
-/*{
-    object Loading : PostDetailViewState()
-
-    data class Failure(val error: String) : PostDetailViewState()
-
-    data class PostSuccess(val post: PostDto, val commentError: String?) : PostDetailViewState()
-
-    data class CommentSuccess(val comments: List<CommentDto>, val postError: String?) :
-        PostDetailViewState()
-
-    data class Success(val post: PostDto, val comments: List<CommentDto>) : PostDetailViewState()
-}*/

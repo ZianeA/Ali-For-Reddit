@@ -14,6 +14,7 @@ import com.visualeap.aliforreddit.presentation.common.util.ResourceProvider
 import com.visualeap.aliforreddit.presentation.postDetail.PostDetailEvent.*
 import com.visualeap.aliforreddit.presentation.postDetail.PostDetailResult.*
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
@@ -28,6 +29,8 @@ class PostDetailPresenter @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val schedulerProvider: SchedulerProvider
 ) {
+    private lateinit var disposable: Disposable
+
     private val events: PublishSubject<PostDetailEvent> = PublishSubject.create()
 
     val viewState: Observable<PostDetailViewState> by lazy {
@@ -42,7 +45,7 @@ class PostDetailPresenter @Inject constructor(
             .doOnNext { Timber.d("----- result $it") }
             .resultToViewState()
             .doOnNext { Timber.d("----- viewstate $it") }
-            .autoReplay()
+            .autoReplay { disposable = it }
     }
 
     fun passEvent(event: PostDetailEvent) = events.onNext(event)
@@ -114,6 +117,10 @@ class PostDetailPresenter @Inject constructor(
             }
         }
             .distinctUntilChanged()
+    }
+
+    fun onCleared() {
+        disposable.dispose()
     }
 
     private fun collapseOrExpandComment(

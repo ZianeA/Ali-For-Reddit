@@ -15,6 +15,7 @@ import com.visualeap.aliforreddit.presentation.common.formatter.SubredditFormatt
 import com.visualeap.aliforreddit.presentation.common.formatter.formatCount
 import com.visualeap.aliforreddit.presentation.common.formatter.formatTimestamp
 import io.reactivex.Flowable
+import io.reactivex.disposables.Disposable
 import io.reactivex.processors.BehaviorProcessor
 import javax.inject.Inject
 import kotlin.math.min
@@ -32,6 +33,7 @@ class FrontPagePresenter @Inject constructor(
         private const val PAGINATION_STEP: Int = PAGE_SIZE / 4
     }
 
+    private lateinit var disposable: Disposable
     private var lastOffset = 0
     private val offsetProcessor = BehaviorProcessor.createDefault(lastOffset)
     private val posts = offsetProcessor.distinctUntilChanged()
@@ -47,7 +49,7 @@ class FrontPagePresenter @Inject constructor(
                 .applySchedulers(schedulerProvider)
                 .startWith(FrontPageViewState.Loading)
         }
-        .autoReplay()
+        .autoReplay { disposable = it }
 
     fun start(): Flowable<FrontPageViewState> {
         return posts
@@ -61,6 +63,10 @@ class FrontPagePresenter @Inject constructor(
         } else if (addItemsAtBottom(position)) {
             offsetProcessor.offer(lastOffset + PAGINATION_STEP)
         }
+    }
+
+    fun onCleared() {
+        disposable.dispose()
     }
 
     private fun addItemsAtTop(position: Int) = position == PAGE_SIZE / 4 - 1
