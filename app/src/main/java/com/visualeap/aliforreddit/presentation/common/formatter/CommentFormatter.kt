@@ -5,24 +5,22 @@ import com.visualeap.aliforreddit.presentation.common.model.CommentDto
 
 object CommentFormatter {
     fun format(comments: List<Comment>): List<CommentDto> {
-        return reverseMapCommentTree(comments)
+        return reverseMapCommentTree(comments, true)
     }
 
     private fun reverseMapCommentTree(
         comments: List<Comment>,
-        isParentLastReply: Boolean? = null
+        isHeadTheDeepestNode: Boolean
     ): List<CommentDto> {
         val commentViews = mutableListOf<CommentDto>()
         comments.forEachIndexed { i, it ->
-            var isLastReply = true
-            if (isParentLastReply != null && (!isParentLastReply || i != comments.lastIndex)) {
-                isLastReply = false
-            }
+            val isDeepestNode = it.depth == 0 || (isHeadTheDeepestNode && i == comments.lastIndex)
+
             if (it.replies != null) {
-                val nestedReplies = reverseMapCommentTree(it.replies, isLastReply)
+                val nestedReplies = reverseMapCommentTree(it.replies, isDeepestNode)
                 commentViews.add(it.toView(nestedReplies, false))
             } else {
-                commentViews.add(it.toView(null, isLastReply))
+                commentViews.add(it.toView(null, isDeepestNode))
             }
         }
 

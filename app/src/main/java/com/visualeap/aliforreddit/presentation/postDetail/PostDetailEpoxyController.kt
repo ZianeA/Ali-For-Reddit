@@ -2,6 +2,7 @@ package com.visualeap.aliforreddit.presentation.postDetail
 
 import android.view.View
 import com.airbnb.epoxy.AsyncEpoxyController
+import com.airbnb.epoxy.EpoxyModelGroup
 import com.airbnb.epoxy.SimpleEpoxyModel
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.presentation.frontPage.PostDto
@@ -41,13 +42,18 @@ class PostDetailEpoxyController() : AsyncEpoxyController() {
             .id("Error Comment")
             .addIf(commentsError, this)
 
-        buildCommentModelsTree(comments)
+        comments.forEach { dto ->
+            val models = createCommentModels(listOf(dto))
+            models.last().isLastReplay = true
+            add(models)
+        }
     }
 
-    private fun buildCommentModelsTree(commentList: List<CommentDto>) {
-        commentList.forEach { dto ->
+    private fun createCommentModels(commentTree: List<CommentDto>): List<CommentEpoxyModel<out CommentHolder>> {
+        val models = mutableListOf<CommentEpoxyModel<out CommentHolder>>()
+        commentTree.forEach { dto ->
             if (dto.isCollapsed) {
-                CollapsedCommentEpoxyModel_()
+                models += CollapsedCommentEpoxyModel_()
                     .id(dto.id)
                     .comment(dto)
                     .longClickListener(
@@ -55,12 +61,11 @@ class PostDetailEpoxyController() : AsyncEpoxyController() {
                             View.OnLongClickListener { listener(dto, comments) }
                         }
                     )
-                    .addTo(this)
 
                 return@forEach //Here return acts as continue
             }
 
-            ExpandedCommentEpoxyModel_()
+            models += ExpandedCommentEpoxyModel_()
                 .id(dto.id)
                 .comment(dto)
                 .longClickListener(
@@ -68,11 +73,12 @@ class PostDetailEpoxyController() : AsyncEpoxyController() {
                         View.OnLongClickListener { listener(dto, comments) }
                     }
                 )
-                .addTo(this)
 
             if (dto.replies != null) {
-                buildCommentModelsTree(dto.replies)
+                models += createCommentModels(dto.replies)
             }
         }
+
+        return models
     }
 }

@@ -1,6 +1,7 @@
 package com.visualeap.aliforreddit.presentation.common.formatter
 
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import util.domain.createComment
@@ -14,7 +15,7 @@ internal class CommentFormatterTest {
         val mappedCommentViewList = CommentFormatter.format(listOf(createComment()))
 
         //Assert
-        Assertions.assertThat(mappedCommentViewList).isEqualTo(listOf(createCommentDto()))
+        assertThat(mappedCommentViewList).isEqualTo(listOf(createCommentDto()))
     }
 
     @Test
@@ -156,7 +157,16 @@ internal class CommentFormatterTest {
                 )
             )
         )
-        Assertions.assertThat(mappedCommentViewList).isEqualTo(expectedCommentViewList)
+        assertThat(mappedCommentViewList).isEqualTo(expectedCommentViewList)
+    }
+
+    @Test
+    fun `find last reply`() {
+        //Act
+        val actual = CommentFormatter.format(listOf(createComment(replies = null)))
+
+        //Assert
+        assertThat(actual.first().isLastReply).isTrue()
     }
 
     @Test
@@ -278,6 +288,6 @@ internal class CommentFormatterTest {
                 )
             )
         )
-        Assertions.assertThat(mappedCommentViewList).isEqualTo(expectedCommentViewList)
+        assertThat(mappedCommentViewList).isEqualTo(expectedCommentViewList)
     }
 }

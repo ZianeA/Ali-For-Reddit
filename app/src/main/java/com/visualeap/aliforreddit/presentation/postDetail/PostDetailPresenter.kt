@@ -36,16 +36,20 @@ class PostDetailPresenter @Inject constructor(
     val viewState: Observable<PostDetailViewState> by lazy {
         events
             .doOnNext { Timber.d("----- event $it") }
-            .publish { event ->
-                Observable.merge(
-                    event.ofType(ScreenLoadEvent::class.java).take(1).handleScreenLoad(),
-                    event.ofType(CommentLongClickEvent::class.java).handleCommentLongCLick()
-                )
-            }
+            .eventToResult()
             .doOnNext { Timber.d("----- result $it") }
             .resultToViewState()
             .doOnNext { Timber.d("----- viewstate $it") }
             .autoReplay { disposable = it }
+    }
+
+    private fun Observable<PostDetailEvent>.eventToResult(): Observable<PostDetailResult> {
+        return publish { event ->
+            Observable.merge(
+                event.ofType(ScreenLoadEvent::class.java).take(1).handleScreenLoad(),
+                event.ofType(CommentLongClickEvent::class.java).handleCommentLongCLick()
+            )
+        }
     }
 
     fun passEvent(event: PostDetailEvent) = events.onNext(event)

@@ -3,6 +3,7 @@ package com.visualeap.aliforreddit.presentation.postDetail
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.epoxy.EpoxyModelGroup
 import com.airbnb.epoxy.EpoxyViewHolder
 
 class CommentItemDecoration(private val itemSpacing: Int) : RecyclerView.ItemDecoration() {
@@ -13,14 +14,21 @@ class CommentItemDecoration(private val itemSpacing: Int) : RecyclerView.ItemDec
         state: RecyclerView.State
     ) {
         super.getItemOffsets(outRect, view, parent, state)
-        val commentEpoxyModel =
-            (parent.getChildViewHolder(view) as EpoxyViewHolder).model as? CommentEpoxyModel // A single RecyclerView could host multiple item types
-        // Comment spacing should only be between root comments
-        if (commentEpoxyModel?.comment != null && commentEpoxyModel.comment.depth > 0)
-            return
 
-        if (parent.getChildAdapterPosition(view) != 0) {
-            outRect.top = itemSpacing
-        }
+        if (addSpacing(parent, view)) outRect.top = itemSpacing
+    }
+
+    private fun addSpacing(parent: RecyclerView, view: View): Boolean {
+        val viewHolder = parent.getChildViewHolder(view)
+
+        return if (viewHolder is EpoxyViewHolder) {
+            val model = viewHolder.model
+            // Spacing for comments only
+            model is CommentEpoxyModel
+                    // Spacing between root comments only
+                    && model.comment.depth == 0
+                    // Skip first comment
+                    && parent.getChildAdapterPosition(view) > 0
+        } else false
     }
 }
