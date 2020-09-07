@@ -22,7 +22,6 @@ import com.visualeap.aliforreddit.domain.redditor.Redditor
 import com.visualeap.aliforreddit.domain.subreddit.Subreddit
 import com.visualeap.aliforreddit.presentation.frontPage.PostDto
 import com.visualeap.aliforreddit.presentation.frontPage.SubredditIcon
-import com.visualeap.aliforreddit.presentation.common.model.CommentDto
 import com.visualeap.aliforreddit.presentation.common.model.SubredditView
 import com.visualeap.aliforreddit.presentation.common.formatter.formatCount
 import com.visualeap.aliforreddit.presentation.common.formatter.formatTimestamp
@@ -384,45 +383,6 @@ fun createCommentEntity(
     postId: String = POST_ID,
     parentId: String? = null
 ) = CommentEntity(id, authorName, text, score, creationDate, depth, postId, parentId)
-
-fun createCommentDto(
-    id: String = COMMENT_ID,
-    authorName: String = REDDITOR_USERNAME,
-    text: String = COMMENT_TEXT,
-    score: String = formatCount(
-        COMMENT_SCORE
-    ),
-    timestamp: String = formatTimestamp(
-        COMMENT_CREATION_DATE
-    ),
-    depth: Int = COMMENT_DEPTH,
-    postId: String = POST_ID,
-    parentId: String? = null,
-    replies: List<CommentDto>? = listOf(
-        createCommentDto(
-            id = NESTED_COMMENT_ID,
-            postId = postId,
-            parentId = COMMENT_ID,
-            depth = NESTED_COMMENT_DEPTH,
-            isLastReply = true,
-            replies = null
-        )
-    ),
-    isCollapsed: Boolean = false,
-    isLastReply: Boolean = false
-) = CommentDto(
-    id,
-    authorName,
-    text,
-    score,
-    timestamp,
-    depth,
-    postId,
-    parentId,
-    replies,
-    isCollapsed,
-    isLastReply
-)
 //endregion
 
 const val FEED_NAME = "FAKE_FEED"

@@ -8,7 +8,7 @@ import androidx.core.view.updateMargins
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.visualeap.aliforreddit.R
-import com.visualeap.aliforreddit.presentation.common.model.CommentDto
+import com.visualeap.aliforreddit.domain.comment.Comment
 import com.visualeap.aliforreddit.presentation.common.util.KotlinEpoxyHolder
 import com.visualeap.aliforreddit.presentation.common.util.dpToPx
 import com.visualeap.aliforreddit.presentation.common.util.hide
@@ -16,7 +16,7 @@ import com.visualeap.aliforreddit.presentation.common.util.show
 
 abstract class CommentEpoxyModel<T : CommentHolder> : EpoxyModelWithHolder<T>() {
     @EpoxyAttribute
-    lateinit var comment: CommentDto
+    lateinit var comment: Comment
 
     @JvmField
     @EpoxyAttribute

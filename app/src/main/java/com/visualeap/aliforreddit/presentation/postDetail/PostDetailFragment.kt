@@ -50,12 +50,6 @@ class PostDetailFragment : Fragment(), PostDetailLauncher {
         presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
 
         epoxyController = PostDetailEpoxyController()
-        epoxyController.onCommentLongClickListener = { longClickedComment, allComments ->
-            presenter.passEvent(
-                PostDetailEvent.CommentLongClickEvent(longClickedComment, allComments)
-            )
-            true
-        }
         postDetailRecyclerView.apply {
             setController(epoxyController)
             addItemDecoration(

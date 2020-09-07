@@ -7,9 +7,7 @@ import com.visualeap.aliforreddit.domain.util.Lce
 import com.visualeap.aliforreddit.domain.util.autoReplay
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import com.visualeap.aliforreddit.presentation.common.di.FragmentScope
-import com.visualeap.aliforreddit.presentation.common.formatter.CommentFormatter
 import com.visualeap.aliforreddit.presentation.common.formatter.PostFormatter
-import com.visualeap.aliforreddit.presentation.common.model.CommentDto
 import com.visualeap.aliforreddit.presentation.common.util.ResourceProvider
 import com.visualeap.aliforreddit.presentation.postDetail.PostDetailEvent.*
 import com.visualeap.aliforreddit.presentation.postDetail.PostDetailResult.*
@@ -47,7 +45,7 @@ class PostDetailPresenter @Inject constructor(
         return publish { event ->
             Observable.merge(
                 event.ofType(ScreenLoadEvent::class.java).take(1).handleScreenLoad(),
-                event.ofType(CommentLongClickEvent::class.java).handleCommentLongCLick()
+                Observable.empty<PostDetailResult>()
             )
         }
     }
@@ -84,18 +82,10 @@ class PostDetailPresenter @Inject constructor(
                 when (lce) {
                     is Lce.Loading -> ScreenLoadResult.CommentsLoading
                     is Lce.Content ->
-                        ScreenLoadResult.CommentsContent(CommentFormatter.format(lce.data))
+                        ScreenLoadResult.CommentsContent(lce.data)
                     is Lce.Error -> ScreenLoadResult.CommentsError(resourceProvider.getString(R.string.error_server))
                 }
             }
-    }
-
-    private fun Observable<CommentLongClickEvent>.handleCommentLongCLick(): Observable<CommentLongClickResult> {
-        return map { event ->
-            val comments = collapseOrExpandComment(event.allComments, event.clickedComment.id)
-            CommentLongClickResult(comments)
-        }
-            .subscribeOn(schedulerProvider.io)
     }
 
     private fun Observable<PostDetailResult>.resultToViewState(): Observable<PostDetailViewState> {
@@ -117,7 +107,6 @@ class PostDetailPresenter @Inject constructor(
                     }
                     ScreenLoadResult.CommentsLoading -> vs.copy(commentsLoading = true)
                 }
-                is CommentLongClickResult -> vs.copy(comments = result.comments)
             }
         }
             .distinctUntilChanged()
@@ -125,21 +114,5 @@ class PostDetailPresenter @Inject constructor(
 
     fun onCleared() {
         disposable.dispose()
-    }
-
-    private fun collapseOrExpandComment(
-        comments: List<CommentDto>,
-        commentId: String
-    ): List<CommentDto> {
-        var foundClickedComment = false
-        return comments.map {
-            if (it.id == commentId) {
-                foundClickedComment = true
-                it.copy(isCollapsed = !it.isCollapsed)
-            } else if (!foundClickedComment && it.replies != null) {
-                val replies = collapseOrExpandComment(it.replies, commentId)
-                it.copy(replies = replies)
-            } else it
-        }
     }
 }

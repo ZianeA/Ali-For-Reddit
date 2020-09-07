@@ -6,13 +6,14 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.marginStart
 import com.airbnb.epoxy.EpoxyModelClass
 import com.visualeap.aliforreddit.R
+import com.visualeap.aliforreddit.presentation.common.formatter.formatTimestamp
 
 @EpoxyModelClass(layout = R.layout.item_collapsed_comment)
 abstract class CollapsedCommentEpoxyModel : CommentEpoxyModel<CollapsedCommentHolder>() {
     override fun bind(holder: CollapsedCommentHolder) {
         super.bind(holder)
         holder.commentSummary.text =
-            "${comment.authorName} • ${comment.timestamp} • ${comment.text}"
+            "${comment.authorName} • ${formatTimestamp(comment.creationDate)} • ${comment.text}"
     }
 }
 
