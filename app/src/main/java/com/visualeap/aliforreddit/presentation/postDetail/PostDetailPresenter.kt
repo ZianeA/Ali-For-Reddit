@@ -63,6 +63,7 @@ class PostDetailPresenter @Inject constructor(
     private fun loadPost(): Observable<ScreenLoadResult> {
         return getPostById.execute(postId)
             .subscribeOn(schedulerProvider.io)
+            .startWith(Lce.Loading())
             .map { lce ->
                 when (lce) {
                     is Lce.Loading -> ScreenLoadResult.PostLoading
@@ -78,6 +79,7 @@ class PostDetailPresenter @Inject constructor(
     private fun loadComments(): Observable<ScreenLoadResult> {
         return getCommentsByPost.execute(postId, subreddit)
             .subscribeOn(schedulerProvider.io)
+            .startWith(Lce.Loading())
             .map { lce ->
                 when (lce) {
                     is Lce.Loading -> ScreenLoadResult.CommentsLoading

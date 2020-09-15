@@ -7,7 +7,6 @@ import com.visualeap.aliforreddit.domain.subreddit.SubredditRepository
 import com.visualeap.aliforreddit.domain.util.Lce
 import com.visualeap.aliforreddit.domain.util.toLce
 import dagger.Reusable
-import io.reactivex.Completable
 import io.reactivex.Observable
 import javax.inject.Inject
 
@@ -18,34 +17,24 @@ class GetPostById @Inject constructor(
     private val postWebService: PostWebService
 ) {
     fun execute(postId: String): Observable<Lce<Pair<Subreddit, Post>>> {
-        return refreshCache(postId)
-            .andThen(loadFromCache(postId).toLce())
-            .onErrorResumeNext { t: Throwable ->
-                loadFromCache(postId)
-                    .skip(1)
-                    .toLce()
-                    .startWith(Lce.Error(t))
-            }
-            .startWith(
-                loadFromCache(postId)
-                    .take(1)
-                    .toLce()
-                    .startWith(Lce.Loading())
-            )
+        return Observable.merge(loadCache(postId), refreshCache(postId))
             .distinctUntilChanged()
     }
 
-    private fun refreshCache(postId: String): Completable {
+    private fun refreshCache(postId: String): Observable<Lce<Pair<Subreddit, Post>>> {
         return postWebService.getPostsByIds(postId)
             .map { response -> PostResponseMapper.map(response).first() }
-            .flatMapCompletable { post -> postRepository.updatePost(post) }
+            .flatMapObservable { post ->
+                postRepository.updatePost(post).toObservable<Pair<Subreddit, Post>>()
+            }
+            .toLce()
     }
 
-    private fun loadFromCache(postId: String): Observable<Pair<Subreddit, Post>> {
+    private fun loadCache(postId: String): Observable<Lce<Pair<Subreddit, Post>>> {
         return subredditRepository.getSubredditByPost(postId)
             .flatMap { subreddit ->
-                postRepository.getPostById(postId)
-                    .map { post -> subreddit to post }
+                postRepository.getPostById(postId).map { post -> subreddit to post }
             }
+            .toLce()
     }
 }

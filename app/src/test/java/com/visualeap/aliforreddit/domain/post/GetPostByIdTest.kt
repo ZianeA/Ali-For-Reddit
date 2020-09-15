@@ -72,16 +72,6 @@ internal class GetPostByIdTest {
     }
 
     @Test
-    fun `return loading`() {
-        //Act and assert
-        getPostById.execute("Subreddit2Post2")
-            .test()
-            .assertValueAt(0, match { lce ->
-                assertThat(lce).isInstanceOf(Lce.Loading::class.java)
-            })
-    }
-
-    @Test
     fun `return post by id`() {
         //Act and assert
         getPostById.execute("Subreddit2Post2")

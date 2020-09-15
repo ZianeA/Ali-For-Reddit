@@ -68,16 +68,6 @@ class GetCommentsByPostTest {
     }
 
     @Test
-    fun `return loading`() {
-        //Act and assert
-        getCommentsByPost.execute("Post2", "Subreddit2")
-            .test()
-            .assertValueAt(0, match { lce ->
-                assertThat(lce).isInstanceOf(Lce.Loading::class.java)
-            })
-    }
-
-    @Test
     fun `return comments by post`() {
         //Act and assert
         getCommentsByPost.execute("Post2", "Subreddit2")
