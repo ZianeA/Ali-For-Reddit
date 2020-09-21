@@ -3,7 +3,6 @@ package com.visualeap.aliforreddit.domain.post
 import com.visualeap.aliforreddit.data.post.PostResponse
 import com.visualeap.aliforreddit.data.post.PostResponseMapper
 import com.visualeap.aliforreddit.data.post.PostWebService
-import com.visualeap.aliforreddit.data.subreddit.SubredditResponse
 import com.visualeap.aliforreddit.data.subreddit.SubredditResponseMapper
 import com.visualeap.aliforreddit.data.subreddit.SubredditWebService
 import com.visualeap.aliforreddit.domain.subreddit.Subreddit
@@ -11,6 +10,8 @@ import com.visualeap.aliforreddit.domain.feed.DefaultFeed
 import com.visualeap.aliforreddit.domain.feed.FeedRepository
 import com.visualeap.aliforreddit.domain.feed.SortType
 import com.visualeap.aliforreddit.domain.subreddit.SubredditRepository
+import com.visualeap.aliforreddit.domain.util.Lce
+import com.visualeap.aliforreddit.domain.util.toLce
 import dagger.Reusable
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -32,7 +33,7 @@ class FetchFeedPosts @Inject constructor(
         sortType: SortType,
         offset: Int,
         pageSize: Int
-    ): Flowable<Listing<Pair<Subreddit, Post>>> {
+    ): Flowable<Lce<Listing<Pair<Subreddit, Post>>>> {
         return postRepository.countPostsByFeed(feed, sortType)
             .map { count ->
                 val correctedPageSize = min(count, pageSize)
@@ -45,7 +46,7 @@ class FetchFeedPosts @Inject constructor(
             }
             .flatMapPublisher { (correctedPageSize, correctedOffset) ->
                 postRepository.getPostsByFeed(feed, sortType, correctedOffset, correctedPageSize)
-                    // Ignore emitted items until concatMap completes. All changes in the database will be ignored.
+                    // Ignore emitted items until concatMap completes. All database changes will be ignored.
                     .onBackpressureDrop()
                     .concatMap { cachedPosts ->
                         afterKeyRepository.getAfterKey(feed, sortType)
@@ -62,7 +63,7 @@ class FetchFeedPosts @Inject constructor(
                                     // The cache is only returned if it's not empty.
                                     Flowable.merge(
                                         loadFromCache(cachedPosts, endOfRemote, correctedOffset)
-                                            .filter { it.items.isNotEmpty() },
+                                            .filterEmpty(),
                                         loadFromNetwork(feed, pageSize, sortType, afterKey, offset)
                                     )
                                 } else {
@@ -86,24 +87,19 @@ class FetchFeedPosts @Inject constructor(
         cachedPosts: List<Post>,
         reachedTheEnd: Boolean,
         correctedOffset: Int
-    ): Flowable<Listing<Pair<Subreddit, Post>>> {
+    ): Flowable<Lce<Listing<Pair<Subreddit, Post>>>> {
         val subredditIds = cachedPosts.map { it.subredditId }
         // TODO get subreddits by post id for better performance
         return subredditRepository.getSubredditsByIds(subredditIds)
             .distinct()
-            // Transform the list of subreddits into a map (id -> Subreddit) for faster lookups
-            // when joining each post with its subreddit.
-            .map { subredditList -> subredditList.associateBy { it.id } }
-            .map { subredditMap ->
-                cachedPosts.map { post -> subredditMap.getValue(post.subredditId) to post }
-            }
-            .map { subredditPostList ->
-                Listing(
-                    subredditPostList,
-                    correctedOffset,
-                    reachedTheEnd
-                )
-            }
+            .map { subredditList ->
+                // Transform the list of subreddits into a map (id -> Subreddit) for faster lookups
+                // when joining each post with its subreddit.
+                val subredditMap = subredditList.associateBy { it.id }
+                val subredditPostList =
+                    cachedPosts.map { post -> subredditMap.getValue(post.subredditId) to post }
+                Listing(subredditPostList, correctedOffset, reachedTheEnd)
+            }.toLce()
     }
 
     private fun loadFromNetwork(
@@ -112,7 +108,7 @@ class FetchFeedPosts @Inject constructor(
         sortType: SortType,
         afterKey: AfterKey,
         offset: Int
-    ): Flowable<Listing<Pair<Subreddit, Post>>> {
+    ): Flowable<Lce<Listing<Pair<Subreddit, Post>>>> {
         return feedRepository.addFeed(feed)
             .andThen(getPostsByFeed(feed, pageSize, afterKey))
             .map { postResponse -> postResponse.getAfterKey() to PostResponseMapper.map(postResponse) }
@@ -121,6 +117,9 @@ class FetchFeedPosts @Inject constructor(
                     .andThen(savePost(remotePost, feed, sortType))
             }
             .andThen(execute(feed, sortType, offset, pageSize))
+            // Although the above operation returns an LCE, it will not, however, prevent the streaming
+            // from terminating if fetchign posts fails. The andThen operator doesn't run after an error.
+            .onErrorReturn { Lce.Error(it) }
     }
 
     private fun getPostsByFeed(
@@ -157,6 +156,16 @@ class FetchFeedPosts @Inject constructor(
         return when (val key = this.data.afterKey) {
             null -> AfterKey.End
             else -> AfterKey.Next(key)
+        }
+    }
+
+    private fun Flowable<Lce<Listing<Pair<Subreddit, Post>>>>.filterEmpty(): Flowable<Lce<Listing<Pair<Subreddit, Post>>>> {
+        return filter { lce ->
+            if (lce is Lce.Content) {
+                lce.data.items.isNotEmpty()
+            } else {
+                true
+            }
         }
     }
 }

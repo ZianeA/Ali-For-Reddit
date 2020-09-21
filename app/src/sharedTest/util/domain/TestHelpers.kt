@@ -20,6 +20,10 @@ fun <T> TestObserver<T>.assertLastValue(predicate: (T) -> Unit) {
     assertValueAt(valueCount() - 1) { predicate.invoke(it); true }
 }
 
+fun <T> TestObserver<T>.assertFirstValue(predicate: (T) -> Unit) {
+    assertValueAt(1) { predicate.invoke(it); true }
+}
+
 fun createDatabase(): RedditDatabase {
     val context = ApplicationProvider.getApplicationContext<Context>()
     return Room.inMemoryDatabaseBuilder(context, RedditDatabase::class.java)

@@ -11,8 +11,14 @@ import com.visualeap.aliforreddit.data.post.PostRoomRepository
 import com.visualeap.aliforreddit.data.subreddit.SubredditRoomRepository
 import com.visualeap.aliforreddit.domain.feed.SortType
 import com.visualeap.aliforreddit.domain.post.FetchFeedPosts
+import com.visualeap.aliforreddit.domain.post.Listing
+import com.visualeap.aliforreddit.domain.post.Post
+import com.visualeap.aliforreddit.domain.subreddit.Subreddit
+import com.visualeap.aliforreddit.domain.util.Lce
 import com.visualeap.aliforreddit.presentation.frontPage.FrontPageViewState.*
 import com.visualeap.aliforreddit.presentation.common.util.ResourceProvider
+import com.visualeap.aliforreddit.presentation.frontPage.FrontPageEvent.*
+import com.visualeap.aliforreddit.presentation.postDetail.PostDetailEvent
 import com.visualeap.aliforreddit.util.fake.FakePostWebService
 import com.visualeap.aliforreddit.util.fake.FakeSubredditWebService
 import org.assertj.core.api.Assertions.*
@@ -23,6 +29,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import util.domain.*
+import kotlin.math.roundToInt
 
 @RunWith(RobolectricTestRunner::class)
 class FrontPagePresenterTest {
@@ -31,7 +38,9 @@ class FrontPagePresenterTest {
 
     companion object {
         private const val PAGE_SIZE = 25
-        private const val PAGINATION_STEP: Int = PAGE_SIZE / 4
+        private const val PAGINATION_STEP = PAGE_SIZE / 5
+        private const val PAGINATION_POINT_DOWN = PAGE_SIZE / 2f
+        private const val PAGINATION_POINT_UP = PAGE_SIZE / 2f - 2
         private const val DATABASE_POST_COUNT = 50
     }
 
@@ -61,11 +70,9 @@ class FrontPagePresenterTest {
             feeds.forEach { feed ->
                 // example: feed1Post1
                 val postId = "${feed}Post$i"
+                val post = createPost(id = postId, subredditId = "Subreddit1")
 
-                postRepository.addPosts(
-                    listOf(createPost(id = postId, subredditId = "Subreddit1")), feed, SortType.Hot
-                )
-                    .blockingAwait()
+                postRepository.addPosts(listOf(post), feed, SortType.Hot).blockingAwait()
             }
         }
 
@@ -78,12 +85,11 @@ class FrontPagePresenterTest {
             feedRepository
         )
 
-        val context = ApplicationProvider.getApplicationContext<Application>()
         presenter = FrontPagePresenter(
             launcher,
             "Feed1",
             fetchFeedPosts,
-            ResourceProvider(context),
+            ResourceProvider(ApplicationProvider.getApplicationContext()),
             TrampolineSchedulerProvider()
         )
     }
@@ -94,81 +100,21 @@ class FrontPagePresenterTest {
     }
 
     @Test
+    fun `when loading should display progress bar`() {
+        val testObserver = presenter.viewState.test()
+
+        presenter.passEvent(ScreenLoadEvent)
+
+        testObserver.assertFirstValue { assertThat(it.loading).isTrue() }
+    }
+
+    @Test
     fun `display posts`() {
-        //Act and assert
-        presenter.start()
-            .test()
-            .assertValueAt(1, match { frontPageViewState ->
-                assertThat(frontPageViewState).isInstanceOf(Success::class.java)
-                    .extracting { (it as Success).posts }.asList()
-                    .hasSize(PAGE_SIZE)
-            })
-    }
+        val testObserver = presenter.viewState.test()
 
-    @Test
-    fun `format post`() {
-        //Act and assert
-        presenter.start()
-            .test()
-            .assertValueAt(1, match {
-                val firstPost = (it as Success).posts.first()
-                assertThat(firstPost).isEqualToIgnoringGivenFields(
-                    createPostDto(), PostDto::id.name, PostDto::subredditId.name
-                )
-            })
-    }
+        presenter.passEvent(ScreenLoadEvent)
 
-    @Test
-    fun `when end is not reached should display loading`() {
-        //Act and assert
-        presenter.start()
-            .test()
-            .assertValueAt(1, match { assertThat((it as Success).isLoading).isEqualTo(true) })
-    }
-
-    @Test
-    fun `when end is reached should hide loading`() {
-        //Arrange
-        db.postDao().deleteAll().blockingAwait()
-
-        //Act and assert
-        presenter.start()
-            .test()
-            .assertValueAt(1, match { assertThat((it as Success).isLoading).isEqualTo(false) })
-    }
-
-    @Test
-    fun `when near the end should load more`() {
-        //Arrange
-        val paginationPoint = PAGE_SIZE * 3 / 4 + 1
-        presenter.onPostBound(paginationPoint)
-
-        //Act and assert
-        presenter.start()
-            .test()
-            .assertValueAt(1, match { viewState ->
-                val firstPost = (viewState as Success).posts.first()
-                assertThat(firstPost)
-                    .extracting { it.id }
-                    .isEqualTo("Feed1Post${PAGINATION_STEP + 1}")
-            })
-    }
-
-    @Test
-    fun `when near the top should load more`() {
-        //Arrange
-        presenter.onPostBound(PAGE_SIZE)
-        presenter.onPostBound(0)
-
-        //Act and assert
-        presenter.start()
-            .test()
-            .assertValueAt(1, match { viewState ->
-                val firstPost = (viewState as Success).posts.first()
-                assertThat(firstPost)
-                    .extracting { it.id }
-                    .isEqualTo("Feed1Post1")
-            })
+        testObserver.assertLastValue { assertThat(it.posts).hasSizeGreaterThan(0) }
     }
 
     @Test
@@ -176,11 +122,74 @@ class FrontPagePresenterTest {
         //Arrange
         db.postDao().deleteAll().blockingAwait()
         postService.simulateError()
+        val testObserver = presenter.viewState.test()
+
+        //Act
+        presenter.passEvent(ScreenLoadEvent)
+
+        //Assert
+        testObserver.assertLastValue { assertThat(it.error).isNotNull() }
+    }
+
+    @Test
+    fun `format post`() {
+        val testObserver = presenter.viewState.test()
+
+        presenter.passEvent(ScreenLoadEvent)
+
+        testObserver.assertLastValue {
+            assertThat(it.posts.first())
+                .isEqualToIgnoringGivenFields(
+                    createPostDto(), PostDto::id.name, PostDto::subredditId.name
+                )
+        }
+    }
+
+    @Test
+    fun `when end is not reached should display progress bar`() {
+        val testObserver = presenter.viewState.test()
+
+        presenter.passEvent(ScreenLoadEvent)
+        presenter.passEvent(PostBoundEvent(PAGINATION_POINT_DOWN.roundToInt(), true))
+
+        testObserver.assertLastValue { assertThat(it.loadingMore).isTrue() }
+    }
+
+    @Test
+    fun `when end is reached should hide progress bar`() {
+        //Arrange
+        db.postDao().deleteAll().blockingAwait()
+        val testObserver = presenter.viewState.test()
+
+        //Act
+        presenter.passEvent(ScreenLoadEvent)
+        presenter.passEvent(PostBoundEvent(PAGINATION_POINT_DOWN.roundToInt(), true))
 
         //Act and assert
-        presenter.start()
-            .test()
-            .assertValueAt(1, match { assertThat(it).isInstanceOf(Failure::class.java) })
+        testObserver.assertLastValue { assertThat(it.loadingMore).isFalse() }
+    }
+
+    @Test
+    fun `when near the end should load more`() {
+        val testObserver = presenter.viewState.test()
+
+        presenter.passEvent(ScreenLoadEvent)
+        presenter.passEvent(PostBoundEvent(PAGINATION_POINT_DOWN.roundToInt(), true))
+
+        testObserver.assertLastValue {
+            assertThat(it.posts.first().id).isEqualTo("Feed1Post${PAGINATION_STEP + 1}")
+        }
+    }
+
+    @Test
+    fun `when near the top should load more`() {
+        //Arrange
+        val testObserver = presenter.viewState.test()
+
+        presenter.passEvent(ScreenLoadEvent)
+        presenter.passEvent(PostBoundEvent(PAGINATION_POINT_UP.roundToInt(), false))
+
+        testObserver.assertLastValue { assertThat(it.posts.first().id).isEqualTo("Feed1Post1") }
     }
 
     class FakeFrontPageLauncher : FrontPageLauncher

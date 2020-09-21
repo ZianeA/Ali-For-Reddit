@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.domain.util
 
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import kotlin.reflect.KClass
 
@@ -10,6 +11,11 @@ sealed class Lce<T>() {
 }
 
 fun <T> Observable<T>.toLce(): Observable<Lce<T>> {
+    return this.map { Lce.Content<T>(it) as Lce<T> }
+        .onErrorReturn { Lce.Error<T>(it) }
+}
+
+fun <T> Flowable<T>.toLce(): Flowable<Lce<T>> {
     return this.map { Lce.Content<T>(it) as Lce<T> }
         .onErrorReturn { Lce.Error<T>(it) }
 }

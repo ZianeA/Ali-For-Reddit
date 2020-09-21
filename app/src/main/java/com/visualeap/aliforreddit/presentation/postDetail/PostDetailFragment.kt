@@ -47,17 +47,15 @@ class PostDetailFragment : Fragment(), PostDetailLauncher {
             .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
             .subscribe(::render)
 
-        presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
-
         epoxyController = PostDetailEpoxyController()
         postDetailRecyclerView.apply {
             setController(epoxyController)
             addItemDecoration(
-                CommentItemDecoration(
-                    resources.getDimension(R.dimen.comment_spacing).toInt()
-                )
+                CommentItemDecoration(resources.getDimension(R.dimen.comment_spacing).toInt())
             )
         }
+
+        presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
     }
 
     override fun onCreateView(

@@ -8,9 +8,12 @@ import com.visualeap.aliforreddit.data.post.PostRoomRepository
 import com.visualeap.aliforreddit.data.subreddit.SubredditRoomRepository
 import com.visualeap.aliforreddit.domain.feed.SortType
 import com.visualeap.aliforreddit.domain.feed.FeedRepository
+import com.visualeap.aliforreddit.domain.subreddit.Subreddit
 import com.visualeap.aliforreddit.domain.subreddit.SubredditRepository
+import com.visualeap.aliforreddit.domain.util.Lce
 import com.visualeap.aliforreddit.util.fake.FakePostWebService
 import com.visualeap.aliforreddit.util.fake.FakeSubredditWebService
+import org.assertj.core.api.*
 import org.assertj.core.api.Assertions.*
 import org.junit.After
 import org.junit.Before
@@ -85,7 +88,7 @@ internal class FetchFeedPostsTest {
         val actual = fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 10).blockingFirst()
 
         //Assert
-        assertThat(actual.items).containsExactly(
+        assertThat(actual.extractItems()).containsExactly(
             subreddits[0] to posts[0],
             subreddits[0] to posts[1],
             subreddits[1] to posts[2]
@@ -109,8 +112,7 @@ internal class FetchFeedPostsTest {
             fetchFeedPosts.execute(FEED_NAME, SortType.Rising, 0, 10).blockingFirst()
 
         //Assert
-        assertThat(actual.items).extracting<Post> { it.second }
-            .containsExactlyElementsOf(posts)
+        assertThat(actual.extractPosts()).containsExactlyElementsOf(posts)
     }
 
     @Test
@@ -125,8 +127,7 @@ internal class FetchFeedPostsTest {
             fetchFeedPosts.execute(FEED_NAME, SortType.Best, 1, 1).blockingFirst()
 
         //Assert
-        assertThat(actual.items).extracting<Post> { it.second }
-            .containsExactly(post)
+        assertThat(actual.extractPosts()).containsExactly(post)
     }
 
     @Test
@@ -144,7 +145,7 @@ internal class FetchFeedPostsTest {
             fetchFeedPosts.execute(FEED_NAME, SortType.Best, 1, 1).blockingFirst()
 
         //Assert
-        assertThat(actual.offset).isEqualTo(1)
+        assertThat(actual.extractListing().offset).isEqualTo(1)
     }
 
     @Test
@@ -163,8 +164,7 @@ internal class FetchFeedPostsTest {
             fetchFeedPosts.execute(FEED_NAME, SortType.Best, 3, 2).blockingFirst()
 
         //Assert
-        assertThat(actual.items).extracting<Post> { it.second }
-            .containsExactlyElementsOf(posts)
+        assertThat(actual.extractPosts()).containsExactlyElementsOf(posts)
     }
 
     @Test
@@ -183,8 +183,7 @@ internal class FetchFeedPostsTest {
             fetchFeedPosts.execute(FEED_NAME, SortType.Best, 1, 3).blockingFirst()
 
         //Assert
-        assertThat(actual.items).extracting<Post> { it.second }
-            .containsExactlyElementsOf(posts)
+        assertThat(actual.extractPosts()).containsExactlyElementsOf(posts)
     }
 
     @Test
@@ -203,8 +202,7 @@ internal class FetchFeedPostsTest {
             fetchFeedPosts.execute(FEED_NAME, SortType.Best, -5, 3).blockingFirst()
 
         //Assert
-        assertThat(actual.items).extracting<Post> { it.second }
-            .containsExactlyElementsOf(posts)
+        assertThat(actual.extractPosts()).containsExactlyElementsOf(posts)
     }
 
     @Test
@@ -221,7 +219,7 @@ internal class FetchFeedPostsTest {
         val actual = fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 1).blockingFirst()
 
         //Assert
-        assertThat(actual.items).hasSize(1)
+        assertThat(actual.extractItems()).hasSize(1)
     }
 
     @Test
@@ -235,7 +233,10 @@ internal class FetchFeedPostsTest {
         //Act, assert
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 1)
             .test()
-            .assertValueAt(0, match { assertThat(it.items).containsExactly(subreddit to post) })
+            .assertValueAt(
+                0,
+                match { assertThat(it.extractItems()).containsExactly(subreddit to post) }
+            )
     }
 
     @Test
@@ -250,9 +251,8 @@ internal class FetchFeedPostsTest {
         //Act and assert
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 2)
             .test()
-            .assertValueAt(1, match { listing ->
-                assertThat(listing.items).extracting<Post> { it.second }
-                    .containsExactly(localPost, remotePost)
+            .assertValueAt(1, match { lce ->
+                assertThat(lce.extractPosts()).containsExactly(localPost, remotePost)
             })
     }
 
@@ -268,13 +268,11 @@ internal class FetchFeedPostsTest {
         //Act and assert
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 2)
             .test()
-            .assertValueAt(0, match { listing ->
-                assertThat(listing.items).extracting<Post> { it.second }
-                    .containsExactly(localPost)
+            .assertValueAt(0, match { lce ->
+                assertThat(lce.extractPosts()).containsExactly(localPost)
             })
-            .assertValueAt(1, match { listing ->
-                assertThat(listing.items).extracting<Post> { it.second }
-                    .containsExactly(localPost, remotePost)
+            .assertValueAt(1, match { lce ->
+                assertThat(lce.extractPosts()).containsExactly(localPost, remotePost)
             })
     }
 
@@ -287,7 +285,7 @@ internal class FetchFeedPostsTest {
         //Act and assert
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 2)
             .test()
-            .assertValueAt(0, match { listing -> assertThat(listing.items).isNotEmpty })
+            .assertValueAt(0, match { lce -> assertThat(lce.extractItems()).isNotEmpty })
     }
 
     @Test
@@ -307,9 +305,8 @@ internal class FetchFeedPostsTest {
         //Act and assert
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 1, 1)
             .test()
-            .assertValueAt(1, match { listing ->
-                assertThat(listing.items).extracting<Post> { it.second }
-                    .containsExactly(remotePost)
+            .assertValueAt(1, match { lce ->
+                assertThat(lce.extractPosts()).containsExactly(remotePost)
             })
     }
 
@@ -321,7 +318,11 @@ internal class FetchFeedPostsTest {
         //Act
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 1)
             .test()
-            .assertValueAt(0, match { listing -> assertThat(listing.reachedTheEnd).isFalse() })
+            .assertValueAt(
+                0,
+                match { lce ->
+                    assertThat(lce.extractListing().reachedTheEnd).isFalse()
+                })
     }
 
     @Test
@@ -329,7 +330,11 @@ internal class FetchFeedPostsTest {
         //Act
         fetchFeedPosts.execute(FEED_NAME, SortType.Best, 0, 2)
             .test()
-            .assertValueAt(0, match { listing -> assertThat(listing.reachedTheEnd).isTrue() })
+            .assertValueAt(
+                0,
+                match { lce ->
+                    assertThat(lce.extractListing().reachedTheEnd).isTrue()
+                })
     }
 
     @Test
@@ -344,8 +349,32 @@ internal class FetchFeedPostsTest {
         fetchFeedPosts.execute("FakeFeed2", SortType.Best, 0, 2)
             .test()
             .assertValueAt(0, match {
-                assertThat(it.items).extracting<Post> { it.second }
-                    .containsExactlyElementsOf(feedPosts)
+                assertThat(it.extractPosts()).containsExactlyElementsOf(feedPosts)
             })
     }
+
+    /*private fun <T> ObjectAssert<T>.extractingItems(): ListAssert<Pair<*, *>> {
+        return this.asInstanceOf(InstanceOfAssertFactories.type(Lce.Content::class.java))
+            .extracting { it.data }
+            .asInstanceOf(InstanceOfAssertFactories.list(Pair::class.java))
+    }
+
+    private fun <T> ObjectAssert<T>.extractingListing(): ObjectAssert<Listing<*>> {
+        return this.asInstanceOf(InstanceOfAssertFactories.type(Lce.Content::class.java))
+            .extracting { it.data }
+            .asInstanceOf(InstanceOfAssertFactories.type(Listing::class.java))
+    }
+
+    private fun <T> ObjectAssert<T>.extractingPosts(): ListAssert<Post> {
+        return this.extractingItems().extracting<Post> { it.second as Post }
+            .asInstanceOf(InstanceOfAssertFactories.list(Post::class.java))
+    }*/
+
+    private fun Lce<Listing<Pair<Subreddit, Post>>>.extractListing() =
+        (this as Lce.Content<Listing<Pair<Subreddit, Post>>>).data
+
+    private fun Lce<Listing<Pair<Subreddit, Post>>>.extractItems() = this.extractListing().items
+
+    private fun Lce<Listing<Pair<Subreddit, Post>>>.extractPosts() =
+        this.extractListing().items.map { it.second }
 }
