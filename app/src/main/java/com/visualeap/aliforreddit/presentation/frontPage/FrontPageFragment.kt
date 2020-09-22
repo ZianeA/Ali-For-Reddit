@@ -33,14 +33,8 @@ class FrontPageFragment : Fragment(), FrontPageLauncher {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        presenter.viewState
-            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
-            .subscribe(::render)
-
+        //region setup recyclerView
         epoxyController.apply {
-            /*onBindPostListener =
-                { presenter.passEvent(FrontPageEvent.PostBoundEvent(it)) }*/
-
             onPostClickListener = {
                 fragNavController.pushFragment(
                     PostDetailFragment.newInstance(it.id, it.subreddit.removePrefix("r/"))
@@ -53,33 +47,31 @@ class FrontPageFragment : Fragment(), FrontPageLauncher {
 
         frontPageRecyclerView.setItemSpacingDp(8)
         frontPageRecyclerView.setController(epoxyController)
-        frontPageRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if(epoxyController.hasPendingModelBuild()) return
-                val scrollDistance = dpToPx(requireContext(), 1)
+        //endregion
 
-                if (dy > scrollDistance) {
-                    val lastVisibleItemPosition =
-                        (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                    presenter.passEvent(
-                        FrontPageEvent.PostBoundEvent(
-                            lastVisibleItemPosition,
-                            true
-                        )
-                    )
-                } else if(dy < -scrollDistance) {
-                    val firstVisibleItemPosition =
-                        (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                    presenter.passEvent(
-                        FrontPageEvent.PostBoundEvent(
-                            firstVisibleItemPosition,
-                            false
-                        )
-                    )
-                }
+        presenter.viewState
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe(::render)
+
+        frontPageRecyclerView.addOnScrollListener { recyclerView, dx, dy ->
+            if (epoxyController.hasPendingModelBuild()) return@addOnScrollListener
+
+            val threshold = dpToPx(requireContext(), 1)
+            if (dy > threshold) {
+                val lastVisibleItemPosition =
+                    (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                presenter.passEvent(
+                    FrontPageEvent.PostBoundEvent(lastVisibleItemPosition, true)
+                )
+            } else if (dy < -threshold) {
+                val firstVisibleItemPosition =
+                    (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                presenter.passEvent(
+                    FrontPageEvent.PostBoundEvent(firstVisibleItemPosition, false)
+                )
             }
-        })
+        }
+
         presenter.passEvent(FrontPageEvent.ScreenLoadEvent)
     }
 
@@ -110,6 +102,15 @@ class FrontPageFragment : Fragment(), FrontPageLauncher {
     override fun onDestroy() {
         super.onDestroy()
         presenter.onCleared()
+    }
+
+    fun RecyclerView.addOnScrollListener(listener: (recyclerView: RecyclerView, dx: Int, dy: Int) -> Unit) {
+        this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                listener(recyclerView, dx, dy)
+            }
+        })
     }
 
     val feed: String

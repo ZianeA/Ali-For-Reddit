@@ -62,33 +62,31 @@ class FrontPagePresenter @Inject constructor(
     private fun Observable<FrontPageEvent.ScreenLoadEvent>.handleScreenLoad(): Observable<ScreenLoadResult> {
         return flatMap { _ ->
             offsetSubject.distinctUntilChanged()
-                .switchMap { offset ->
-                    fetchFeedPosts.execute(feed, SortType.Hot, offset, PAGE_SIZE)
-                        .toObservable()
-                        .map { lce ->
-                            when (lce) {
-                                is Lce.Loading -> ScreenLoadResult.Loading
-                                is Lce.Content -> {
-                                    val listing = lce.data
-                                    lastOffset = listing.offset
-                                    ScreenLoadResult.Content(
-                                        listing.items.map { (s, p) ->
-                                            PostFormatter.formatPost(s, p)
-                                        },
-                                        !listing.reachedTheEnd
-                                    )
-                                }
-                                is Lce.Error -> {
-                                    ScreenLoadResult.Error(resourceProvider.getString(R.string.error_server))
-                                }
-                            }
-                        }
-                        .subscribeOn(schedulerProvider.io)
-
-                }
+                .switchMap { offset -> loadPosts(offset).subscribeOn(schedulerProvider.io) }
                 .observeOn(schedulerProvider.ui)
                 .startWith(ScreenLoadResult.Loading)
         }
+    }
+
+    private fun loadPosts(offset: Int): Observable<ScreenLoadResult> {
+        return fetchFeedPosts.execute(feed, SortType.Hot, offset, PAGE_SIZE)
+            .toObservable()
+            .map { lce ->
+                when (lce) {
+                    is Lce.Loading -> ScreenLoadResult.Loading
+                    is Lce.Content -> {
+                        val listing = lce.data
+                        lastOffset = listing.offset
+                        ScreenLoadResult.Content(
+                            listing.items.map { (s, p) -> PostFormatter.formatPost(s, p) },
+                            !listing.reachedTheEnd
+                        )
+                    }
+                    is Lce.Error -> {
+                        ScreenLoadResult.Error(resourceProvider.getString(R.string.error_server))
+                    }
+                }
+            }
     }
 
     private fun Observable<FrontPageEvent.PostBoundEvent>.handlePostBound(): Observable<PostBoundResult> {
