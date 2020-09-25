@@ -1,7 +1,5 @@
 package com.visualeap.aliforreddit.data.subreddit
 
-import com.visualeap.aliforreddit.domain.subreddit.Subreddit
-
 object SubredditResponseMapper {
     fun map(response: SubredditResponse): List<Subreddit> {
         return response.data.subredditHolders.map { subredditHolder ->
@@ -9,7 +7,7 @@ object SubredditResponseMapper {
                 Subreddit(
                     id,
                     name,
-                    iconUrl,
+                    iconUrl?.takeIf { it.isNotBlank() },
                     primaryColor?.takeIf { it.isNotBlank() },
                     keyColor?.takeIf { it.isNotBlank() }
                 )

@@ -1,7 +1,7 @@
 package com.visualeap.aliforreddit.presentation.common.formatter
 
-import com.visualeap.aliforreddit.domain.post.Post
-import com.visualeap.aliforreddit.domain.subreddit.Subreddit
+import com.visualeap.aliforreddit.data.post.Post
+import com.visualeap.aliforreddit.data.subreddit.Subreddit
 import com.visualeap.aliforreddit.presentation.frontPage.PostDto
 
 object PostFormatter {

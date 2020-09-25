@@ -1,15 +1,13 @@
 package com.visualeap.aliforreddit.domain.post
 
+import com.visualeap.aliforreddit.data.post.Post
 import com.visualeap.aliforreddit.data.post.PostResponse
 import com.visualeap.aliforreddit.data.post.PostResponseMapper
 import com.visualeap.aliforreddit.data.post.PostWebService
-import com.visualeap.aliforreddit.data.subreddit.SubredditResponseMapper
-import com.visualeap.aliforreddit.data.subreddit.SubredditWebService
-import com.visualeap.aliforreddit.domain.subreddit.Subreddit
+import com.visualeap.aliforreddit.data.subreddit.*
 import com.visualeap.aliforreddit.domain.feed.DefaultFeed
 import com.visualeap.aliforreddit.domain.feed.FeedRepository
 import com.visualeap.aliforreddit.domain.feed.SortType
-import com.visualeap.aliforreddit.domain.subreddit.SubredditRepository
 import com.visualeap.aliforreddit.domain.util.Lce
 import com.visualeap.aliforreddit.domain.util.toLce
 import dagger.Reusable
@@ -22,7 +20,7 @@ import kotlin.math.min
 @Reusable
 class FetchFeedPosts @Inject constructor(
     private val postRepository: PostRepository,
-    private val subredditRepository: SubredditRepository,
+    private val subredditDao: SubredditDao,
     private val postService: PostWebService,
     private val subredditService: SubredditWebService,
     private val afterKeyRepository: AfterKeyRepository,
@@ -90,7 +88,7 @@ class FetchFeedPosts @Inject constructor(
     ): Flowable<Lce<Listing<Pair<Subreddit, Post>>>> {
         val subredditIds = cachedPosts.map { it.subredditId }
         // TODO get subreddits by post id for better performance
-        return subredditRepository.getSubredditsByIds(subredditIds)
+        return subredditDao.getByIds(subredditIds)
             .distinct()
             .map { subredditList ->
                 // Transform the list of subreddits into a map (id -> Subreddit) for faster lookups
@@ -146,7 +144,7 @@ class FetchFeedPosts @Inject constructor(
                 .map(SubredditResponseMapper::map)
                 .flatMapCompletable { remoteSubreddits ->
                     // The subreddit must be added first because of the foreign key constraint
-                    subredditRepository.addSubreddits(remoteSubreddits)
+                    subredditDao.addAll(remoteSubreddits)
                         .andThen(postRepository.addPosts(remotePost, feed, sortType))
                 }
         } else Completable.complete()

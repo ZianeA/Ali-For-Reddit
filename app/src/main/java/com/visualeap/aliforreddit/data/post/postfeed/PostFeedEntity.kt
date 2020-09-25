@@ -3,14 +3,14 @@ package com.visualeap.aliforreddit.data.post.postfeed
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.visualeap.aliforreddit.data.feed.FeedEntity
-import com.visualeap.aliforreddit.data.post.PostEntity
+import com.visualeap.aliforreddit.data.post.Post
 import com.visualeap.aliforreddit.data.sort.SortTypeEntity
 import com.visualeap.aliforreddit.domain.feed.SortType
 
 @Entity(
     primaryKeys = ["postId", "feedName", "sortType"],
     foreignKeys = [ForeignKey(
-        entity = PostEntity::class,
+        entity = Post::class,
         parentColumns = ["id"],
         childColumns = ["postId"],
         onDelete = ForeignKey.CASCADE,

@@ -8,10 +8,10 @@ import io.reactivex.Single
 
 @Dao
 interface CommentDao {
-    @Query("SELECT * FROM CommentEntity c WHERE c.postId=:postId")
+    @Query("SELECT * FROM Comment c WHERE c.postId=:postId")
     fun getByPostId(postId: String): Observable<List<CommentEntity>>
 
-    @Query("SELECT * FROM CommentEntity")
+    @Query("SELECT * FROM Comment")
     fun getAll(): Observable<List<CommentEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -20,6 +20,6 @@ interface CommentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun add(comment: CommentEntity): Completable
 
-    @Query("DELETE FROM CommentEntity")
+    @Query("DELETE FROM Comment")
     fun deleteAll(): Completable
 }

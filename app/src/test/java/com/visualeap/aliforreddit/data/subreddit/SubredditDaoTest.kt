@@ -1,7 +1,6 @@
 package com.visualeap.aliforreddit.data.subreddit
 
 import com.visualeap.aliforreddit.data.database.RedditDatabase
-import com.visualeap.aliforreddit.domain.subreddit.SubredditRepository
 import org.assertj.core.api.Assertions.*
 import org.junit.After
 import org.junit.Before
@@ -12,14 +11,14 @@ import util.domain.createDatabase
 import util.domain.createSubreddit
 
 @RunWith(RobolectricTestRunner::class)
-internal class SubredditRoomRepositoryTest {
+internal class SubredditDaoTest {
     private lateinit var db: RedditDatabase
-    private lateinit var subredditRepository: SubredditRepository
+    private lateinit var subredditDao: SubredditDao
 
     @Before
     fun setUp() {
         db = createDatabase()
-        subredditRepository = SubredditRoomRepository(db.subredditDao())
+        subredditDao = db.subredditDao()
     }
 
     @After
@@ -33,12 +32,12 @@ internal class SubredditRoomRepositoryTest {
         val subreddit = createSubreddit()
 
         //Act
-        subredditRepository.addSubreddit(subreddit)
+        subredditDao.add(subreddit)
             .test()
             .assertResult()
 
         //Assert
-        val actual = subredditRepository.getSubredditsByIds(listOf(subreddit.id)).blockingFirst()
+        val actual = subredditDao.getByIds(listOf(subreddit.id)).blockingFirst()
         assertThat(actual).containsExactly(subreddit)
     }
 
@@ -49,12 +48,12 @@ internal class SubredditRoomRepositoryTest {
             listOf(createSubreddit(id = "Subreddit1"), createSubreddit(id = "Subreddit2"))
 
         //Act
-        subredditRepository.addSubreddits(subreddits)
+        subredditDao.addAll(subreddits)
             .test()
             .assertResult()
 
         //Assert
-        val actual = subredditRepository.getSubredditsByIds(listOf("Subreddit1", "Subreddit2"))
+        val actual = subredditDao.getByIds(listOf("Subreddit1", "Subreddit2"))
             .blockingFirst()
         assertThat(actual).containsExactlyElementsOf(subreddits)
     }
@@ -70,12 +69,12 @@ internal class SubredditRoomRepositoryTest {
             )
 
         //Act
-        subredditRepository.addSubreddits(subreddits)
+        subredditDao.addAll(subreddits)
             .test()
             .assertResult()
 
         //Assert
-        val actual = subredditRepository.getSubredditsByIds(listOf("Subreddit1", "Subreddit3"))
+        val actual = subredditDao.getByIds(listOf("Subreddit1", "Subreddit3"))
             .blockingFirst()
         assertThat(actual).containsExactly(subreddits[0], subreddits[2])
     }

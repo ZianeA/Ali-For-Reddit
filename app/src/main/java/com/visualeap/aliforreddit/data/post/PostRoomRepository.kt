@@ -3,7 +3,6 @@ package com.visualeap.aliforreddit.data.post
 import com.visualeap.aliforreddit.data.database.RedditDatabase
 import com.visualeap.aliforreddit.data.post.postfeed.PostFeedDao
 import com.visualeap.aliforreddit.data.post.postfeed.PostFeedEntity
-import com.visualeap.aliforreddit.domain.post.Post
 import com.visualeap.aliforreddit.domain.feed.SortType
 import com.visualeap.aliforreddit.domain.post.PostRepository
 import dagger.Reusable
@@ -17,7 +16,7 @@ class PostRoomRepository @Inject constructor(
     private val postFeedDao: PostFeedDao
 ) : PostRepository {
 
-    override fun getPostById(id: String): Observable<Post> = postDao.getById(id).map(::toDomain)
+    override fun getPostById(id: String): Observable<Post> = postDao.getById(id)
 
     override fun getPostsByFeed(
         feed: String,
@@ -26,7 +25,6 @@ class PostRoomRepository @Inject constructor(
         limit: Int
     ): Flowable<List<Post>> {
         return postDao.getByFeed(feed, sortType, offset, limit)
-            .map { postList -> postList.map(::toDomain) }
     }
 
     override fun countPostsByFeed(feed: String, sortType: SortType): Single<Int> {
@@ -40,7 +38,7 @@ class PostRoomRepository @Inject constructor(
     override fun addPosts(posts: List<Post>, feed: String, sortType: SortType): Completable {
         return Completable.fromAction {
             db.runInTransaction {
-                postDao.addAll(posts.map(::toEntity))
+                postDao.addAll(posts)
 
                 val lowestRank = postFeedDao.countPostsByFeed(feed, sortType)
                 val postFeedEntities = posts.mapIndexed { index, post ->
@@ -52,18 +50,6 @@ class PostRoomRepository @Inject constructor(
     }
 
     override fun updatePost(post: Post): Completable {
-        return postDao.update(toEntity(post))
-    }
-
-    private fun toEntity(post: Post): PostEntity {
-        return post.run {
-            PostEntity(id, authorName, title, text, score, commentCount, subredditId, created)
-        }
-    }
-
-    private fun toDomain(post: PostEntity): Post {
-        return post.run {
-            Post(id, authorName, title, text, score, commentCount, subredditId, created)
-        }
+        return postDao.update(post)
     }
 }

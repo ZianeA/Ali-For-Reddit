@@ -4,27 +4,26 @@ import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.Single
 
 @Dao
 interface SubredditDao {
     // TODO use upsert
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addAll(subreddits: List<SubredditEntity>): Completable
+    fun addAll(subreddits: List<Subreddit>): Completable
 
     // TODO use upsert
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun add(subredditEntity: SubredditEntity): Completable
+    fun add(subreddit: Subreddit): Completable
 
     @Update
-    fun update(subreddit: SubredditEntity): Completable
+    fun update(subreddit: Subreddit): Completable
 
-    @Query("SELECT * FROM SubredditEntity WHERE id IN (:ids)")
-    fun getByIds(ids: List<String>): Flowable<List<SubredditEntity>>
+    @Query("SELECT * FROM Subreddit WHERE id IN (:ids)")
+    fun getByIds(ids: List<String>): Flowable<List<Subreddit>>
 
-    @Query("SELECT s.* FROM SubredditEntity s INNER JOIN PostEntity p ON s.id = p.subredditId WHERE p.id = :postId")
-    fun getByPost(postId: String): Observable<SubredditEntity>
+    @Query("SELECT s.* FROM Subreddit s INNER JOIN Post p ON s.id = p.subredditId WHERE p.id = :postId")
+    fun getByPost(postId: String): Observable<Subreddit>
 
-    @Query("SELECT * FROM SubredditEntity")
-    fun getAll(): Observable<List<SubredditEntity>>
+    @Query("SELECT * FROM Subreddit")
+    fun getAll(): Observable<List<Subreddit>>
 }

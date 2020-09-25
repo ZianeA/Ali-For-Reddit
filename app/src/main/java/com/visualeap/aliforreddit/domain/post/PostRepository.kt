@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.domain.post
 
+import com.visualeap.aliforreddit.data.post.Post
 import com.visualeap.aliforreddit.domain.feed.SortType
 import io.reactivex.*
 

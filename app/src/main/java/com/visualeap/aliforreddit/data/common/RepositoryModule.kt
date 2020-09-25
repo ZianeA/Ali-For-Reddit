@@ -11,14 +11,11 @@ import com.visualeap.aliforreddit.data.token.*
 import com.visualeap.aliforreddit.domain.account.AccountRepository
 import com.visualeap.aliforreddit.domain.authentication.TokenRepository
 import com.visualeap.aliforreddit.domain.comment.CommentRepository
-import com.visualeap.aliforreddit.domain.post.Post
 import com.visualeap.aliforreddit.domain.redditor.Redditor
-import com.visualeap.aliforreddit.domain.subreddit.Subreddit
 import com.visualeap.aliforreddit.domain.post.AfterKeyRepository
 import com.visualeap.aliforreddit.domain.feed.FeedRepository
 import com.visualeap.aliforreddit.domain.post.PostRepository
 import com.visualeap.aliforreddit.domain.redditor.RedditorRepository
-import com.visualeap.aliforreddit.domain.subreddit.SubredditRepository
 import com.visualeap.aliforreddit.domain.util.Mapper
 import dagger.Binds
 import dagger.Module
@@ -27,9 +24,6 @@ import dagger.Module
 interface RepositoryModule {
     @Binds
     fun providePostRepository(postRepo: PostRoomRepository): PostRepository
-
-    @Binds
-    fun provideSubredditRepository(subredditRepo: SubredditRoomRepository): SubredditRepository
 
     @Binds
     fun provideAccountRepository(accountRepo: AccountRoomRepository): AccountRepository
@@ -54,7 +48,4 @@ interface RepositoryModule {
 
     @Binds
     fun provideRedditorResponseMapper(mapper: RedditorResponseMapper): Mapper<RedditorResponse, Redditor>
-
-    @Binds
-    fun provideSubredditEntityMapper(mapper: SubredditEntityMapper): Mapper<SubredditEntity, Subreddit>
 }

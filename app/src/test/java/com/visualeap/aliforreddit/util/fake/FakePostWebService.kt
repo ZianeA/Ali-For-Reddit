@@ -1,9 +1,9 @@
 package com.visualeap.aliforreddit.util.fake
 
+import com.visualeap.aliforreddit.data.post.Post
 import com.visualeap.aliforreddit.data.post.PostResponse
 import com.visualeap.aliforreddit.data.post.PostResponse.Data.PostHolder.*
 import com.visualeap.aliforreddit.data.post.PostWebService
-import com.visualeap.aliforreddit.domain.post.Post
 import io.reactivex.Single
 import java.io.IOException
 import kotlin.math.min

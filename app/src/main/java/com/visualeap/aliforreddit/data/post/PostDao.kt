@@ -8,18 +8,18 @@ import io.reactivex.Observable
 
 @Dao
 interface PostDao {
-    @Query("SELECT * FROM PostEntity WHERE id = :id")
-    fun getById(id: String): Observable<PostEntity>
+    @Query("SELECT * FROM Post WHERE id = :id")
+    fun getById(id: String): Observable<Post>
 
-    @Query("SELECT * FROM PostEntity")
-    fun getAll(): Observable<List<PostEntity>>
+    @Query("SELECT * FROM Post")
+    fun getAll(): Observable<List<Post>>
 
     @Query(
         """
         SELECT * 
-        FROM PostEntity
+        FROM Post
         INNER JOIN PostFeedEntity  
-        ON PostEntity.id = postId 
+        ON Post.id = postId 
         WHERE feedName = :feed AND sortType = :sortType AND rank >= :offset
         ORDER BY rank
         LIMIT :limit
@@ -30,19 +30,19 @@ interface PostDao {
         sortType: SortType,
         offset: Int,
         limit: Int
-    ): Flowable<List<PostEntity>>
+    ): Flowable<List<Post>>
 
     // TODO use upsert
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun add(post: PostEntity): Completable
+    fun add(post: Post): Completable
 
     // TODO use upsert
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addAll(posts: List<PostEntity>)
+    fun addAll(posts: List<Post>)
 
     @Update
-    fun update(post: PostEntity): Completable
+    fun update(post: Post): Completable
 
-    @Query("DELETE FROM PostEntity")
+    @Query("DELETE FROM Post")
     fun deleteAll(): Completable
 }

@@ -21,7 +21,7 @@ internal class PostRoomRepositoryTest {
         db = createDatabase()
 
         // Add subreddit to database to satisfy Post foreign key constraint
-        db.subredditDao().add(createSubredditEntity()).blockingGet()
+        db.subredditDao().add(createSubreddit()).blockingGet()
 
         // Add a record to the feed table
         db.feedDao().add(createFeedEntity()).blockingGet()

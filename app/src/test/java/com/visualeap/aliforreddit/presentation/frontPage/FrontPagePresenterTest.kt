@@ -1,6 +1,5 @@
 package com.visualeap.aliforreddit.presentation.frontPage
 
-import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import com.visualeap.aliforreddit.util.TrampolineSchedulerProvider
@@ -8,17 +7,10 @@ import com.visualeap.aliforreddit.data.database.RedditDatabase
 import com.visualeap.aliforreddit.data.afterkey.AfterKeyRoomRepository
 import com.visualeap.aliforreddit.data.feed.FeedRoomRepository
 import com.visualeap.aliforreddit.data.post.PostRoomRepository
-import com.visualeap.aliforreddit.data.subreddit.SubredditRoomRepository
 import com.visualeap.aliforreddit.domain.feed.SortType
 import com.visualeap.aliforreddit.domain.post.FetchFeedPosts
-import com.visualeap.aliforreddit.domain.post.Listing
-import com.visualeap.aliforreddit.domain.post.Post
-import com.visualeap.aliforreddit.domain.subreddit.Subreddit
-import com.visualeap.aliforreddit.domain.util.Lce
-import com.visualeap.aliforreddit.presentation.frontPage.FrontPageViewState.*
 import com.visualeap.aliforreddit.presentation.common.util.ResourceProvider
 import com.visualeap.aliforreddit.presentation.frontPage.FrontPageEvent.*
-import com.visualeap.aliforreddit.presentation.postDetail.PostDetailEvent
 import com.visualeap.aliforreddit.util.fake.FakePostWebService
 import com.visualeap.aliforreddit.util.fake.FakeSubredditWebService
 import org.assertj.core.api.Assertions.*
@@ -55,9 +47,8 @@ class FrontPagePresenterTest {
         db = createDatabase()
 
         // TODO clean up
-        val subredditRepository = SubredditRoomRepository(db.subredditDao())
-        subredditRepository.addSubreddit(createSubreddit(id = "Subreddit1")).blockingAwait()
-        subredditRepository.addSubreddit(createSubreddit(id = "Subreddit2")).blockingAwait()
+        db.subredditDao().add(createSubreddit(id = "Subreddit1")).blockingAwait()
+        db.subredditDao().add(createSubreddit(id = "Subreddit2")).blockingAwait()
 
         val feedRepository = FeedRoomRepository(db.feedDao())
         val feeds = listOf("Feed1", "Feed2")
@@ -78,7 +69,7 @@ class FrontPagePresenterTest {
 
         fetchFeedPosts = FetchFeedPosts(
             postRepository,
-            subredditRepository,
+            db.subredditDao(),
             postService,
             FakeSubredditWebService(),
             AfterKeyRoomRepository(db.feedAfterKeyDao()),

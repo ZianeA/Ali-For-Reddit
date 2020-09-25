@@ -3,12 +3,13 @@ package com.visualeap.aliforreddit.data.comment
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.visualeap.aliforreddit.data.post.PostEntity
+import com.visualeap.aliforreddit.data.post.Post
 
 //TODO add self reference
 @Entity(
+    tableName = "Comment",
     foreignKeys = [ForeignKey(
-        entity = PostEntity::class,
+        entity = Post::class,
         parentColumns = ["id"],
         childColumns = ["postId"],
         onUpdate = ForeignKey.CASCADE,

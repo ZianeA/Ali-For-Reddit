@@ -8,7 +8,7 @@ import com.visualeap.aliforreddit.data.account.AccountEntity
 import com.visualeap.aliforreddit.data.afterkey.FeedAfterKeyDao
 import com.visualeap.aliforreddit.data.afterkey.FeedAfterKeyEntity
 import com.visualeap.aliforreddit.data.post.PostDao
-import com.visualeap.aliforreddit.data.post.PostEntity
+import com.visualeap.aliforreddit.data.post.Post
 import com.visualeap.aliforreddit.data.redditor.RedditorDao
 import com.visualeap.aliforreddit.data.redditor.RedditorEntity
 import com.visualeap.aliforreddit.data.comment.CommentDao
@@ -19,13 +19,13 @@ import com.visualeap.aliforreddit.data.post.postfeed.PostFeedDao
 import com.visualeap.aliforreddit.data.post.postfeed.PostFeedEntity
 import com.visualeap.aliforreddit.data.sort.SortTypeEntity
 import com.visualeap.aliforreddit.data.subreddit.SubredditDao
-import com.visualeap.aliforreddit.data.subreddit.SubredditEntity
+import com.visualeap.aliforreddit.data.subreddit.Subreddit
 import com.visualeap.aliforreddit.data.token.*
 
 @Database(
     entities = [TokenEntity::class, UserTokenEntity::class, UserlessTokenEntity::class,
-        CurrentTokenEntity::class, AccountEntity::class, RedditorEntity::class, PostEntity::class,
-        SubredditEntity::class, CommentEntity::class, FeedEntity::class, PostFeedEntity::class,
+        CurrentTokenEntity::class, AccountEntity::class, RedditorEntity::class, Post::class,
+        Subreddit::class, CommentEntity::class, FeedEntity::class, PostFeedEntity::class,
         SortTypeEntity::class, FeedAfterKeyEntity::class],
     version = 1
 )

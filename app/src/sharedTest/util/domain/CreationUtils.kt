@@ -7,19 +7,17 @@ import com.visualeap.aliforreddit.data.comment.CommentEntity
 import com.visualeap.aliforreddit.data.comment.CommentResponse
 import com.visualeap.aliforreddit.data.feed.FeedEntity
 import com.visualeap.aliforreddit.data.redditor.RedditorEntity
-import com.visualeap.aliforreddit.data.post.PostEntity
+import com.visualeap.aliforreddit.data.post.Post
 import com.visualeap.aliforreddit.data.post.PostResponse
 import com.visualeap.aliforreddit.data.redditor.RedditorResponse
-import com.visualeap.aliforreddit.data.subreddit.SubredditEntity
+import com.visualeap.aliforreddit.data.subreddit.Subreddit
 import com.visualeap.aliforreddit.data.subreddit.SubredditResponse
 import com.visualeap.aliforreddit.domain.account.Account
 import com.visualeap.aliforreddit.domain.authentication.token.Token
 import com.visualeap.aliforreddit.domain.authentication.token.UserToken
 import com.visualeap.aliforreddit.domain.authentication.token.UserlessToken
 import com.visualeap.aliforreddit.domain.comment.Comment
-import com.visualeap.aliforreddit.domain.post.Post
 import com.visualeap.aliforreddit.domain.redditor.Redditor
-import com.visualeap.aliforreddit.domain.subreddit.Subreddit
 import com.visualeap.aliforreddit.presentation.frontPage.PostDto
 import com.visualeap.aliforreddit.presentation.frontPage.SubredditIcon
 import com.visualeap.aliforreddit.presentation.common.model.SubredditView
@@ -142,22 +140,7 @@ fun createSubreddit(
     primaryColor: String? = SUBREDDIT_PRIMARY_COLOR,
     keyColor: String? = SUBREDDIT_KEY_COLOR
 ) =
-    Subreddit(
-        id,
-        name,
-        iconUrl,
-        primaryColor,
-        keyColor
-    )
-
-fun createSubredditEntity(
-    id: String = SUBREDDIT_ID,
-    name: String = SUBREDDIT_NAME,
-    iconUrl: String? = SUBREDDIT_ICON_URL,
-    primaryColor: String? = SUBREDDIT_PRIMARY_COLOR,
-    keyColor: String? = SUBREDDIT_KEY_COLOR
-) =
-    SubredditEntity(id, name, iconUrl, primaryColor, keyColor)
+    Subreddit(id, name, iconUrl, primaryColor, keyColor)
 
 fun createSubredditResponse(
     id: String = SUBREDDIT_ID,
@@ -206,27 +189,7 @@ fun createPost(
     commentCount: Int = POST_COMMENT_COUNT,
     subredditId: String = SUBREDDIT_ID,
     created: Long = POST_CREATED
-) = Post(
-    id,
-    authorName,
-    title,
-    text,
-    score,
-    commentCount,
-    subredditId,
-    created
-)
-
-fun createPostEntity(
-    id: String = POST_ID,
-    authorName: String = REDDITOR_USERNAME,
-    title: String = POST_TITLE,
-    text: String = POST_TEXT,
-    score: Int = POST_SCORE,
-    commentCount: Int = POST_COMMENT_COUNT,
-    subredditId: String = SUBREDDIT_ID,
-    created: Long = POST_CREATED
-) = PostEntity(id, authorName, title, text, score, commentCount, subredditId, created)
+) = Post(id, authorName, title, text, score, commentCount, subredditId, created)
 
 fun createPostResponse(
     afterKey: String = "FAKE_AFTER_KEY",

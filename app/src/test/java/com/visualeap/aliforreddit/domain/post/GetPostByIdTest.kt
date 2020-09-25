@@ -2,19 +2,15 @@ package com.visualeap.aliforreddit.domain.post
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.visualeap.aliforreddit.data.database.RedditDatabase
+import com.visualeap.aliforreddit.data.post.Post
 import com.visualeap.aliforreddit.data.post.PostRoomRepository
-import com.visualeap.aliforreddit.data.subreddit.SubredditRoomRepository
-import com.visualeap.aliforreddit.domain.comment.Comment
+import com.visualeap.aliforreddit.data.subreddit.Subreddit
 import com.visualeap.aliforreddit.domain.feed.SortType
-import com.visualeap.aliforreddit.domain.subreddit.Subreddit
-import com.visualeap.aliforreddit.domain.subreddit.SubredditRepository
 import com.visualeap.aliforreddit.domain.util.Lce
 import com.visualeap.aliforreddit.util.fake.FakePostWebService
-import com.visualeap.aliforreddit.util.fake.FakeSubredditWebService
 import org.assertj.core.api.AbstractObjectAssert
 import org.assertj.core.api.Assertions.*
 import org.assertj.core.api.InstanceOfAssertFactories
-import org.assertj.core.api.ListAssert
 import org.assertj.core.api.ObjectAssert
 import org.junit.After
 import org.junit.Before
@@ -31,7 +27,6 @@ internal class GetPostByIdTest {
 
     private lateinit var db: RedditDatabase
     private lateinit var postRepository: PostRepository
-    private lateinit var subredditRepository: SubredditRepository
     private lateinit var postWebService: FakePostWebService
     private lateinit var getPostById: GetPostById
 
@@ -40,15 +35,14 @@ internal class GetPostByIdTest {
         db = createDatabase()
         db.feedDao().add(createFeedEntity()).blockingAwait()
         postRepository = PostRoomRepository(db, db.postDao(), db.postFeedDao())
-        subredditRepository = SubredditRoomRepository(db.subredditDao())
         postWebService = FakePostWebService()
         getPostById =
-            GetPostById(postRepository, subredditRepository, postWebService)
+            GetPostById(postRepository, db.subredditDao(), postWebService)
 
         // Add two subreddits with two posts
         for (i in 1..2) {
             val subredditId = "Subreddit$i"
-            subredditRepository.addSubreddit(createSubreddit(id = subredditId)).blockingAwait()
+            db.subredditDao().add(createSubreddit(id = subredditId)).blockingAwait()
 
             for (j in 1..2) {
                 val postId = "${subredditId}Post$j"

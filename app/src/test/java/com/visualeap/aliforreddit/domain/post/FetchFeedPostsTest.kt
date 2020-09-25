@@ -4,16 +4,15 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.visualeap.aliforreddit.data.database.RedditDatabase
 import com.visualeap.aliforreddit.data.afterkey.AfterKeyRoomRepository
 import com.visualeap.aliforreddit.data.feed.FeedRoomRepository
+import com.visualeap.aliforreddit.data.post.Post
 import com.visualeap.aliforreddit.data.post.PostRoomRepository
-import com.visualeap.aliforreddit.data.subreddit.SubredditRoomRepository
+import com.visualeap.aliforreddit.data.subreddit.Subreddit
+import com.visualeap.aliforreddit.data.subreddit.SubredditDao
 import com.visualeap.aliforreddit.domain.feed.SortType
 import com.visualeap.aliforreddit.domain.feed.FeedRepository
-import com.visualeap.aliforreddit.domain.subreddit.Subreddit
-import com.visualeap.aliforreddit.domain.subreddit.SubredditRepository
 import com.visualeap.aliforreddit.domain.util.Lce
 import com.visualeap.aliforreddit.util.fake.FakePostWebService
 import com.visualeap.aliforreddit.util.fake.FakeSubredditWebService
-import org.assertj.core.api.*
 import org.assertj.core.api.Assertions.*
 import org.junit.After
 import org.junit.Before
@@ -30,7 +29,6 @@ internal class FetchFeedPostsTest {
 
     private lateinit var db: RedditDatabase
     private lateinit var postRepository: PostRepository
-    private lateinit var subredditRepository: SubredditRepository
     private lateinit var afterKeyRepository: AfterKeyRepository
     private lateinit var feedRepository: FeedRepository
     private lateinit var postService: FakePostWebService
@@ -40,7 +38,6 @@ internal class FetchFeedPostsTest {
     @Before
     internal fun setUp() {
         db = createDatabase()
-        subredditRepository = SubredditRoomRepository(db.subredditDao())
         postRepository = PostRoomRepository(db, db.postDao(), db.postFeedDao())
         afterKeyRepository = AfterKeyRoomRepository(db.feedAfterKeyDao())
         feedRepository = FeedRoomRepository(db.feedDao())
@@ -49,7 +46,7 @@ internal class FetchFeedPostsTest {
 
         // Add subreddit to database to satisfy Post foreign key constraint
         val subreddit = createSubreddit()
-        subredditRepository.addSubreddit(subreddit).blockingAwait()
+        db.subredditDao().add(subreddit).blockingAwait()
         subredditService.addSubreddit(subreddit)
         // Add a record to the feed table
         feedRepository.addFeed(FEED_NAME).blockingAwait()
@@ -57,7 +54,7 @@ internal class FetchFeedPostsTest {
         fetchFeedPosts =
             FetchFeedPosts(
                 postRepository,
-                subredditRepository,
+                db.subredditDao(),
                 postService,
                 subredditService,
                 afterKeyRepository,
@@ -75,7 +72,7 @@ internal class FetchFeedPostsTest {
         //Arrange
         val subreddits =
             listOf(createSubreddit(id = "FakeSubreddit1"), createSubreddit(id = "FakeSubreddit2"))
-        subredditRepository.addSubreddits(subreddits).blockingAwait()
+        db.subredditDao().addAll(subreddits).blockingAwait()
 
         val posts = listOf(
             createPost(id = "1", subredditId = "FakeSubreddit1"),

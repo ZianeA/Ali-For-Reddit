@@ -3,7 +3,6 @@ package com.visualeap.aliforreddit.domain.comment
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.visualeap.aliforreddit.data.comment.CommentRoomRepository
 import com.visualeap.aliforreddit.data.database.RedditDatabase
-import com.visualeap.aliforreddit.data.subreddit.SubredditRoomRepository
 import com.visualeap.aliforreddit.domain.util.Lce
 import com.visualeap.aliforreddit.util.fake.FakeCommentWebService
 import org.assertj.core.api.Assertions.*
@@ -33,18 +32,17 @@ class GetCommentsByPostTest {
         db = createDatabase()
         db.feedDao().add(createFeedEntity()).blockingAwait()
 
-        val subredditRepository = SubredditRoomRepository(db.subredditDao())
         commentRepository = CommentRoomRepository(db.commentDao())
         commentService = FakeCommentWebService()
 
         // Add two posts with two comments
         for (i in 1..2) {
             val subredditId = "Subreddit$i"
-            subredditRepository.addSubreddit(createSubreddit(name = subredditId, id = subredditId))
+            db.subredditDao().add(createSubreddit(name = subredditId, id = subredditId))
                 .blockingAwait()
 
             val postId = "Post$i"
-            db.postDao().add(createPostEntity(id = postId, subredditId = subredditId))
+            db.postDao().add(createPost(id = postId, subredditId = subredditId))
                 .blockingAwait()
 
             for (j in 1..2) {

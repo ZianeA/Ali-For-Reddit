@@ -3,18 +3,18 @@ package com.visualeap.aliforreddit.data.post
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.visualeap.aliforreddit.data.subreddit.SubredditEntity
+import com.visualeap.aliforreddit.data.subreddit.Subreddit
 
 @Entity(
     foreignKeys = [ForeignKey(
-        entity = SubredditEntity::class,
+        entity = Subreddit::class,
         parentColumns = ["id"],
         childColumns = ["subredditId"],
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE
     )]
 )
-data class PostEntity(
+data class Post(
     @PrimaryKey val id: String,
     val authorName: String,
     val title: String,

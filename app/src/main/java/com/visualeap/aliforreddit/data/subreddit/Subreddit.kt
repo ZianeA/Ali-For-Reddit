@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class SubredditEntity(
+data class Subreddit(
     @PrimaryKey val id: String,
     val name: String, //TODO add unique constrain
     val iconUrl: String?,

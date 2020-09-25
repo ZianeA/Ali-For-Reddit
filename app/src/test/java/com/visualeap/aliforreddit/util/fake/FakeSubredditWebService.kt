@@ -1,9 +1,9 @@
 package com.visualeap.aliforreddit.util.fake
 
+import com.visualeap.aliforreddit.data.subreddit.Subreddit
 import com.visualeap.aliforreddit.data.subreddit.SubredditResponse
 import com.visualeap.aliforreddit.data.subreddit.SubredditResponse.Data.SubredditHolder.*
 import com.visualeap.aliforreddit.data.subreddit.SubredditWebService
-import com.visualeap.aliforreddit.domain.subreddit.Subreddit
 import io.reactivex.Single
 import com.visualeap.aliforreddit.data.subreddit.SubredditResponse.Data.SubredditHolder.Subreddit as SubredditDto
 
