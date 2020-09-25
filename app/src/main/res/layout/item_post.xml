@@ -55,42 +55,62 @@
             app:layout_constraintTop_toBottomOf="@+id/subredditImage"
             tools:text="What's video game you dislike that everybody loves?" />
 
+        <ImageView
+            android:id="@+id/postImage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:adjustViewBounds="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/postTitle"
+            tools:srcCompat="@drawable/post_image_test"
+            tools:visibility="visible" />
+
         <TextView
             android:id="@+id/postText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:maxLines="3"
             android:ellipsize="end"
+            android:maxLines="3"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/postTitle"
             app:layout_constraintTop_toBottomOf="@+id/postTitle"
-            tools:text="Over the last few years and countless apps I've developed on Android, I began to notice an unsettling pattern with Admob, Google and their business practices. I decided to do an experiment:" />
+            tools:text="Over the last few years and countless apps I've developed on Android, I began to notice an unsettling pattern with Admob, Google and their business practices. I decided to do an experiment:"
+            tools:visibility="gone" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/postContentBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="postImage,postText" />
 
         <ImageView
-            android:id="@+id/upvoteImage"
+            android:id="@+id/upvoteIcon"
             android:layout_width="24dp"
             android:layout_height="0dp"
-            android:tint="@android:color/darker_gray"
             app:layout_constraintBottom_toBottomOf="@+id/postScore"
             app:layout_constraintDimensionRatio="h,1:1"
             app:layout_constraintStart_toStartOf="@+id/postTitle"
             app:layout_constraintTop_toTopOf="@+id/postScore"
-            app:srcCompat="@drawable/ic_arrow_up" />
+            app:srcCompat="@drawable/ic_arrow_up"
+            app:tint="?attr/colorControlNormal" />
 
         <ImageView
-            android:id="@+id/downvoteImage"
+            android:id="@+id/downvoteIcon"
             android:layout_width="24dp"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
-            android:tint="@android:color/darker_gray"
             app:layout_constraintBottom_toBottomOf="@+id/postScore"
             app:layout_constraintDimensionRatio="h,1:1"
             app:layout_constraintStart_toEndOf="@+id/postScore"
             app:layout_constraintTop_toTopOf="@+id/postScore"
-            app:srcCompat="@drawable/ic_arrow_down" />
+            app:srcCompat="@drawable/ic_arrow_down"
+            app:tint="?attr/colorControlNormal" />
 
         <TextView
             android:id="@+id/postScore"
@@ -99,24 +119,24 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintStart_toEndOf="@+id/upvoteImage"
-            app:layout_constraintTop_toBottomOf="@+id/postText"
+            app:layout_constraintStart_toEndOf="@+id/upvoteIcon"
+            app:layout_constraintTop_toBottomOf="@+id/postContentBarrier"
             tools:text="508" />
 
         <ImageView
-            android:id="@+id/commentImage"
+            android:id="@+id/commentIcon"
             android:layout_width="20dp"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
-            android:tint="@android:color/darker_gray"
             app:layout_constraintBottom_toBottomOf="@+id/postCommentCount"
             app:layout_constraintDimensionRatio="h,1:1"
             app:layout_constraintEnd_toStartOf="@+id/postCommentCount"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toEndOf="@+id/downvoteImage"
+            app:layout_constraintStart_toEndOf="@+id/downvoteIcon"
             app:layout_constraintTop_toTopOf="@+id/postCommentCount"
-            app:srcCompat="@drawable/ic_comment" />
+            app:srcCompat="@drawable/ic_comment"
+            app:tint="?attr/colorControlNormal" />
 
         <TextView
             android:id="@+id/postCommentCount"
@@ -125,23 +145,23 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintEnd_toStartOf="@+id/shareImage"
+            app:layout_constraintEnd_toStartOf="@+id/shareIcon"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/commentImage"
+            app:layout_constraintStart_toEndOf="@+id/commentIcon"
             app:layout_constraintTop_toTopOf="@+id/postScore"
             tools:text="7.4k" />
 
         <ImageView
-            android:id="@+id/shareImage"
+            android:id="@+id/shareIcon"
             android:layout_width="20dp"
             android:layout_height="0dp"
             android:layout_marginEnd="8dp"
-            android:tint="@android:color/darker_gray"
             app:layout_constraintBottom_toBottomOf="@+id/share"
             app:layout_constraintDimensionRatio="h,1:1"
             app:layout_constraintEnd_toStartOf="@+id/share"
             app:layout_constraintTop_toTopOf="@+id/share"
-            app:srcCompat="@drawable/ic_share" />
+            app:srcCompat="@drawable/ic_share"
+            app:tint="?attr/colorControlNormal" />
 
         <TextView
             android:id="@+id/share"

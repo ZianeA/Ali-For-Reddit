@@ -176,6 +176,7 @@ fun createSubredditView(
 const val POST_ID = "FakePostId"
 private const val POST_TITLE = "This is a fake post title"
 private const val POST_TEXT = "This is a fake post text."
+private const val POST_URL = "https://fake.com/image.jpg"
 private const val POST_SCORE = 3000
 private const val POST_COMMENT_COUNT = 2500
 private const val POST_CREATED: Long = 1569878021
@@ -185,11 +186,12 @@ fun createPost(
     authorName: String = REDDITOR_USERNAME,
     title: String = POST_TITLE,
     text: String = POST_TEXT,
+    url: String = POST_URL,
     score: Int = POST_SCORE,
     commentCount: Int = POST_COMMENT_COUNT,
     subredditId: String = SUBREDDIT_ID,
     created: Long = POST_CREATED
-) = Post(id, authorName, title, text, score, commentCount, subredditId, created)
+) = Post(id, authorName, title, text, url, score, commentCount, subredditId, created)
 
 fun createPostResponse(
     afterKey: String = "FAKE_AFTER_KEY",
@@ -197,6 +199,7 @@ fun createPostResponse(
     authorName: String = REDDITOR_USERNAME,
     title: String = POST_TITLE,
     text: String = POST_TEXT,
+    url: String = POST_URL,
     score: Int = POST_SCORE,
     commentCount: Int = POST_COMMENT_COUNT,
     subredditId: String = SUBREDDIT_ID,
@@ -211,6 +214,7 @@ fun createPostResponse(
                     authorName,
                     title,
                     text,
+                    url,
                     score,
                     commentCount,
                     subredditId,
@@ -225,16 +229,11 @@ fun createPostDto(
     id: String = POST_ID,
     authorName: String = "u/$REDDITOR_USERNAME",
     title: String = POST_TITLE,
-    text: String = POST_TEXT,
-    score: String = formatCount(
-        POST_SCORE
-    ),
-    commentCount: String = formatCount(
-        POST_COMMENT_COUNT
-    ),
-    timestamp: String = formatTimestamp(
-        POST_CREATED
-    ),
+    text: String? = POST_TEXT,
+    url: String? = POST_URL,
+    score: String = formatCount(POST_SCORE),
+    commentCount: String = formatCount(POST_COMMENT_COUNT),
+    timestamp: String = formatTimestamp(POST_CREATED),
     subredditId: String = SUBREDDIT_ID,
     subreddit: String = SUBREDDIT_NAME,
     subredditColor: String = SUBREDDIT_PRIMARY_COLOR,
@@ -244,6 +243,7 @@ fun createPostDto(
     authorName,
     title,
     text,
+    url,
     score,
     commentCount,
     timestamp,

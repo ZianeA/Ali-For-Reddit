@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8d511c435daf9624d7b3af31ba51a5e3",
+    "identityHash": "2d991c743b4e81ab7f143d0f3b430759",
     "entities": [
       {
         "tableName": "TokenEntity",
@@ -234,7 +234,7 @@
       },
       {
         "tableName": "Post",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `authorName` TEXT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `score` INTEGER NOT NULL, `commentCount` INTEGER NOT NULL, `subredditId` TEXT NOT NULL, `created` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`subredditId`) REFERENCES `Subreddit`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `authorName` TEXT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `url` TEXT NOT NULL, `score` INTEGER NOT NULL, `commentCount` INTEGER NOT NULL, `subredditId` TEXT NOT NULL, `created` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`subredditId`) REFERENCES `Subreddit`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -257,6 +257,12 @@
           {
             "fieldPath": "text",
             "columnName": "text",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -598,7 +604,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8d511c435daf9624d7b3af31ba51a5e3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2d991c743b4e81ab7f143d0f3b430759')"
     ]
   }
 }

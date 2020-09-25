@@ -32,7 +32,7 @@
         tools:text="Pour le 30ème anniversaire de Laura, on avait décidé de ne pas déroger à la tradition et de feter la chose avec sa famille." />
 
     <ImageView
-        android:id="@+id/upvoteImage"
+        android:id="@+id/upvoteIcon"
         android:layout_width="24dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
@@ -44,7 +44,7 @@
         app:srcCompat="@drawable/ic_arrow_up" />
 
     <ImageView
-        android:id="@+id/downvoteImage"
+        android:id="@+id/downvoteIcon"
         android:layout_width="24dp"
         android:layout_height="0dp"
         android:tint="@android:color/darker_gray"
@@ -63,7 +63,7 @@
         android:layout_marginBottom="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/downvoteImage"
+        app:layout_constraintEnd_toStartOf="@+id/downvoteIcon"
         app:layout_constraintTop_toBottomOf="@+id/commentBody"
         tools:text="508" />
 </androidx.constraintlayout.widget.ConstraintLayout>

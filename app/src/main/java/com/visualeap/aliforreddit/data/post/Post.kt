@@ -19,6 +19,7 @@ data class Post(
     val authorName: String,
     val title: String,
     val text: String,
+    val url: String,
     val score: Int,
     val commentCount: Int,
     val subredditId: String,

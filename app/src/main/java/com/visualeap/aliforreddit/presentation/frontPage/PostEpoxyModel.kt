@@ -12,6 +12,7 @@ import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.bumptech.glide.Glide
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.presentation.common.util.KotlinEpoxyHolder
+import com.visualeap.aliforreddit.presentation.common.util.showIf
 
 @EpoxyModelClass(layout = R.layout.item_post)
 abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
@@ -33,12 +34,15 @@ abstract class PostEpoxyModel : EpoxyModelWithHolder<PostHolder>() {
 
         holder.apply {
             postTitle.text = post.title
+
             postText.maxLines = maxLines
             postText.text = post.text
+            postText.showIf { post.text != null }
 
-            if (post.text.isEmpty()) {
-                postText.visibility = View.GONE
-            }
+            postImage.showIf { post.url != null }
+            Glide.with(holder.view)
+                .load(post.url)
+                .into(postImage)
 
             postedByAndAt.text = view.context.getString(
                 R.string.post_posted_by_and_at,
@@ -88,6 +92,7 @@ class PostHolder : KotlinEpoxyHolder() {
 
     val postTitle by bind<TextView>(R.id.postTitle)
     val postText by bind<TextView>(R.id.postText)
+    val postImage by bind<ImageView>(R.id.postImage)
     val postScore by bind<TextView>(R.id.postScore)
     val postCommentCount by bind<TextView>(R.id.postCommentCount)
     val postedByAndAt by bind<TextView>(R.id.postedByAndAt)
