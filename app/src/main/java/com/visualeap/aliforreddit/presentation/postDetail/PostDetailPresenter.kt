@@ -99,13 +99,18 @@ class PostDetailPresenter @Inject constructor(
                         vs.copy(post = result.post, postLoading = false)
                     }
                     is ScreenLoadResult.PostError -> {
-                        vs.copy(postError = result.error, postLoading = false)
+                        vs.copy(error = result.error, postLoading = false)
                     }
                     is ScreenLoadResult.CommentsContent -> {
                         vs.copy(comments = result.comments, commentsLoading = false)
                     }
                     is ScreenLoadResult.CommentsError -> {
-                        vs.copy(commentsError = result.error, commentsLoading = false)
+                        // Don't show error sate when there is content.
+                        if (vs.comments == null) {
+                            vs.copy(commentsError = result.error, commentsLoading = false)
+                        } else {
+                            vs.copy(error = result.error, commentsLoading = false)
+                        }
                     }
                     ScreenLoadResult.CommentsLoading -> vs.copy(commentsLoading = true)
                 }

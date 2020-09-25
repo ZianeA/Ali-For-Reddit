@@ -7,9 +7,9 @@ data class PostDetailViewState(
     val post: PostDto? = null,
     val comments: List<Comment>? = null,
     val postLoading: Boolean = false,
-    val postError: String? = null,
     val commentsLoading: Boolean = false,
-    val commentsError: String? = null
+    val commentsError: String? = null,
+    val error: String? = null
 )
 
 sealed class PostDetailEvent {

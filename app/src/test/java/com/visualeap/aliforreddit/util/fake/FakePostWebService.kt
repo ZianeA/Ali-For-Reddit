@@ -21,6 +21,7 @@ class FakePostWebService : PostWebService {
                     it.authorName,
                     it.title,
                     it.text,
+                    it.url,
                     it.score,
                     it.commentCount,
                     it.subredditId,

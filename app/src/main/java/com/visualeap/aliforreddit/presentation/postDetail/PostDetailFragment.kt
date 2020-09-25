@@ -73,7 +73,7 @@ class PostDetailFragment : Fragment(), PostDetailLauncher {
             toolbar.setBackgroundColor(Color.parseColor(it.subredditColor))
             epoxyController.post = it
         }
-        viewState.postError?.let { Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show() }
+        viewState.error?.let { Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show() }
 
         //Display comments
         epoxyController.commentsLoading = viewState.commentsLoading

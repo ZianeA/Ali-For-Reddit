@@ -89,7 +89,7 @@ internal class PostDetailPresenterTest {
 
         //Assert
         testObserver.assertLastValue {
-            assertThat(it.postError).isNotBlank()
+            assertThat(it.error).isNotBlank()
             assertThat(it.postLoading).isFalse()
         }
     }
@@ -125,7 +125,7 @@ internal class PostDetailPresenterTest {
     }
 
     @Test
-    fun `display error when loading comments fails`() {
+    fun `display error view when loading comments fails`() {
         //Arrange
         every { getCommentsByPost.execute(any(), any()) }
             .returns(Observable.just(Lce.Error(IOException())))
@@ -136,7 +136,27 @@ internal class PostDetailPresenterTest {
 
         //Assert
         testObserver.assertLastValue {
-            assertThat(it.commentsError).isNotBlank()
+            assertThat(it.commentsError).isNotNull()
+            assertThat(it.commentsLoading).isFalse()
+        }
+    }
+
+    @Test
+    fun `display error toast when loading comments fails`() {
+        //Arrange
+        every { getCommentsByPost.execute(any(), any()) }
+            .returns(
+                Observable.just(Lce.Content(listOf(createComment())), Lce.Error(IOException()))
+            )
+
+        //Act
+        val testObserver = presenter.viewState.test()
+        presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
+
+        //Assert
+        testObserver.assertLastValue {
+            assertThat(it.error).isNotNull()
+            assertThat(it.commentsError).isNull()
             assertThat(it.commentsLoading).isFalse()
         }
     }
