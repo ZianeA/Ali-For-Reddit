@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import android.os.Bundle
 import android.view.*
+import androidx.core.view.ViewCompat
+import androidx.core.view.updatePadding
 import androidx.viewpager.widget.ViewPager
 import com.visualeap.aliforreddit.R
 import com.visualeap.aliforreddit.domain.feed.DefaultFeed
@@ -16,8 +18,8 @@ import com.visualeap.aliforreddit.presentation.frontPage.FrontPageFragment
 import com.visualeap.aliforreddit.presentation.login.BackButtonHandler
 import com.visualeap.aliforreddit.presentation.login.LoginFragment
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_container_home.*
 import kotlinx.android.synthetic.main.fragment_container_home.view.*
-import kotlinx.android.synthetic.main.search_bar.view.*
 import javax.inject.Inject
 
 class FrontPageContainerFragment : Fragment(), FrontPageContainerView, BackButtonHandler {
@@ -36,6 +38,12 @@ class FrontPageContainerFragment : Fragment(), FrontPageContainerView, BackButto
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_container_home, container, false)
+        rootView.setOnApplyWindowInsetsListener { _, insets ->
+            // Move toolbar below status bar
+            appBarLayout.updatePadding(top = insets.systemWindowInsetTop)
+            insets
+        }
+
         rootView.viewPager.apply {
             mViewPager = this
             addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(rootView.tabs))

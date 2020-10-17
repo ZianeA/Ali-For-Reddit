@@ -5,39 +5,41 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context=".presentation.common.main.MainActivity"
     tools:openDrawer="start">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="match_parent"
+            android:layout_marginBottom="56dp" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigationView"
+            android:id="@+id/bottomBar"
             android:layout_width="match_parent"
+            android:layout_gravity="bottom"
             android:layout_height="wrap_content"
             app:labelVisibilityMode="unlabeled"
-            android:background="?android:attr/windowBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:menu="@menu/bottom_navigation" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        <me.ibrahimsn.lib.SmoothBottomBar
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            app:backgroundColor="?attr/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:menu="@menu/bottom_navigation"/>-->
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.visualeap.aliforreddit.presentation.common.view.drawer.RedditDrawer
         android:id="@+id/redditDrawer"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="false">
-    </com.visualeap.aliforreddit.presentation.common.view.drawer.RedditDrawer>
+        android:layout_gravity="start" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

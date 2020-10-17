@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.core.view.updatePadding
 import com.google.android.material.snackbar.Snackbar
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
 import com.uber.autodispose.autoDispose
@@ -20,6 +21,7 @@ import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_post_detail.*
+import kotlinx.android.synthetic.main.fragment_post_detail.view.*
 
 class PostDetailFragment : Fragment(), PostDetailLauncher {
     @Inject
@@ -30,18 +32,30 @@ class PostDetailFragment : Fragment(), PostDetailLauncher {
 
     private lateinit var epoxyController: PostDetailEpoxyController
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val rootView = inflater.inflate(R.layout.fragment_post_detail, container, false)
         drawerController.lockClosed()
+
+        rootView.setOnApplyWindowInsetsListener { _, insets ->
+            // Move toolbar below status bar
+            appBarLayout.updatePadding(top = insets.systemWindowInsetTop)
+            insets
+        }
+
+        (activity as AppCompatActivity).apply {
+            setSupportActionBar(rootView.toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+
+        return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).apply {
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        }
-
         presenter.viewState
             .observeOn(AndroidSchedulers.mainThread())
             .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
@@ -58,19 +72,11 @@ class PostDetailFragment : Fragment(), PostDetailLauncher {
         presenter.passEvent(PostDetailEvent.ScreenLoadEvent)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_post_detail, container, false)
-    }
-
     private fun render(viewState: PostDetailViewState) {
         //Display post
         epoxyController.postLoading = viewState.postLoading
         viewState.post?.let {
-            toolbar.setBackgroundColor(Color.parseColor(it.subredditColor))
+            appBarLayout.setBackgroundColor(Color.parseColor(it.subredditColor))
             epoxyController.post = it
         }
         viewState.error?.let { Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show() }

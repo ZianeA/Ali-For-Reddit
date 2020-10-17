@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- In dark mode without light status bar we can use transparent -->
+    <color name="status_bar_scrim">@color/transparent</color>
+    <!-- In dark mode without light navigation bar we can use transparent -->
+    <color name="nav_bar_scrim">@color/transparent</color>
+</resources>

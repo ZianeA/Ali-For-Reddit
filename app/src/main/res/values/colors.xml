@@ -7,4 +7,17 @@
     <color name="redditButtonBlue">#0079d3</color>
     <color name="redditLoginPageGray">#c5ccd3</color>
     <color name="drawer_icon_color">#878a8c</color>
+
+    <!-- Scrim colors -->
+    <color name="system_ui_scrim_light">#B3FFFFFF</color> <!-- 70% white -->
+    <color name="system_ui_scrim_black">#40000000</color> <!-- 25% black -->
+
+    <!-- We use a dark scrim by default since light status is API 23+ -->
+    <color name="status_bar_scrim">@color/system_ui_scrim_black</color>
+    <!-- We use a dark scrim by default since light nav bar is API 27+ -->
+    <color name="nav_bar_scrim">@color/system_ui_scrim_black</color>
+
+    <color name="white">#fff</color>
+    <color name="black">#000</color>
+    <color name="transparent">#0fff</color>
 </resources>

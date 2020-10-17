@@ -2,9 +2,11 @@ package com.visualeap.aliforreddit.presentation.common.main
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
+import androidx.core.view.*
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -19,6 +21,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_post_detail.view.*
 import java.lang.IllegalStateException
 import javax.inject.Inject
 
@@ -58,15 +61,25 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        drawerLayout.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+
+        drawerLayout.setOnApplyWindowInsetsListener { _, insets ->
+            // Move bottom navigation above navigation bar
+            redditDrawer.updatePadding(bottom = insets.systemWindowInsetBottom)
+            bottomBar.updatePadding(bottom = insets.systemWindowInsetBottom)
+            insets
+        }
+
         this.savedInstanceState = savedInstanceState
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(
+        bottomBar.setOnNavigationItemSelectedListener(
             onBottomNavigationItemSelectedListener
         )
 
         // Set default tab selection
         if (savedInstanceState == null) {
-            bottomNavigationView.selectedItemId = R.id.navigation_home
+            bottomBar.selectedItemId = R.id.navigation_home
         }
 
         fragNavController.rootFragmentListener = this

@@ -22,7 +22,6 @@ Varius duis at consectetur lorem donec. Hac habitasse platea dictumst vestibulum
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="title_activity_login">LoginActivity</string>
 
     <string name="post_posted_by_and_at">Posted by %1$s • %2$s</string>
     <string name="error_server">Sorry, can\'t reach Reddit</string>

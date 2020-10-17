@@ -58,7 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
-        android:tint="@color/redditButtonBlue"
+        app:tint="@color/redditButtonBlue"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/navUsername"
         app:srcCompat="@drawable/ic_karma" />
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
-        android:tint="@color/redditButtonBlue"
+        app:tint="@color/redditButtonBlue"
         app:layout_constraintEnd_toStartOf="@id/redditAgeTitle"
         app:layout_constraintTop_toBottomOf="@+id/navUsername"
         app:srcCompat="@drawable/ic_cake" />

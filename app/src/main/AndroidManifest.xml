@@ -15,18 +15,9 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".presentation.login.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:parentActivityName=".presentation.common.main.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.visualeap.aliforreddit.presentation.common.main.MainActivity" />
-        </activity>
-        <activity
             android:name=".presentation.common.main.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

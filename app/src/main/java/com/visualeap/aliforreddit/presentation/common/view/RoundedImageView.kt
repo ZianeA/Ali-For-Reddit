@@ -50,9 +50,6 @@ class RoundedImageView : AppCompatImageView {
 
             recycle()
         }
-
-        //Request another setImageDrawable because isCircular and cornerRadius were not set yet when this method was initially called
-//        setImageDrawable(drawable)
     }
 
     override fun setImageDrawable(drawable: Drawable?) {
