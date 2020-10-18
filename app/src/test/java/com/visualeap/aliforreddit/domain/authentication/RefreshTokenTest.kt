@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.domain.authentication
 
+import androidx.room.EmptyResultSetException
 import com.visualeap.aliforreddit.data.token.AuthService
 import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
 import com.visualeap.aliforreddit.domain.authentication.token.UserToken
@@ -45,7 +46,7 @@ internal class RefreshTokenTest {
     fun `should refresh user token`() {
         //Arrange
         val cachedUserToken = createUserToken()
-        every { tokenRepository.getCurrentToken() } returns Maybe.just(cachedUserToken)
+        every { tokenRepository.getCurrentToken() } returns Single.just(cachedUserToken)
 
         val authCredential = "BASIC_AUTH_CREDENTIAL"
         every { authCredentialProvider.getAuthCredential() } returns authCredential
@@ -78,7 +79,7 @@ internal class RefreshTokenTest {
     fun `should return the refreshed user token`() {
         //Arrange
         val cachedUserToken = createUserToken()
-        every { tokenRepository.getCurrentToken() } returns Maybe.just(cachedUserToken)
+        every { tokenRepository.getCurrentToken() } returns Single.just(cachedUserToken)
 
         val refreshedUserToken = createTokenResponse(accessToken = "REFRESHED_ACCESS_TOKEN")
         every { authService.refreshUserToken(any(), any(), any()) }
@@ -100,7 +101,7 @@ internal class RefreshTokenTest {
     fun `should refresh userless token`() {
         //Arrange
         val cachedUserlessToken = createUserlessToken()
-        every { tokenRepository.getCurrentToken() } returns Maybe.just(cachedUserlessToken)
+        every { tokenRepository.getCurrentToken() } returns Single.just(cachedUserlessToken)
 
         val authCredential = "BASIC_AUTH_CREDENTIAL"
         every { authCredentialProvider.getAuthCredential() } returns authCredential
@@ -133,7 +134,7 @@ internal class RefreshTokenTest {
     fun `should return the refreshed userless token`() {
         //Arrange
         val cachedUserlessToken = createUserlessToken()
-        every { tokenRepository.getCurrentToken() } returns Maybe.just(cachedUserlessToken)
+        every { tokenRepository.getCurrentToken() } returns Single.just(cachedUserlessToken)
 
         val refreshedUserLessToken = createTokenResponse(accessToken = "REFRESHED_ACCESS_TOKEN")
         every { authService.getUserlessToken(any(), any(), any()) }
@@ -154,7 +155,7 @@ internal class RefreshTokenTest {
     @Test
     fun `when there is no current token should return error`() {
         //Arrange
-        every { tokenRepository.getCurrentToken() } returns Maybe.empty()
+        every { tokenRepository.getCurrentToken() } returns Single.error(EmptyResultSetException(""))
 
         //Act, Assert
         refreshToken.execute()

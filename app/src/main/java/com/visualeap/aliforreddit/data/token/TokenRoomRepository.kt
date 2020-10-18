@@ -35,9 +35,9 @@ class TokenRoomRepository @Inject constructor(
         return currentTokenDao.setCurrentTokenEntity(currentTokenEntity)
     }
 
-    override fun getCurrentToken(): Maybe<Token> {
+    override fun getCurrentToken(): Single<Token> {
         return currentTokenDao.getCurrentTokenEntity()
-            .flatMapSingleElement {
+            .flatMap {
                 if (it.tokenType == TokenType.USER) {
                     userTokenDao.getUserToken(it.tokenId)
                 } else {

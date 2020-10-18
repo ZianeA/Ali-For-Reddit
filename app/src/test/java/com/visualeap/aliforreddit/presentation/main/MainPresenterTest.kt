@@ -39,7 +39,7 @@ internal class MainPresenterTest {
         every { repository.getCurrentRedditor() } returns Single.just(currentRedditor)
 
         //Act
-        presenter.start(true)
+        presenter.start()
 
         //Assert
         verify { view.displayCurrentRedditor(currentRedditor) }
@@ -51,7 +51,7 @@ internal class MainPresenterTest {
         every { isUserLoggedIn.execute() } returns Single.just(false)
 
         //Act
-        presenter.start(true)
+        presenter.start()
 
         //Assert
         verify { view.displayLoginPrompt() }

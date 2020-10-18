@@ -14,6 +14,7 @@
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:minHeight="?attr/actionBarSize"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlways"
             app:statusBarScrim="@android:color/transparent"
             app:titleEnabled="false"
@@ -112,7 +113,6 @@
                         app:layout_constraintTop_toTopOf="@+id/searchBarHint"
                         app:srcCompat="@drawable/ic_search"
                         app:tint="#a4a7a8" />
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.appbar.MaterialToolbar>

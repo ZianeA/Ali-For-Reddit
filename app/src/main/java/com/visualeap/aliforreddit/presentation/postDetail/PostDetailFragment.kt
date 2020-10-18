@@ -16,6 +16,7 @@ import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
 import com.uber.autodispose.autoDispose
 
 import com.visualeap.aliforreddit.R
+import com.visualeap.aliforreddit.presentation.common.util.makeSnackbar
 import com.visualeap.aliforreddit.presentation.common.view.drawer.DrawerController
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
@@ -79,7 +80,7 @@ class PostDetailFragment : Fragment(), PostDetailLauncher {
             appBarLayout.setBackgroundColor(Color.parseColor(it.subredditColor))
             epoxyController.post = it
         }
-        viewState.error?.let { Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show() }
+        viewState.error?.let { requireView().makeSnackbar(it).show() }
 
         //Display comments
         epoxyController.commentsLoading = viewState.commentsLoading

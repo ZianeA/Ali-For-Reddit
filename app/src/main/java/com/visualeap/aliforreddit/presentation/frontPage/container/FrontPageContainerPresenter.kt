@@ -5,6 +5,7 @@ import com.visualeap.aliforreddit.domain.util.applySchedulers
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import com.visualeap.aliforreddit.presentation.common.di.FragmentScope
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.subscribeBy
 import javax.inject.Inject
 
 @FragmentScope
@@ -18,9 +19,9 @@ class FrontPageContainerPresenter @Inject constructor(
     fun start() {
         val disposable = isUserLoggedIn.execute()
             .applySchedulers(schedulerProvider)
-            .subscribe(
-                { if (it) view.showHomeScreen() else view.showLoginScreen() },
-                { /*onError*/ })
+            .subscribeBy(
+                onSuccess = { if (it) view.showHomeScreen() else view.showLoginScreen() }
+            )
 
         disposables.add(disposable)
     }

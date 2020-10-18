@@ -106,12 +106,11 @@ class LoginFragment : Fragment(), LoginView, BackButtonHandler {
     }
 
     override fun reloadScreen() {
-        //TODO find a better way to handle reload
         (activity as MainActivity).reload()
     }
 
     override fun onBackPressed(): Boolean {
-        return if (webView.visibility == View.VISIBLE) {
+        return if (webView?.visibility == View.VISIBLE) {
             hideLoginPage()
             showLoginPrompt()
             true

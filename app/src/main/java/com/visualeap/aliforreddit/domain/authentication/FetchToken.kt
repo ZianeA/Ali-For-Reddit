@@ -22,7 +22,7 @@ class FetchToken @Inject constructor(
     fun execute(): Single<Token> {
         val deviceId = generateUniqueId()
         return tokenRepository.getCurrentToken()
-            .switchIfEmpty(Single.defer {
+            .onErrorResumeNext(Single.defer {
                 //This is the first app launch, should fetch user-less token.
                 authService.getUserlessToken(
                     GRANT_TYPE,

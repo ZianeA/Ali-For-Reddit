@@ -52,16 +52,13 @@ class FrontPageContainerFragment : Fragment(), FrontPageContainerView, BackButto
 
         rootView.profileImage.setOnClickListener { _ -> drawerController.toggle() }
 
+        presenter.start()
+
         return rootView
     }
 
-    override fun onStart() {
-        super.onStart()
-        presenter.start()
-    }
-
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroyView() {
+        super.onDestroyView()
         presenter.stop()
     }
 

@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.data.token
 
+import androidx.room.EmptyResultSetException
 import com.visualeap.aliforreddit.data.database.RedditDatabase
 import com.visualeap.aliforreddit.data.token.CurrentTokenEntity.*
 import io.mockk.clearAllMocks
@@ -184,7 +185,7 @@ internal class TokenRoomRepositoryTest {
             val currentTokenEntity = createCurrentTokenEntity(tokenType = TokenType.USER)
             val userToken = createUserToken()
 
-            every { currentTokenDao.getCurrentTokenEntity() } returns Maybe.just(currentTokenEntity)
+            every { currentTokenDao.getCurrentTokenEntity() } returns Single.just(currentTokenEntity)
             every { userTokenDao.getUserToken(currentTokenEntity.tokenId) } returns Single.just(
                 userToken
             )
@@ -199,7 +200,7 @@ internal class TokenRoomRepositoryTest {
         fun `when current token is userless token should return it`() {
             val currentTokenEntity = createCurrentTokenEntity(tokenType = TokenType.USERLESS)
             val userlessToken = createUserlessToken()
-            every { currentTokenDao.getCurrentTokenEntity() } returns Maybe.just(currentTokenEntity)
+            every { currentTokenDao.getCurrentTokenEntity() } returns Single.just(currentTokenEntity)
             every { userlessTokenDao.getUserlessToken() } returns Single.just(userlessToken)
 
             //Act, Assert
@@ -209,13 +210,14 @@ internal class TokenRoomRepositoryTest {
         }
 
         @Test
-        fun `when there's no current token should return empty`() {
-            every { currentTokenDao.getCurrentTokenEntity() } returns Maybe.empty()
+        fun `when there's no current token should return error`() {
+            every { currentTokenDao.getCurrentTokenEntity() }
+                .returns(Single.error(EmptyResultSetException("")))
 
             //Act and assert
             repository.getCurrentToken()
                 .test()
-                .assertResult()
+                .assertError(EmptyResultSetException::class.java)
         }
     }
 

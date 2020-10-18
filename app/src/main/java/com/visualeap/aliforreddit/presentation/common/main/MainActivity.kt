@@ -65,8 +65,12 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 
         drawerLayout.setOnApplyWindowInsetsListener { _, insets ->
+            // Move drawer content above navigation bar
+            redditDrawer.updatePadding(
+                bottom = insets.systemWindowInsetBottom,
+                top = insets.systemWindowInsetTop
+            )
             // Move bottom navigation above navigation bar
-            redditDrawer.updatePadding(bottom = insets.systemWindowInsetBottom)
             bottomBar.updatePadding(bottom = insets.systemWindowInsetBottom)
             insets
         }
@@ -109,7 +113,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
 
     override fun onStart() {
         super.onStart()
-        presenter.start(savedInstanceState == null)
+        presenter.start()
     }
 
     override fun onStop() {
@@ -186,7 +190,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
     fun reload() {
         fragNavController.clearStack()
         fragNavController.replaceFragment(FrontPageContainerFragment())
-        presenter.start(true)
+        presenter.start()
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = androidInjector

@@ -12,5 +12,5 @@ interface TokenRepository {
     fun addUserToken(token: UserToken): Single<Int>
     fun updateUserToken(token: UserToken): Completable
     fun setCurrentToken(token: Token): Completable
-    fun getCurrentToken(): Maybe<Token>
+    fun getCurrentToken(): Single<Token>
 }

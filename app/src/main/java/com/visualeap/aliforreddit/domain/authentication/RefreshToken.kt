@@ -26,8 +26,7 @@ class RefreshToken @Inject constructor(
 
     fun execute(): Single<Token> {
         return tokenRepository.getCurrentToken()
-            .toSingle()
-            .flatMap { cachedToken ->
+            .flatMap { cachedToken: Token ->
                 when (cachedToken) {
                     is UserToken -> refreshUserToken(cachedToken)
                     is UserlessToken -> refreshUserlessToken(cachedToken)

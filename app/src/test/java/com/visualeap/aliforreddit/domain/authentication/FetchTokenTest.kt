@@ -1,5 +1,6 @@
 package com.visualeap.aliforreddit.domain.authentication
 
+import androidx.room.EmptyResultSetException
 import com.visualeap.aliforreddit.data.token.AuthService
 import com.visualeap.aliforreddit.data.token.TokenResponse
 import com.visualeap.aliforreddit.domain.util.BasicAuthCredentialProvider
@@ -50,7 +51,7 @@ class FetchTokenTest {
     fun `when current token exists should return it`() {
         //Arrange
         val expectedToken = createToken()
-        every { tokenRepository.getCurrentToken() } returns Maybe.just(expectedToken)
+        every { tokenRepository.getCurrentToken() } returns Single.just(expectedToken)
 
         //Act, Assert
         getToken.execute()
@@ -61,7 +62,7 @@ class FetchTokenTest {
     @Test
     fun `when current token doesn't exist should fetch userless token and save it`() {
         //Arrange
-        every { tokenRepository.getCurrentToken() } returns Maybe.empty()
+        every { tokenRepository.getCurrentToken() } returns Single.error(EmptyResultSetException(""))
 
         val basicAuth = "BASIC_AUTH_CREDENTIAL"
         every { authCredentialProvider.getAuthCredential() } returns basicAuth
@@ -94,7 +95,7 @@ class FetchTokenTest {
     @Test
     fun `when current token doesn't exist should set fetched token as current token`() {
         //Arrange
-        every { tokenRepository.getCurrentToken() } returns Maybe.empty()
+        every { tokenRepository.getCurrentToken() } returns Single.error(EmptyResultSetException(""))
 
         val fetchedToken = createTokenResponse()
         every { authService.getUserlessToken(any(), any(), any()) }
@@ -118,7 +119,7 @@ class FetchTokenTest {
     @Test
     fun `when current token doesn't exist should return userless token`() {
         //Arrange
-        every { tokenRepository.getCurrentToken() } returns Maybe.empty()
+        every { tokenRepository.getCurrentToken() } returns Single.error(EmptyResultSetException(""))
         val deviceIdSlot = slot<String>()
         val fetchedToken = createTokenResponse()
         every { authService.getUserlessToken(any(), capture(deviceIdSlot), any()) }

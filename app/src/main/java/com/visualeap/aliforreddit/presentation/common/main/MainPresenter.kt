@@ -2,11 +2,13 @@ package com.visualeap.aliforreddit.presentation.common.main
 
 import com.visualeap.aliforreddit.domain.redditor.RedditorRepository
 import com.visualeap.aliforreddit.domain.authentication.IsUserLoggedIn
+import com.visualeap.aliforreddit.domain.redditor.Redditor
 import com.visualeap.aliforreddit.domain.util.applySchedulers
 import com.visualeap.aliforreddit.domain.util.scheduler.SchedulerProvider
 import com.visualeap.aliforreddit.presentation.common.di.ActivityScope
 import io.reactivex.Maybe
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.subscribeBy
 import javax.inject.Inject
 
 @ActivityScope
@@ -18,19 +20,19 @@ class MainPresenter @Inject constructor(
 ) {
     private val disposables = CompositeDisposable()
 
-    fun start(refresh: Boolean) {
-        if(refresh.not()) return
-
+    fun start() {
         val disposable = isUserLoggedIn.execute()
-            .flatMapMaybe {
-                if (it) redditorRepository.getCurrentRedditor().toMaybe()
-                else Maybe.empty()
+            .flatMapMaybe { loggedIn ->
+                when {
+                    loggedIn -> redditorRepository.getCurrentRedditor().toMaybe()
+                    else -> Maybe.empty()
+                }
             }
             .applySchedulers(schedulerProvider)
-            .subscribe(
-                { view.displayCurrentRedditor(it) },
-                { /*onError*/ },
-                { view.displayLoginPrompt() })
+            .subscribeBy(
+                onSuccess = { view.displayCurrentRedditor(it) },
+                onComplete = { view.displayLoginPrompt() }
+            )
 
         disposables.add(disposable)
     }

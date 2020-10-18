@@ -1,7 +1,9 @@
 package com.visualeap.aliforreddit.domain.authentication
 
+import androidx.room.EmptyResultSetException
 import com.visualeap.aliforreddit.domain.authentication.token.UserToken
 import com.visualeap.aliforreddit.domain.authentication.token.UserlessToken
+import com.visualeap.aliforreddit.domain.redditor.Redditor
 import dagger.Reusable
 import io.reactivex.Single
 import javax.inject.Inject
@@ -17,6 +19,11 @@ class IsUserLoggedIn @Inject constructor(private val tokenRepository: TokenRepos
                     else -> throw IllegalStateException("Unknown Token type")
                 }
             }
-            .toSingle(false)
+            .onErrorResumeNext {
+                when (it) {
+                    is EmptyResultSetException -> Single.just(false)
+                    else -> Single.error(it)
+                }
+            }
     }
 }
