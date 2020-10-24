@@ -24,6 +24,7 @@
     <com.airbnb.epoxy.EpoxyRecyclerView
         android:id="@+id/postDetailRecyclerView"
         android:layout_width="match_parent"
+        android:background="@color/lightGray"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
