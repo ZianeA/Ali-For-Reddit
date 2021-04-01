@@ -14,6 +14,7 @@ import dagger.Reusable
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.rxkotlin.Singles
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -32,45 +33,43 @@ class FetchFeedPosts @Inject constructor(
         offset: Int,
         pageSize: Int
     ): Flowable<Lce<Listing<Pair<Subreddit, Post>>>> {
-        return postRepository.countPostsByFeed(feed, sortType)
-            .map { count ->
-                val correctedPageSize = min(count, pageSize)
-                val correctedOffset = when {
-                    offset < 0 -> 0
-                    offset + correctedPageSize > count -> count - correctedPageSize
-                    else -> offset
+        return Singles.zip(
+            postRepository.countPostsByFeed(feed, sortType),
+            afterKeyRepository.getAfterKey(feed, sortType)
+        ).map { (count, afterKey) ->
+            val correctedPageSize = min(count, pageSize)
+            val correctedOffset = when {
+                offset < 0 -> 0
+                offset + correctedPageSize > count -> count - correctedPageSize
+                else -> offset
+            }
+            Triple(correctedPageSize, correctedOffset, afterKey)
+
+        }.flatMapPublisher { (correctedPageSize, correctedOffset, afterKey) ->
+            val endOfRemote = afterKey is AfterKey.End
+            // If we have reached the end of cached items
+            // but not the end of the remote ones, fetch new items
+            val endOfCache = isEndOfCache(correctedPageSize, pageSize, correctedOffset, offset)
+            if (endOfCache && !endOfRemote) {
+                // Return the cached items first (first observable)
+                // while fetching remote items (second observable)
+                // The cache is only returned if it's not empty.
+                loadFromNetwork(feed, sortType, pageSize, offset, afterKey).publish { network ->
+                    Flowable.merge(
+                        loadFromCache(
+                            feed, sortType, correctedPageSize, correctedOffset, endOfRemote
+                        )
+                            .takeUntil(network)
+                            .filterEmpty()
+                            .distinctUntilChanged(),
+                        network
+                    )
                 }
-                correctedPageSize to correctedOffset
+            } else {
+                // If not, just return the cached items.
+                loadFromCache(feed, sortType, correctedPageSize, correctedOffset, endOfRemote)
             }
-            .flatMapPublisher { (correctedPageSize, correctedOffset) ->
-                postRepository.getPostsByFeed(feed, sortType, correctedOffset, correctedPageSize)
-                    // Ignore emitted items until concatMap completes. All database changes will be ignored.
-                    .onBackpressureDrop()
-                    .concatMap { cachedPosts ->
-                        afterKeyRepository.getAfterKey(feed, sortType)
-                            .flatMapPublisher { afterKey ->
-                                val endOfRemote = afterKey is AfterKey.End
-                                // If we have reached the end of cached items
-                                // but not the end of the remote ones, fetch new items
-                                val endOfCache = isEndOfCache(
-                                    correctedPageSize, pageSize, correctedOffset, offset
-                                )
-                                if (endOfCache && !endOfRemote) {
-                                    // Return the cached items first (first observable)
-                                    // while fetching remote items (second observable)
-                                    // The cache is only returned if it's not empty.
-                                    Flowable.merge(
-                                        loadFromCache(cachedPosts, endOfRemote, correctedOffset)
-                                            .filterEmpty(),
-                                        loadFromNetwork(feed, pageSize, sortType, afterKey, offset)
-                                    )
-                                } else {
-                                    // If not, just return the cached items.
-                                    loadFromCache(cachedPosts, endOfRemote, correctedOffset)
-                                }
-                            }
-                    }
-            }
+        }
     }
 
     private fun isEndOfCache(
@@ -78,45 +77,49 @@ class FetchFeedPosts @Inject constructor(
         pageSize: Int,
         correctedOffset: Int,
         offset: Int
-    ) =
-        correctedPageSize == 0 || correctedPageSize < pageSize || correctedOffset < offset
+    ) = correctedPageSize == 0 || correctedPageSize < pageSize || correctedOffset < offset
 
     private fun loadFromCache(
-        cachedPosts: List<Post>,
-        reachedTheEnd: Boolean,
-        correctedOffset: Int
+        feed: String,
+        sortType: SortType,
+        correctedPageSize: Int,
+        correctedOffset: Int,
+        reachedTheEnd: Boolean
     ): Flowable<Lce<Listing<Pair<Subreddit, Post>>>> {
-        val subredditIds = cachedPosts.map { it.subredditId }
-        // TODO get subreddits by post id for better performance
-        return subredditDao.getByIds(subredditIds)
-            .distinct()
-            .map { subredditList ->
-                // Transform the list of subreddits into a map (id -> Subreddit) for faster lookups
-                // when joining each post with its subreddit.
-                val subredditMap = subredditList.associateBy { it.id }
-                val subredditPostList =
-                    cachedPosts.map { post -> subredditMap.getValue(post.subredditId) to post }
-                Listing(subredditPostList, correctedOffset, reachedTheEnd)
-            }.toLce()
+        return postRepository.getPostsByFeed(feed, sortType, correctedOffset, correctedPageSize)
+            .flatMap { posts ->
+                val subredditIds = posts.map { it.subredditId }
+                // TODO get subreddits by post id for better performance
+                subredditDao.getByIds(subredditIds)
+                    .distinct()
+                    .map { subredditList ->
+                        // Transform the list of subreddits into a map (id -> Subreddit) for faster
+                        // lookups when joining each post with its subreddit.
+                        val subredditMap = subredditList.associateBy { it.id }
+                        val subredditPostList =
+                            posts.map { post -> subredditMap.getValue(post.subredditId) to post }
+                        Listing(subredditPostList, correctedOffset, reachedTheEnd)
+                    }.toLce()
+            }
     }
 
     private fun loadFromNetwork(
         feed: String,
-        pageSize: Int,
         sortType: SortType,
-        afterKey: AfterKey,
-        offset: Int
+        pageSize: Int,
+        offset: Int,
+        afterKey: AfterKey
     ): Flowable<Lce<Listing<Pair<Subreddit, Post>>>> {
         return feedRepository.addFeed(feed)
             .andThen(getPostsByFeed(feed, pageSize, afterKey))
-            .map { postResponse -> postResponse.getAfterKey() to PostResponseMapper.map(postResponse) }
+            .map { response -> response.getAfterKey() to PostResponseMapper.map(response) }
             .flatMapCompletable { (afterKey, remotePost) ->
                 afterKeyRepository.setAfterKey(feed, sortType, afterKey)
                     .andThen(savePost(remotePost, feed, sortType))
             }
             .andThen(execute(feed, sortType, offset, pageSize))
-            // Although the above operation returns an LCE, it will not, however, prevent the streaming
-            // from terminating if fetchign posts fails. The andThen operator doesn't run after an error.
+            // Although the above operation returns an LCE, it will not, however, prevent the stream
+            // from terminating if fetching posts fails. The andThen operator doesn't run after an error.
             .onErrorReturn { Lce.Error(it) }
     }
 
